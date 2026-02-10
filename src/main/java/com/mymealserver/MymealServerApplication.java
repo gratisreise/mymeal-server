@@ -1,0 +1,13 @@
+package com.mymealserver;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class MymealServerApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MymealServerApplication.class, args);
+    }
+
+}
