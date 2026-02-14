@@ -1,0 +1,30 @@
+# <type>(<scope>): <subject>
+# |<----  Using a MAX Of 72 chars  ---->|
+
+# Explain WHY this change is being made
+# |<----   Try To Limit Each Line to a Max Of 72 chars   ---->|
+
+# Provide links or keys to any relevant tickets, articles or other resources
+# Example: Fixes #23
+
+# --- COMMIT END ---
+# Type can be:
+#   feat     (new feature)
+#   fix      (bug fix)
+#   docs     (changes to documentation)
+#   style    (formatting, missing semi colons, etc)
+#   refactor (refactoring production code)
+#   test     (adding missing tests, refactoring tests)
+#   chore    (updating build tasks, package manager configs, etc)
+#   perf     (performance improvements)
+#   build    (build system changes)
+#   ci       (CI configuration changes)
+# --------------------
+# Scope can be:
+#   user, meal, menu, order, auth, payment, notification, admin, api, config
+# --------------------
+# Subject: Written in "imperative" mood (e.g., "add" not "added")
+# --------------------
+# Body: Motivation for change and contrast with previous behavior
+# --------------------
+# Footer: Information about Breaking Changes and Closes/Fixes issues

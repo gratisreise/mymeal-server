@@ -1,6 +1,7 @@
 package com.mymealserver.common.response;
 
 
+import com.mymealserver.common.exception.ErrorMessage;
 import com.mymealserver.common.response.classes.ErrorDetail;
 import java.time.LocalDateTime;
 import lombok.Getter;
@@ -19,7 +20,8 @@ public class ErrorResponse extends BaseResponse {
     }
 
     public static ErrorResponse unknown(RuntimeException ex){
-        return new ErrorResponse(500, "UNKNOW_ERROR", ex.getMessage());
+        ErrorMessage message = ErrorMessage.UNKNOWN_ERROR;
+        return new ErrorResponse(message.getStatus(), message.getCode(), ex.getMessage());
     }
 
 }

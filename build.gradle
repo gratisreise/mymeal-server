@@ -4,7 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
-group = 'com'
+group = 'com.mymealserver'
 version = '0.0.1-SNAPSHOT'
 description = 'mymeal-server'
 
@@ -19,20 +19,64 @@ repositories {
 }
 
 dependencies {
-
+    // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-batch'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
+    // JWT (JJWT 0.12.3)
+    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
+
+    // Database Migration
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+
+    // PostgreSQL Driver
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // AWS SDK v2 (2.21.0)
+    implementation platform('software.amazon.awssdk:bom:2.21.0')
+    implementation 'software.amazon.awssdk:s3'
+
+    // Firebase Admin SDK (9.2.0)
+    implementation 'com.google.firebase:firebase-admin:9.7.0'
+
+    // pgvector (0.1.4)
+    implementation 'com.pgvector:pgvector:0.1.4'
+
+    // Utilities
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
+    // API Documentation (SpringDoc OpenAPI 2.x)
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
 
+    // Monitoring (Prometheus)
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    implementation 'org.springframework.boot:spring-boot-starter'
+    // Test Dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation 'org.springframework.batch:spring-batch-test'
+    testImplementation 'org.testcontainers:testcontainers:1.19.3'
+    testImplementation 'org.testcontainers:postgresql:1.19.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+// Spring Boot Docker Image Build
+tasks.named('bootBuildImage') {
+    imageName = "mymeal-server:${version}"
 }

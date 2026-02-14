@@ -1,13 +1,11 @@
 package com.mymealserver.common.exception;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @AllArgsConstructor
+@Getter
 public enum ErrorMessage {
-
-
-
-
 
 
     //미처리 오류

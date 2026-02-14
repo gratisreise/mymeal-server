@@ -1,0 +1,85 @@
+spring:
+  profiles:
+    group:
+      local: local
+
+  # DataSource (PostgreSQL 15+)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mymeal
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+
+  # JPA (local: SQL LOGGING enabled)
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+
+  # Redis (7+)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      timeout: 2000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+          max-wait: -1ms
+
+# AWS Configuration (local: default values)
+aws:
+  region: ap-northeast-2
+  s3:
+    bucket: mymeal-bucket
+    endpoint: https://s3.ap-northeast-2.amazonaws.com
+  credentials:
+    access-key: dummy-access-key
+    secret-key: dummy-secret-key
+  secrets-manager:
+    enabled: false
+
+# Firebase FCM (local: classpath resource)
+firebase:
+  service-account-key: classpath:firebase-service-account.json
+
+# JWT (local: default values)
+jwt:
+  secret: default-secret-key-for-development-change-in-production
+  access-token-expiry: 3600  # 1 hour
+  refresh-token-expiry: 1209600  # 14 days
+
+# Actuator (local: all endpoints enabled)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+
+# Logging (local: DEBUG level)
+logging:
+  level:
+    root: INFO
+    com.mymealserver: DEBUG
+    org.springframework.web: INFO
+    org.springframework.security: INFO
+    org.springframework.batch: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# Server (local: default port)
+server:
+  port: 8080
