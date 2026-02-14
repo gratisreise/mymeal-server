@@ -50,11 +50,15 @@ dependencies {
     // pgvector (0.1.4)
     implementation 'com.pgvector:pgvector:0.1.4'
 
+    // Spring AI 1.0.0-M4
+    implementation platform('org.springframework.ai:spring-ai-bom:1.0.0-M4')
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter'
+    implementation 'org.springframework.ai:spring-ai-vertex-ai-gemini-spring-boot-starter'
+    implementation 'org.springframework.ai:spring-ai-pgvector-store-spring-boot-starter'
+
     // Utilities
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
     // API Documentation (SpringDoc OpenAPI 2.x)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.0'
