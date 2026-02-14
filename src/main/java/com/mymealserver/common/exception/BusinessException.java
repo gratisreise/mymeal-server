@@ -1,8 +1,15 @@
 package com.mymealserver.common.exception;
 
+import lombok.Getter;
+
+@Getter
 public class BusinessException extends RuntimeException {
 
-    public BusinessException(ErrorMessage message) {
-        super(message.name());
+    private final ErrorCode code;
+
+    public BusinessException(ErrorCode code) {
+        super(code.getMessage());
+        this.code = code;
     }
+
 }

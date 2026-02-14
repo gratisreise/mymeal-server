@@ -9,26 +9,28 @@ import org.springframework.http.ResponseEntity;
 public class SuccessResponse<T> extends BaseResponse {
     private final T data;
 
-    private SuccessResponse(HttpStatus status, T data) {
-        super(true, status.value(), LocalDateTime.now());
+    private SuccessResponse(T data) {
+        super(true, LocalDateTime.now());
         this.data = data;
     }
 
-    //200코드 성공
-    public static <T> SuccessResponse<T> ok(T data) {
-        return new SuccessResponse<>(HttpStatus.OK, data);
+    private static <T> SuccessResponse<T> of(T data) {
+        return new SuccessResponse<>(data);
     }
 
-    public static <T> SuccessResponse<T> created(T data) {
-        return new SuccessResponse<>(HttpStatus.CREATED, data);
+    public static <T> ResponseEntity<SuccessResponse<T>> toOk(T data) {
+        return ResponseEntity.ok(of(data));
     }
 
-    public static <T> SuccessResponse<T> noContent(T data) {
-        return new SuccessResponse<>(HttpStatus.NO_CONTENT, data);
+    public static <T> ResponseEntity<SuccessResponse<T>> toCreated(T data) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(of(data));
     }
 
-    //201~2xx 성공
-    public static <T> SuccessResponse<T> of(HttpStatus code, T data) {
-        return new SuccessResponse<>(code, data);
+    public static <T> ResponseEntity<SuccessResponse<T>> toNoContent(T data) {
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(of(data));
+    }
+
+    public static <T> ResponseEntity<SuccessResponse<T>> to(HttpStatus status, T data) {
+        return ResponseEntity.status(status).body(of(data));
     }
 }
