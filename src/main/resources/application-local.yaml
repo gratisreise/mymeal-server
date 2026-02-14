@@ -83,3 +83,27 @@ logging:
 # Server (local: default port)
 server:
   port: 8080
+
+# Spring AI - OpenAI (Embeddings)
+spring.ai.openai:
+  api-key: ${OPENAI_API_KEY:dummy-openai-key}
+  embedding:
+    options:
+      model: text-embedding-3-small
+
+# Spring AI - Vertex AI Gemini
+spring.ai.vertex.ai:
+  project-id: ${GCP_PROJECT_ID:dummy-project-id}
+  location: ${GCP_LOCATION:asia-northeast3}
+  gemini:
+    api-key: ${GEMINI_API_KEY:}
+    chat:
+      options:
+        model: gemini-2.0-flash-exp
+
+# Spring AI - pgvector Store
+spring.ai.vectorstore.pgvector:
+  index-type: HNSW
+  dimension: 1536
+  distance-type: COSINE_DISTANCE
+  schema-name: public
