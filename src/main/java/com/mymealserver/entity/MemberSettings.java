@@ -73,4 +73,13 @@ public class MemberSettings extends BaseEntity {
     public void enableMealReminder() {
         this.mealReminderEnabled = true;
     }
+
+    public static MemberSettings createDefault(Member member) {
+        return MemberSettings.builder()
+                .memberId(member.getId())
+                .recommendationEnabled(true)
+                .reactionReminderEnabled(true)
+                .mealReminderEnabled(true)
+                .build();
+    }
 }

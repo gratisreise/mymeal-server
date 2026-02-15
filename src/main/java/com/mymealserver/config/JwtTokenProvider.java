@@ -69,6 +69,19 @@ public class JwtTokenProvider {
             .signWith(refreshKey, SIG.HS512)
             .compact();
     }
+
+    public String createRefreshToken(Long memberId) {
+        Date now = new Date();
+        Date validity = new Date(now.getTime() + refreshValidity);
+
+        return Jwts.builder()
+            .claim("memberId", memberId)
+            .issuedAt(now)
+            .expiration(validity)
+            .signWith(refreshKey, SIG.HS512)
+            .compact();
+    }
+
     public String getRefreshUsername(String token) {
         return Jwts.parser()
             .verifyWith(refreshKey)
@@ -76,6 +89,15 @@ public class JwtTokenProvider {
             .parseSignedClaims(token)
             .getPayload()
             .getSubject();
+    }
+
+    public Long getRefreshMemberId(String token) {
+        return Jwts.parser()
+            .verifyWith(refreshKey)
+            .build()
+            .parseSignedClaims(token)
+            .getPayload()
+            .get("memberId", Long.class);
     }
 
     public String getUsername(String token) {
@@ -106,6 +128,30 @@ public class JwtTokenProvider {
             return true;
         } catch (RuntimeException e) {
             throw new BusinessException(ErrorCode.TOKEN_INVALID);
+        }
+    }
+
+    public Long validateAccessTokenAndGetMemberId(String token) {
+        try {
+            Jwts.parser()
+                .verifyWith(accessKey)
+                .build()
+                .parseSignedClaims(token);
+            return getMemberId(token);
+        } catch (RuntimeException e) {
+            throw new BusinessException(ErrorCode.TOKEN_INVALID);
+        }
+    }
+
+    public Long validateRefreshTokenAndGetMemberId(String token) {
+        try {
+            Jwts.parser()
+                .verifyWith(refreshKey)
+                .build()
+                .parseSignedClaims(token);
+            return getRefreshMemberId(token);
+        } catch (RuntimeException e) {
+            throw new BusinessException(ErrorCode.REFRESH_TOKEN_INVALID);
         }
     }
 }
