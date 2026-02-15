@@ -27,6 +27,7 @@ public enum ErrorCode {
     MEMBER_WITHDRAWN(410, "MEMBER_003", "이미 탈퇴한 회원입니다."),
     MEMBER_NAME_REQUIRED(400, "MEMBER_004", "이름은 필수 입력 항목입니다."),
     MEMBER_PROFILE_IMAGE_INVALID(400, "MEMBER_005", "프로필 이미지 URL이 유효하지 않습니다."),
+    MEMBER_DEACTIVATED(403, "MEMBER_006", "비활성화된 회원입니다."),
 
     // ========================================================================
     // MEAL - 식사 관련

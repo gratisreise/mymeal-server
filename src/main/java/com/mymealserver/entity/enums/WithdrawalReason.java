@@ -15,4 +15,15 @@ public enum WithdrawalReason {
     WithdrawalReason(String description) {
         this.description = description;
     }
+
+    public static WithdrawalReason fromString(String text) {
+        if (text == null) {
+            return OTHER;
+        }
+        try {
+            return WithdrawalReason.valueOf(text.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return OTHER;
+        }
+    }
 }
