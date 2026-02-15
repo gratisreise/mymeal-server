@@ -69,3 +69,24 @@ Use `@SpringBootTest` for integration tests. Test classes should be in the same 
 ### Configuration
 
 Application properties are in `application.properties`. For profile-specific configs, use `application-{profile}.properties`.
+
+## Git Commit Guidelines
+
+### Commit Message Rules
+
+- **DO NOT** include `Co-Authored-By: Claude Sonnet` or any AI attribution in commit messages
+- Use conventional commits format: `type(scope): description`
+- Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`, `style`
+- Keep subject line under 72 characters
+- Write body in Korean for this project
+- Reference issues if applicable: `#123`
+
+### Examples
+
+```
+feat(auth): JWT 토큰 재발급 API 추가
+
+fix(member): 회원가입 이메일 중복 검증 로직 수정
+
+refactor(response): 공통 응답 구조 개선
+```
