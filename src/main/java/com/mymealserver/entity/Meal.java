@@ -42,6 +42,9 @@ public class Meal extends SoftDeletable {
     @Builder.Default
     private AnalysisStatus analysisStatus = AnalysisStatus.PENDING;
 
+    @Column(length = 500)
+    private String memo;
+
     public void updateAnalysisStatus(AnalysisStatus status) {
         this.analysisStatus = status;
     }
