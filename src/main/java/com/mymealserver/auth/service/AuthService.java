@@ -1,19 +1,17 @@
 package com.mymealserver.auth.service;
 
+import com.mymealserver.auth.dto.request.LoginRequest;
+import com.mymealserver.auth.dto.request.RegisterRequest;
+import com.mymealserver.auth.dto.request.WithdrawRequest;
+import com.mymealserver.auth.dto.response.AuthResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
-import com.mymealserver.auth.dto.AuthResponse;
-import com.mymealserver.auth.dto.LoginRequest;
-import com.mymealserver.auth.dto.RegisterRequest;
-import com.mymealserver.auth.dto.WithdrawRequest;
+import com.mymealserver.domain.member.MemberSettingsWriter;
 import com.mymealserver.entity.Member;
 import com.mymealserver.entity.MemberSettings;
 import com.mymealserver.entity.MemberWithdrawal;
-import com.mymealserver.entity.enums.ProviderType;
-import com.mymealserver.entity.enums.WithdrawalReason;
-import com.mymealserver.repository.MemberSettingsRepository;
 import com.mymealserver.repository.MemberWithdrawalRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * 인증 서비스 (이메일 회원가입, 로그인, 로그아웃, 탈퇴)
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,128 +30,111 @@ public class AuthService {
 
     private final MemberReader memberReader;
     private final MemberWriter memberWriter;
+    private final MemberSettingsWriter memberSettingsWriter;
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
-    private final MemberSettingsRepository memberSettingsRepository;
     private final MemberWithdrawalRepository memberWithdrawalRepository;
+    private final TokenBlacklistService tokenBlacklistService;
 
+    /**
+     * 이메일 회원가입
+     */
     @Transactional
     public void register(RegisterRequest request) {
-        log.info("Registering new member with email: {}", request.email());
+        log.info("이메일 회원가입 시도: {}", request.email());
 
-        // 1. Validate email not already registered
+        // 1. 이메일 중복 체크
         if (memberReader.existsByEmail(request.email())) {
             throw new BusinessException(ErrorCode.MEMBER_EMAIL_ALREADY_EXISTS);
         }
 
-        // 2. Validate password (already validated by @Pattern annotation)
-        // Additional validation can be added here if needed
+        // 2. 비밀번호 인코딩
+        String encodedPassword = passwordEncoder.encode(request.password());
 
-        // 3. Create member
-        Member member = Member.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .name(request.name())
-                .provider(ProviderType.EMAIL)
-                .isActive(true)
-                .build();
-
+        // 3. Member 엔티티 생성 (DTO의 toEntity 메서드 사용)
+        Member member = request.toEntity(encodedPassword);
         member = memberWriter.save(member);
-        log.info("Member created successfully with id: {}", member.getId());
+        log.info("회원 생성 성공 - ID: {}", member.getId());
 
-        // 4. Create default settings
+        // 4. 기본 설정 생성
         MemberSettings settings = MemberSettings.createDefault(member);
         if (request.fcmToken() != null) {
             settings.updateFcmToken(request.fcmToken());
         }
-        memberSettingsRepository.save(settings);
-        log.info("Default settings created for member: {}", member.getId());
+        memberSettingsWriter.save(settings);
+        log.info("기본 설정 생성 완료 - 회원 ID: {}", member.getId());
     }
 
+    /**
+     * 이메일 로그인
+     */
     @Transactional
     public AuthResponse login(LoginRequest request) {
-        log.info("Login attempt for email: {}", request.email());
+        log.info("이메일 로그인 시도: {}", request.email());
 
-        // 1. Find member by email
+        // 1. 이메일로 회원 조회
         Member member = memberReader.findByEmail(request.email());
 
-        // 2. Verify password
+        // 2. 비밀번호 검증
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
             throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        // 3. Check if active
+        // 3. 활성 상태 확인
         if (!member.isActive()) {
             throw new BusinessException(ErrorCode.MEMBER_DEACTIVATED);
         }
 
-        // 4. Update last login
+        // 4. 마지막 로그인 시간 업데이트
         member.updateLastLoginAt();
         memberWriter.save(member);
 
-        // 5. Update FCM token if provided
+        // 5. FCM 토큰 업데이트 (제공된 경우)
         if (request.fcmToken() != null) {
-            updateFcmToken(member.getId(), request.fcmToken());
+            memberSettingsWriter.updateFcmToken(member.getId(), request.fcmToken());
         }
 
-        log.info("Member logged in successfully: {}", member.getId());
+        log.info("로그인 성공 - 회원 ID: {}", member.getId());
 
-        // 6. Generate tokens
+        // 6. 토큰 생성
         return tokenService.generateTokens(member);
     }
 
+    /**
+     * 로그아웃
+     */
     @Transactional
-    public void logout(Long memberId) {
-        log.info("Member logging out: {}", memberId);
+    public void logout(Long memberId, String refreshToken) {
+        log.info("로그아웃 - 회원 ID: {}", memberId);
 
-        // For now, client-side token removal is sufficient
-        // In a production environment, you might want to:
-        // - Add the token to a blacklist in Redis
-        // - Remove the refresh token from database
-        // - etc.
+        // 리프레시 토큰을 블랙리스트에 추가하여 즉시 무효화
+        if (refreshToken != null) {
+            tokenBlacklistService.addToBlacklist(refreshToken);
+            log.info("리프레시 토큰 블랙리스트 추가 완료 - 회원 ID: {}", memberId);
+        }
 
-        log.info("Member logged out successfully: {}", memberId);
+        log.info("로그아웃 완료 - 회원 ID: {}", memberId);
     }
 
+    /**
+     * 회원 탈퇴
+     */
     @Transactional
     public void withdraw(Long memberId, WithdrawRequest request) {
-        log.info("Member withdrawing: {}", memberId);
+        log.info("회원 탈퇴 - 회원 ID: {}", memberId);
 
         Member member = memberReader.findById(memberId);
 
-        // 1. Parse withdrawal reason (defaults to OTHER if invalid)
-        WithdrawalReason reason = WithdrawalReason.fromString(request.reason());
-
-        // 2. Create withdrawal record
-        MemberWithdrawal withdrawal = MemberWithdrawal.builder()
-                .memberId(memberId)
-                .reason(reason)
-                .reasonDetail(request.reasonDetail())
-                .build();
+        // 1. 탈퇴 기록 생성 (DTO의 toEntity 메서드 사용)
+        MemberWithdrawal withdrawal = request.toEntity(memberId);
 
         memberWithdrawalRepository.save(withdrawal);
-        log.info("Withdrawal record created for member: {}", memberId);
+        log.info("탈퇴 기록 생성 완료 - 회원 ID: {}", memberId);
 
-        // 3. Deactivate and soft delete member
+        // 2. 회원 비활성화 및 소프트 삭제
         member.deactivate();
         memberWriter.delete(member);
 
-        log.info("Member withdrawn successfully: {}", memberId);
-    }
-
-    private void updateFcmToken(Long memberId, String fcmToken) {
-        MemberSettings settings = memberSettingsRepository.findByMemberId(memberId)
-                .orElse(null);
-
-        if (settings != null) {
-            settings.updateFcmToken(fcmToken);
-            memberSettingsRepository.save(settings);
-        } else {
-            // Create settings if not exists
-            Member member = memberReader.findById(memberId);
-            MemberSettings newSettings = MemberSettings.createDefault(member);
-            newSettings.updateFcmToken(fcmToken);
-            memberSettingsRepository.save(newSettings);
-        }
+        log.info("회원 탈퇴 완료 - 회원 ID: {}", memberId);
     }
 }
