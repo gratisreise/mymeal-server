@@ -1,17 +1,22 @@
 package com.mymealserver.auth.service;
 
-import lombok.Builder;
+/**
+ * OAuth 제공업체 사용자 정보 인터페이스
+ */
+public interface OAuth2UserInfo {
 
-@Builder
-public record OAuth2UserInfo(
+    /**
+     * 제공업체 사용자 ID 반환
+     */
+    String id();
 
-        String id,
+    /**
+     * 사용자 닉네임 또는 이름 반환
+     */
+    String name();
 
-        String email,
-
-        String name,
-
-        String profileImage
-
-) {
+    /**
+     * 프로필 이미지 URL 반환 (없을 경우 null)
+     */
+    String profileImage();
 }
