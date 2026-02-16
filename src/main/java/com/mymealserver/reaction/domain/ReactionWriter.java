@@ -1,4 +1,4 @@
-package com.mymealserver.domain.reaction;
+package com.mymealserver.reaction.domain;
 
 import com.mymealserver.repository.ReactionRepository;
 import lombok.RequiredArgsConstructor;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ReactionReader {
+public class ReactionWriter {
 
     private final ReactionRepository reactionRepository;
 

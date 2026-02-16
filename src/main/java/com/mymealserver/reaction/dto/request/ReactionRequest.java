@@ -1,4 +1,4 @@
-package com.mymealserver.dto.reaction;
+package com.mymealserver.reaction.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

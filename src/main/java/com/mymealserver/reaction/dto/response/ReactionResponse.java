@@ -1,4 +1,4 @@
-package com.mymealserver.dto.reaction;
+package com.mymealserver.reaction.dto.response;
 
 import com.mymealserver.entity.enums.GradeType;
 
