@@ -1,4 +1,4 @@
-package com.mymealserver.dto.profile;
+package com.mymealserver.profile.dto.request;
 
 import java.time.LocalTime;
 

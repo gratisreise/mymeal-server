@@ -1,4 +1,4 @@
-package com.mymealserver.service.profile;
+package com.mymealserver.profile.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class StatisticsService {
+public class ProfileService {
 
-    // TODO: 통계 계산 로직 구현
+    // TODO: 프로필/통계 API 구현
 }

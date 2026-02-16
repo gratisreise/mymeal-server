@@ -1,8 +1,8 @@
-package com.mymealserver.dto.profile;
+package com.mymealserver.profile.dto.response;
 
 import java.time.LocalDateTime;
 
-public record ProfileResponse(
+public record MemberResponse(
         Long id,
         String email,
         String name,
