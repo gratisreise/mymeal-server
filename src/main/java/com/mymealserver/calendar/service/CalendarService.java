@@ -1,4 +1,4 @@
-package com.mymealserver.service.calendar;
+package com.mymealserver.calendar.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

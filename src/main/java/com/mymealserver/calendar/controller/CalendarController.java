@@ -1,4 +1,4 @@
-package com.mymealserver.controller;
+package com.mymealserver.calendar.controller;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

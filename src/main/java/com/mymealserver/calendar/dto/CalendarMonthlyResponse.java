@@ -1,4 +1,4 @@
-package com.mymealserver.dto.calendar;
+package com.mymealserver.calendar.dto;
 
 import java.util.Map;
 
