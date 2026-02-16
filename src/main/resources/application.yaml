@@ -2,6 +2,13 @@ spring:
   application:
     name: mymeal-server
 
+  # MessageSource for validation messages
+  messages:
+    basename: messages
+    encoding: UTF-8
+    default-encoding: UTF-8
+    fallback-to-system-locale: false
+
   # JPA + Spring Data JPA
   jpa:
     hibernate:
