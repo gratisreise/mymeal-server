@@ -1,5 +1,7 @@
-package com.mymealserver.controller;
+package com.mymealserver.settings;
 
+import com.mymealserver.settings.service.SettingsService;
+import com.mymealserver.settings.dto.response.SettingsResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
