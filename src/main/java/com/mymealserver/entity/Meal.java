@@ -52,4 +52,17 @@ public class Meal extends SoftDeletable {
     public boolean isAnalysisCompleted() {
         return analysisStatus == AnalysisStatus.COMPLETED;
     }
+
+    public void updatePhoto(String photoUrl, String photoKey) {
+        this.photoUrl = photoUrl;
+        this.photoKey = photoKey;
+    }
+
+    public void softDelete() {
+        this.deletedAt = LocalDateTime.now();
+    }
+
+    public boolean isDeleted() {
+        return deletedAt != null;
+    }
 }

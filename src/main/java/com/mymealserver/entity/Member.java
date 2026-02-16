@@ -50,6 +50,18 @@ public class Member extends SoftDeletable {
         this.lastLoginAt = LocalDateTime.now();
     }
 
+    public void updateName(String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
+    }
+
+    public void updateProfileImage(String profileImage) {
+        if (profileImage != null) {
+            this.profileImage = profileImage.isBlank() ? null : profileImage;
+        }
+    }
+
     public void deactivate() {
         this.isActive = false;
     }
