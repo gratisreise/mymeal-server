@@ -8,10 +8,10 @@ import java.time.LocalDateTime;
 
 public record CreateMealRequest(
 
-        @NotNull(message = "식사 사진은 필수입니다.")
+        @NotNull(message = "{validation.meal.photo.notnull}")
         MultipartFile photo,
 
-        @NotNull(message = "식사 유형은 필수입니다.")
+        @NotNull(message = "{validation.meal.mealType.notnull}")
         MealType mealType,
 
         LocalDateTime mealTime,

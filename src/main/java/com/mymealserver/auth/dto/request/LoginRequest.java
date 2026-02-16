@@ -7,11 +7,11 @@ import lombok.Builder;
 @Builder
 public record LoginRequest(
 
-        @NotBlank(message = "이메일은 필수 항목입니다.")
-        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        @NotBlank(message = "{validation.email.notblank}")
+        @Email(message = "{validation.email.invalid}")
         String email,
 
-        @NotBlank(message = "비밀번호는 필수 항목입니다.")
+        @NotBlank(message = "{validation.password.notblank}")
         String password,
 
         String fcmToken
