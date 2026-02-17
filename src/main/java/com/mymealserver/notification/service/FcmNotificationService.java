@@ -1,4 +1,4 @@
-package com.mymealserver.service.notification;
+package com.mymealserver.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NotificationService {
+public class FcmNotificationService {
 
-    // TODO: 알림 API 구현
+    // TODO: FCM 발송 로직 구현
 }
