@@ -1,5 +1,6 @@
-package com.mymealserver.dto.ranking;
+package com.mymealserver.ranking.dto.response;
 
+import com.mymealserver.entity.enums.GradeType;
 import com.mymealserver.entity.enums.MealType;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public record RankingItemResponse(
         String photoUrl,
         LocalDateTime mealTime,
         Double overallScore,
+        GradeType grade,
         MealType mealType
 ) {
 }
