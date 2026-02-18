@@ -1,6 +1,6 @@
 package com.mymealserver.calendar.dto;
 
-import com.mymealserver.dto.meal.MealDetailResponse;
+import com.mymealserver.meal.dto.response.MealDetailResponse;
 
 import java.time.LocalDate;
 import java.util.List;

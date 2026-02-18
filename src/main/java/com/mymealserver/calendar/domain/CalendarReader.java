@@ -55,6 +55,7 @@ public class CalendarReader {
      * 식사 기록을 날짜별로 그룹화합니다.
      *
      * @param meals 식사 기록 목록
+     *
      * @return 날짜별 식사 기록 맵
      */
     public Map<LocalDate, List<Meal>> groupMealsByDate(List<Meal> meals) {
