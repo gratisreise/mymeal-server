@@ -19,7 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +38,7 @@ public class MealController {
     @PostMapping
     @Operation(summary = "식사 생성", description = "사진을 업로드하고 식사를 저장합니다. AI 음식 분석이 백그라운드에서 진행됩니다.")
     public ResponseEntity<SuccessResponse<MealResponse>> createMeal(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @Valid @ModelAttribute MealCreateRequest request
     ) {
         MealResponse response = mealService.createMeal(memberId, request);
@@ -48,7 +48,7 @@ public class MealController {
     @GetMapping
     @Operation(summary = "식사 목록 조회", description = "페이지네이션과 필터링을 지원합니다.")
     public ResponseEntity<SuccessResponse<PageResponse<MealResponse>>> getMeals(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate endDate,
             @RequestParam(required = false) MealType mealType,
@@ -61,7 +61,7 @@ public class MealController {
     @GetMapping("/{id}")
     @Operation(summary = "식사 상세 조회", description = "AI 분석 결과와 식후 반응을 포함한 상세 정보를 조회합니다.")
     public ResponseEntity<SuccessResponse<MealDetailResponse>> getMealDetail(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @PathVariable Long id
     ) {
         MealDetailResponse response = mealService.getMealDetail(memberId, id);
@@ -71,7 +71,7 @@ public class MealController {
     @DeleteMapping("/{id}")
     @Operation(summary = "식사 삭제", description = "식사를 삭제합니다. 관련된 식후 반응 데이터는 보존됩니다.")
     public ResponseEntity<SuccessResponse<Void>> deleteMeal(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @PathVariable Long id
     ) {
         mealService.deleteMeal(memberId, id);
@@ -81,7 +81,7 @@ public class MealController {
     @PostMapping("/{id}/photo")
     @Operation(summary = "사진 재촬영", description = "기존 식사의 사진을 새로운 사진으로 교체하고 AI 재분석을 진행합니다. 기존 식후 반응 데이터는 보존됩니다.")
     public ResponseEntity<SuccessResponse<MealResponse>> retakePhoto(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @PathVariable Long id,
             @Valid @ModelAttribute MealRetakePhotoRequest request
     ) {

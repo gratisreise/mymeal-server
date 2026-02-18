@@ -14,7 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -29,7 +29,7 @@ public class NotificationController {
     @GetMapping
     @Operation(summary = "알림 목록 조회", description = "페이지네이션된 알림 목록을 조회합니다.")
     public ResponseEntity<SuccessResponse<NotificationListResponse>> getNotifications(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @RequestParam(defaultValue = "false") Boolean unreadOnly,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
@@ -55,7 +55,7 @@ public class NotificationController {
     @PutMapping("/{id}/read")
     @Operation(summary = "알림 읽음 처리", description = "특정 알림을 읽음 상태로 변경합니다.")
     public ResponseEntity<SuccessResponse<Void>> markAsRead(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @PathVariable Long id
     ) {
         notificationService.markAsRead(memberId, id);
@@ -65,7 +65,7 @@ public class NotificationController {
     @PutMapping("/read-all")
     @Operation(summary = "전체 알림 읽음 처리", description = "현재 회원의 모든 알림을 읽음 상태로 변경합니다.")
     public ResponseEntity<SuccessResponse<Void>> markAllAsRead(
-            @AuthenticationPrincipal Long memberId
+            @AuthenticatedMember Long memberId
     ) {
         notificationService.markAllAsRead(memberId);
         return SuccessResponse.toOk(null);
