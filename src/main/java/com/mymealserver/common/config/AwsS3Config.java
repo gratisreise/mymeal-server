@@ -1,4 +1,4 @@
-package com.mymealserver.config;
+package com.mymealserver.common.config;
 
 import lombok.Getter;
 import lombok.Setter;

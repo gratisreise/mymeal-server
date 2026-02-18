@@ -1,4 +1,4 @@
-package com.mymealserver.config;
+package com.mymealserver.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

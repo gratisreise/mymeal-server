@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,7 +49,7 @@ public class CalendarController {
             @Max(value = 12, message = "{validation.calendar.month.max}")
             @RequestParam Integer month,
 
-            @AuthenticationPrincipal Long memberId
+            @AuthenticatedMember Long memberId
     ) {
         log.info("Getting monthly calendar for member: {}, year: {}, month: {}", memberId, year, month);
         CalendarMonthlyResponse response = calendarService.getMonthlyCalendar(memberId, year, month);
@@ -62,7 +62,7 @@ public class CalendarController {
             @Parameter(description = "날짜 (예: 2025-02-09)", required = true)
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
 
-            @AuthenticationPrincipal Long memberId
+            @AuthenticatedMember Long memberId
     ) {
         log.info("Getting daily calendar for member: {}, date: {}", memberId, date);
         CalendarDailyResponse response = calendarService.getDailyCalendar(memberId, date);

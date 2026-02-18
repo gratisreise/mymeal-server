@@ -19,12 +19,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 
 @Slf4j
 @RestController
@@ -89,7 +89,7 @@ public class AuthController {
     @PostMapping("/logout")
     @Operation(summary = "로그아웃", description = "로그아웃하고 리프레시 토큰을 무효화합니다.")
     public ResponseEntity<SuccessResponse<Void>> logout(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @Valid @RequestBody RefreshTokenRequest request
     ) {
         log.info("Logout request for member: {}", memberId);
@@ -100,7 +100,7 @@ public class AuthController {
     @DeleteMapping("/withdraw")
     @Operation(summary = "회원 탈퇴", description = "회원을 탈퇴합니다.")
     public ResponseEntity<SuccessResponse<Void>> withdraw(
-            @AuthenticationPrincipal Long memberId,
+            @AuthenticatedMember Long memberId,
             @Valid @RequestBody WithdrawRequest request
     ) {
         log.info("Withdrawal request for member: {}", memberId);

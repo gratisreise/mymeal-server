@@ -1,6 +1,6 @@
-package com.mymealserver.config;
+package com.mymealserver.common.filter;
 
-import com.mymealserver.common.exception.ErrorCode;
+import com.mymealserver.config.classes.MemberPrincipal;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,7 +18,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final com.mymealserver.config.JwtTokenProvider jwtTokenProvider;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
@@ -34,8 +34,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (token != null) {
             try {
                 Long memberId = jwtTokenProvider.validateAccessTokenAndGetMemberId(token);
+                MemberPrincipal memberPrincipal = new MemberPrincipal(memberId);
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        memberId,
+                        memberPrincipal,
                         null,
                         null
                 );
