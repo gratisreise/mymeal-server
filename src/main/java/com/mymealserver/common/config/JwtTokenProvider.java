@@ -1,4 +1,4 @@
-package com.mymealserver.config;
+package com.mymealserver.common.config;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
@@ -10,6 +10,9 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+/**
+ * JWT 토큰 생성 및 검증 provider
+ */
 @Component
 public class JwtTokenProvider {
 
@@ -31,6 +34,9 @@ public class JwtTokenProvider {
         this.refreshValidity = refreshValidity;
     }
 
+    /**
+     * 액세스 토큰 만료 시간 반환 (밀리초)
+     */
     public long getExpiration(String accessToken) {
         Date expiration = Jwts.parser()
             .verifyWith(accessKey)
@@ -39,18 +45,20 @@ public class JwtTokenProvider {
             .getPayload()
             .getExpiration();
 
-        // 2. 현재 시간과의 차이를 계산
+        // 현재 시간과의 차이를 계산
         long now = new Date().getTime();
         return (expiration.getTime() - now);
     }
 
-
-    public String createAccessToken(String subject, long memberId) {
+    /**
+     * 액세스 토큰 생성 (subject에 memberId 저장)
+     */
+    public String createAccessToken(Long memberId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + accessValidity);
 
         return Jwts.builder()
-            .subject(subject)
+            .subject(String.valueOf(memberId))
             .claim("memberId", memberId)
             .issuedAt(now)
             .expiration(validity)
@@ -58,18 +66,9 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    public String createRefreshToken(String username) {
-        Date now = new Date();
-        Date validity = new Date(now.getTime() + refreshValidity);
-
-        return Jwts.builder()
-            .subject(username)
-            .issuedAt(now)
-            .expiration(validity)
-            .signWith(refreshKey, SIG.HS512)
-            .compact();
-    }
-
+    /**
+     * 리프레시 토큰 생성 (claim에 memberId 저장)
+     */
     public String createRefreshToken(Long memberId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + refreshValidity);
@@ -82,15 +81,9 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    public String getRefreshUsername(String token) {
-        return Jwts.parser()
-            .verifyWith(refreshKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getSubject();
-    }
-
+    /**
+     * 리프레시 토큰에서 memberId 추출
+     */
     public Long getRefreshMemberId(String token) {
         return Jwts.parser()
             .verifyWith(refreshKey)
@@ -100,15 +93,9 @@ public class JwtTokenProvider {
             .get("memberId", Long.class);
     }
 
-    public String getUsername(String token) {
-        return Jwts.parser()
-            .verifyWith(accessKey)
-            .build()
-            .parseSignedClaims(token)
-            .getPayload()
-            .getSubject();
-    }
-
+    /**
+     * 액세스 토큰에서 memberId 추출
+     */
     public Long getMemberId(String token){
         return Jwts.parser()
             .verifyWith(accessKey)
@@ -118,7 +105,9 @@ public class JwtTokenProvider {
             .get("memberId", Long.class);
     }
 
-
+    /**
+     * 액세스 토큰 유효성 검증
+     */
     public boolean validateAccessToken(String token) {
         try {
             Jwts.parser()
@@ -131,6 +120,9 @@ public class JwtTokenProvider {
         }
     }
 
+    /**
+     * 액세스 토큰 유효성 검증 및 memberId 추출
+     */
     public Long validateAccessTokenAndGetMemberId(String token) {
         try {
             Jwts.parser()
@@ -143,6 +135,9 @@ public class JwtTokenProvider {
         }
     }
 
+    /**
+     * 리프레시 토큰 유효성 검증 및 memberId 추출
+     */
     public Long validateRefreshTokenAndGetMemberId(String token) {
         try {
             Jwts.parser()

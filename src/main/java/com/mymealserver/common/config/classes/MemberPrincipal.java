@@ -1,4 +1,4 @@
-package com.mymealserver.config.classes;
+package com.mymealserver.common.config.classes;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
