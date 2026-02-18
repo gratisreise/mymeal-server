@@ -1,4 +1,4 @@
-package com.mymealserver.auth.dto;
+package com.mymealserver.auth.dto.response;
 
 import com.mymealserver.entity.Member;
 import com.mymealserver.entity.enums.ProviderType;

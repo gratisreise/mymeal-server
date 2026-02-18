@@ -1,11 +1,16 @@
-package com.mymealserver.auth.dto;
+package com.mymealserver.auth.dto.request;
 
+import com.mymealserver.common.validation.Password;
+import com.mymealserver.entity.Member;
+import com.mymealserver.entity.enums.ProviderType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
+/**
+ * 회원가입 요청 DTO
+ */
 @Builder
 public record RegisterRequest(
 
@@ -14,9 +19,7 @@ public record RegisterRequest(
         String email,
 
         @NotBlank(message = "{validation.password.notblank}")
-        @Size(min = 8, message = "{validation.password.size.min}")
-        @Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)(?=.*[@$!%*#?&])[A-Za-z\\d@$!%*#?&]+$",
-                message = "{validation.password.pattern}")
+        @Password(message = "{validation.password.pattern}")
         String password,
 
         @NotBlank(message = "{validation.name.notblank}")
@@ -24,6 +27,20 @@ public record RegisterRequest(
         String name,
 
         String fcmToken
-
 ) {
+    /**
+     * Member 엔티티로 변환
+     *
+     * @param encodedPassword 인코딩된 비밀번호
+     * @return Member 엔티티
+     */
+    public Member toEntity(String encodedPassword) {
+        return Member.builder()
+                .email(email)
+                .password(encodedPassword)
+                .name(name)
+                .provider(ProviderType.EMAIL)
+                .isActive(true)
+                .build();
+    }
 }
