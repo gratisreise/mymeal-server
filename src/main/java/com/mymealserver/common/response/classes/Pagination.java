@@ -3,8 +3,10 @@ package com.mymealserver.common.response.classes;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import org.springframework.data.domain.Page;
 
+@Getter
 @AllArgsConstructor
 @Builder
 public class Pagination {

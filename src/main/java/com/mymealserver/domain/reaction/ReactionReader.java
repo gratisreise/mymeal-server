@@ -20,4 +20,17 @@ public class ReactionReader {
     public List<Reaction> findAllByMealIds(List<Long> mealIds) {
         return reactionRepository.findAllByMealIdIn(mealIds);
     }
+
+    /**
+     * Find reactions by meal IDs and return as Map for efficient lookup
+     */
+    public java.util.Map<Long, Reaction> findByMealIdsAsMap(List<Long> mealIds) {
+        List<Reaction> reactions = findAllByMealIds(mealIds);
+        return reactions.stream()
+                .collect(java.util.stream.Collectors.toMap(
+                        Reaction::getMealId,
+                        reaction -> reaction,
+                        (existing, replacement) -> existing // Keep first if duplicate mealId
+                ));
+    }
 }
