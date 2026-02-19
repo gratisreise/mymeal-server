@@ -1,25 +1,24 @@
-package com.mymealserver.meal.service;
+package com.mymealserver.api.meal.service;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.MealAnalysis;
-import com.mymealserver.entity.Reaction;
 import com.mymealserver.entity.enums.AnalysisStatus;
 import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.meal.dto.request.MealCreateRequest;
-import com.mymealserver.meal.dto.request.MealRetakePhotoRequest;
-import com.mymealserver.meal.dto.response.AIAnalysisResponse;
-import com.mymealserver.meal.dto.response.MealDetailResponse;
-import com.mymealserver.meal.dto.response.MealResponse;
-import com.mymealserver.reaction.domain.ReactionReader;
-import com.mymealserver.reaction.dto.response.ReactionResponse;
+import com.mymealserver.api.meal.dto.request.MealRetakePhotoRequest;
+import com.mymealserver.api.meal.dto.response.AIAnalysisResponse;
+import com.mymealserver.api.meal.dto.response.MealDetailResponse;
+import com.mymealserver.api.meal.dto.response.MealResponse;
+import com.mymealserver.api.reaction.domain.ReactionReader;
+import com.mymealserver.api.reaction.dto.response.ReactionResponse;
 import com.mymealserver.service.storage.FileStorageService;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
 import com.mymealserver.domain.meal.MealAnalysisReader;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -48,29 +46,30 @@ public class MealService {
      * 사진 업로드 -> Meal 저장 -> AI 분석 비동기 처리
      */
     @Transactional
-    public MealResponse createMeal(Long memberId, MealCreateRequest request) {
-        log.info("Creating meal for member: {}, mealType: {}", memberId, request.mealType());
+    public MealResponse createMeal(Long memberId, MultipartFile photo, MealType mealType) {
+        log.info("Creating meal for member: {}, mealType: {}", memberId, mealType);
 
-        // 1. 사진 업로드
-        String photoUrl = fileStorageService.uploadMealPhoto(request.photo(), memberId);
+        // 1. MultipartFile -> Resource 변환
+        Resource imageResource = photo.getResource();
+
+        // 2. 사진 업로드
+        String photoUrl = fileStorageService.uploadMealPhoto(photo, memberId);
         String photoKey = fileStorageService.extractPhotoKey(photoUrl);
 
-        // 2. Meal 엔티티 생성 및 저장
-        LocalDateTime mealTime = request.mealTime() != null ? request.mealTime() : LocalDateTime.now();
+        // 3. Meal 엔티티 생성 및 저장
         Meal meal = Meal.builder()
                 .memberId(memberId)
-                .mealType(request.mealType())
-                .mealTime(mealTime)
+                .mealType(mealType)
                 .photoUrl(photoUrl)
                 .photoKey(photoKey)
-                .memo(request.memo())
+                .mealTime(LocalDateTime.now())
                 .build();
 
         meal = mealWriter.save(meal);
         log.info("Meal created with id: {}", meal.getId());
 
-        // 3. AI 분석 비동기 처리 (TODO: MealAnalysisService 구현 필요)
-        mealAnalysisService.analyzeMealAsync(meal.getId(), request.photo());
+        // 4. AI 분석 비동기 처리 (이미 변환된 Resource 전달)
+        mealAnalysisService.analyzeMealAsync(meal.getId(), mealType, imageResource);
 
         return MealResponse.from(meal, false);
     }
@@ -170,20 +169,38 @@ public class MealService {
             throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
         }
 
-        // 1. 새 사진 업로드
-        String newPhotoUrl = fileStorageService.uploadMealPhoto(request.photo(), memberId);
+        MultipartFile photo = request.photo();
+
+        // 1. MultipartFile -> ByteArrayResource 변환
+        byte[] imageBytes;
+        try {
+            imageBytes = photo.getBytes();
+        } catch (Exception e) {
+            log.error("Failed to read photo bytes", e);
+            throw new BusinessException(ErrorCode.FILE_UPLOAD_FAILED);
+        }
+
+        Resource imageResource = new ByteArrayResource(imageBytes) {
+            @Override
+            public String getFilename() {
+                return photo.getOriginalFilename();
+            }
+        };
+
+        // 2. 새 사진 업로드
+        String newPhotoUrl = fileStorageService.uploadMealPhoto(photo, memberId);
         String newPhotoKey = fileStorageService.extractPhotoKey(newPhotoUrl);
 
-        // 2. 기존 사진 삭제
+        // 3. 기존 사진 삭제
         fileStorageService.deletePhoto(meal.getPhotoKey());
 
-        // 3. Meal 엔티티 업데이트
+        // 4. Meal 엔티티 업데이트
         meal.updatePhoto(newPhotoUrl, newPhotoKey);
         meal.updateAnalysisStatus(AnalysisStatus.PENDING);
         mealWriter.save(meal);
 
-        // 4. AI 재분석 비동기 처리
-        mealAnalysisService.analyzeMealAsync(meal.getId(), request.photo());
+        // 5. AI 재분석 비동기 처리 (이미 변환된 Resource 전달)
+        mealAnalysisService.analyzeMealAsync(meal.getId(), meal.getMealType(), imageResource);
 
         boolean hasReaction = reactionReader.existsByMealId(meal.getId());
 

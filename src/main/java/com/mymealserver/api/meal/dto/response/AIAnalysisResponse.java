@@ -1,4 +1,4 @@
-package com.mymealserver.meal.dto.response;
+package com.mymealserver.api.meal.dto.response;
 
 import com.mymealserver.entity.MealAnalysis;
 
