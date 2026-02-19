@@ -1,4 +1,4 @@
-package com.mymealserver.auth.dto.request;
+package com.mymealserver.api.auth.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;

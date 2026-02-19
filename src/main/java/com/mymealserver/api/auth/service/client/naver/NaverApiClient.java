@@ -1,4 +1,4 @@
-package com.mymealserver.auth.service.client.naver;
+package com.mymealserver.api.auth.service.client.naver;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +9,6 @@ import org.springframework.web.client.RestClient;
 
 import java.util.Map;
 
-/**
- * Naver OAuth API Client
- * Naver OAuth 설정값을 @Value로 직접 주입받아 강하게 결합
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,13 +31,6 @@ public class NaverApiClient {
     @Value("${oauth.naver.redirect-uri}")
     private String redirectUri;
 
-    /**
-     * Exchange authorization code for access token
-     * 내부적으로 @Value로 주입받은 redirectUri 사용
-     *
-     * @param code Authorization code from Naver
-     * @return Naver token response
-     */
     public NaverTokenResponse exchangeCodeForToken(String code) {
         log.info("Exchanging authorization code for access token with Naver");
         log.debug("Using redirect URI: {}", redirectUri);
@@ -59,12 +48,6 @@ public class NaverApiClient {
                 .body(NaverTokenResponse.class);
     }
 
-    /**
-     * Get user information from Naver using access token
-     *
-     * @param accessToken Access token from Naver
-     * @return Naver user info response
-     */
     public NaverUserInfoResponse getUserInfo(String accessToken) {
         log.info("Fetching user info from Naver");
 

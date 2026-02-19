@@ -1,4 +1,4 @@
-package com.mymealserver.auth.dto.request;
+package com.mymealserver.api.auth.dto.request;
 
 import com.mymealserver.common.validation.Password;
 import com.mymealserver.entity.Member;

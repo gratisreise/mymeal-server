@@ -1,4 +1,4 @@
-package com.mymealserver.auth.service.client.naver;
+package com.mymealserver.api.auth.service.client.naver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

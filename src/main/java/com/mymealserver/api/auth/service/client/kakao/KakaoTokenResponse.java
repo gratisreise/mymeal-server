@@ -1,4 +1,4 @@
-package com.mymealserver.auth.service.client.kakao;
+package com.mymealserver.api.auth.service.client.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,10 +1,10 @@
-package com.mymealserver.auth.service;
+package com.mymealserver.api.auth.service;
 
-import com.mymealserver.auth.dto.response.AuthResponse;
-import com.mymealserver.auth.dto.response.MemberResponse;
+import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.response.MemberResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.config.JwtTokenProvider;
+import com.mymealserver.common.security.JwtTokenProvider;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.entity.Member;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * JWT 토큰 생성 및 검증 서비스
- */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -25,9 +23,6 @@ public class TokenService {
     private final MemberReader memberReader;
     private final TokenBlacklistService tokenBlacklistService;
 
-    /**
-     * 액세스 토큰 및 리프레시 토큰 생성
-     */
     public AuthResponse generateTokens(Member member) {
         String accessToken = jwtTokenProvider.createAccessToken(member.getId());
         String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
@@ -39,9 +34,7 @@ public class TokenService {
                 .build();
     }
 
-    /**
-     * 리프레시 토큰으로 새로운 액세스 토큰 발급
-     */
+
     public AuthResponse refreshToken(String refreshToken) {
         // 1. 리프레시 토큰 블랙리스트 확인
         if (tokenBlacklistService.isBlacklisted(refreshToken)) {
@@ -63,16 +56,12 @@ public class TokenService {
         return generateTokens(member);
     }
 
-    /**
-     * 액세스 토큰 유효성 검증
-     */
+
     public Long validateAccessToken(String token) {
         return jwtTokenProvider.validateAccessTokenAndGetMemberId(token);
     }
 
-    /**
-     * 리프레시 토큰 유효성 검증
-     */
+
     public Long validateRefreshToken(String token) {
         return jwtTokenProvider.validateRefreshTokenAndGetMemberId(token);
     }
