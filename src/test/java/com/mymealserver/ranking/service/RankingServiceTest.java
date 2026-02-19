@@ -182,17 +182,14 @@ class RankingServiceTest {
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(3);
 
-            // All should have same score (3.0)
             assertThat(response.getData()).allMatch(
                     item -> item.overallScore().equals(3.0),
-                    "All items should have score 3.0"
+                    "모든 항목 점수는 3.0이어야 함"
             );
 
-            // Latest meal should come first (mealTime DESC)
             List<LocalDateTime> mealTimes = response.getData().stream()
                     .map(RankingItemResponse::mealTime)
                     .toList();
@@ -313,17 +310,14 @@ class RankingServiceTest {
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(3);
 
-            // All should have same score (3.0)
             assertThat(response.getData()).allMatch(
                     item -> item.overallScore().equals(3.0),
-                    "All items should have score 3.0"
+                    "모든 항목 점수는 3.0이어야 함"
             );
 
-            // Latest meal should come first (mealTime DESC)
             List<LocalDateTime> mealTimes = response.getData().stream()
                     .map(RankingItemResponse::mealTime)
                     .toList();
