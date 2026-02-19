@@ -32,4 +32,36 @@ public class AsyncConfig {
         executor.initialize();
         return executor;
     }
+
+    /**
+     * FCM 알림 발송 전용 스레드 풀
+     * Firebase FCM 발송을 비동기로 처리
+     */
+    @Bean(name = "fcmNotificationExecutor")
+    public Executor fcmNotificationExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(4);
+        executor.setMaxPoolSize(8);
+        executor.setQueueCapacity(50);
+        executor.setThreadNamePrefix("fcm-notification-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
+        return executor;
+    }
+
+    /**
+     * MealLog 생성 및 임베딩 전용 스레드 풀
+     * Meal + Reaction → MealLog 생성 및 벡터화 작업 처리
+     */
+    @Bean(name = "mealLogExecutor")
+    public Executor mealLogExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(2);
+        executor.setMaxPoolSize(4);
+        executor.setQueueCapacity(100);
+        executor.setThreadNamePrefix("meallog-embedding-");
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.initialize();
+        return executor;
+    }
 }

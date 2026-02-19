@@ -42,12 +42,24 @@ public class Meal extends SoftDeletable {
     @Builder.Default
     private AnalysisStatus analysisStatus = AnalysisStatus.PENDING;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean notificationSent = false;
+
     public void updateAnalysisStatus(AnalysisStatus status) {
         this.analysisStatus = status;
     }
 
     public boolean isAnalysisCompleted() {
         return analysisStatus == AnalysisStatus.COMPLETED;
+    }
+
+    public void markNotificationSent() {
+        this.notificationSent = true;
+    }
+
+    public boolean isNotificationSent() {
+        return notificationSent;
     }
 
     public void updatePhoto(String photoUrl, String photoKey) {
