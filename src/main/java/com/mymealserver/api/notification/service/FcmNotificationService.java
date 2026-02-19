@@ -1,4 +1,4 @@
-package com.mymealserver.notification.service;
+package com.mymealserver.api.notification.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

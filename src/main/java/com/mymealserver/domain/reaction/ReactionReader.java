@@ -2,6 +2,7 @@ package com.mymealserver.domain.reaction;
 
 import com.mymealserver.entity.Reaction;
 import com.mymealserver.repository.ReactionRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -33,4 +34,9 @@ public class ReactionReader {
                         (existing, replacement) -> existing // Keep first if duplicate mealId
                 ));
     }
+
+    public boolean existsByMealId(Long mealId) {
+        return reactionRepository.existsByMealId(mealId);
+    }
+
 }

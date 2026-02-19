@@ -1,11 +1,11 @@
-package com.mymealserver.ranking.controller;
+package com.mymealserver.api.ranking.controller;
 
 import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.common.response.SuccessResponse;
 import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.ranking.dto.response.RankingItemResponse;
-import com.mymealserver.ranking.service.DateRange;
-import com.mymealserver.ranking.service.RankingService;
+import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
+import com.mymealserver.api.ranking.service.DateRange;
+import com.mymealserver.api.ranking.service.RankingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;

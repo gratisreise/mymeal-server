@@ -1,5 +1,6 @@
 package com.mymealserver.profile.service;
 
+import com.mymealserver.api.profile.service.ProfileService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.MemberFixture;
@@ -7,8 +8,8 @@ import com.mymealserver.common.test.fixtures.ProfileFixture;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
 import com.mymealserver.entity.Member;
-import com.mymealserver.profile.dto.request.UpdateProfileRequest;
-import com.mymealserver.profile.dto.response.ProfileResponse;
+import com.mymealserver.api.profile.dto.request.UpdateProfileRequest;
+import com.mymealserver.api.profile.dto.response.ProfileResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,8 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

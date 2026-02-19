@@ -1,4 +1,4 @@
-package com.mymealserver.profile.dto.request;
+package com.mymealserver.api.profile.dto.request;
 
 import jakarta.validation.constraints.Size;
 

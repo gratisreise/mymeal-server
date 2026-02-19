@@ -1,11 +1,13 @@
 package com.mymealserver.auth.service.impl;
 
-import com.mymealserver.auth.dto.request.OAuthRequest;
-import com.mymealserver.auth.dto.response.AuthResponse;
-import com.mymealserver.auth.service.TokenService;
-import com.mymealserver.auth.service.client.google.GoogleApiClient;
-import com.mymealserver.auth.service.client.google.GoogleTokenResponse;
-import com.mymealserver.auth.service.client.google.GoogleUserInfoResponse;
+import com.mymealserver.api.auth.dto.response.MemberResponse;
+import com.mymealserver.api.auth.dto.request.OAuthRequest;
+import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.service.TokenService;
+import com.mymealserver.api.auth.service.client.google.GoogleApiClient;
+import com.mymealserver.api.auth.service.client.google.GoogleTokenResponse;
+import com.mymealserver.api.auth.service.client.google.GoogleUserInfoResponse;
+import com.mymealserver.api.auth.service.impl.GoogleOAuthService;
 import com.mymealserver.common.test.fixtures.OAuthFixture;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberSettingsWriter;
@@ -181,7 +183,7 @@ class GoogleOAuthServiceTest {
             mockAuthResponse = AuthResponse.builder()
                     .accessToken("test_access_token")
                     .refreshToken("test_refresh_token")
-                    .member(com.mymealserver.auth.dto.response.MemberResponse.from(testMember))
+                    .member(MemberResponse.from(testMember))
                     .build();
         }
 
@@ -292,7 +294,7 @@ class GoogleOAuthServiceTest {
             mockAuthResponse = AuthResponse.builder()
                     .accessToken("test_access_token")
                     .refreshToken("test_refresh_token")
-                    .member(com.mymealserver.auth.dto.response.MemberResponse.from(testMember))
+                    .member(MemberResponse.from(testMember))
                     .build();
         }
 

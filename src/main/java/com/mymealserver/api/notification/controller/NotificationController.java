@@ -1,10 +1,10 @@
-package com.mymealserver.notification.controller;
+package com.mymealserver.api.notification.controller;
 
 import com.mymealserver.common.response.SuccessResponse;
 import com.mymealserver.common.response.classes.Pagination;
-import com.mymealserver.notification.dto.response.NotificationListResponse;
-import com.mymealserver.notification.dto.response.NotificationResponse;
-import com.mymealserver.notification.service.NotificationService;
+import com.mymealserver.api.notification.dto.response.NotificationListResponse;
+import com.mymealserver.api.notification.dto.response.NotificationResponse;
+import com.mymealserver.api.notification.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

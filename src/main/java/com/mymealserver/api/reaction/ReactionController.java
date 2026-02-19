@@ -1,8 +1,7 @@
-package com.mymealserver.api.reaction.controller;
+package com.mymealserver.api.reaction;
 
 import com.mymealserver.api.reaction.dto.request.ReactionRequest;
 import com.mymealserver.api.reaction.dto.response.ReactionResponse;
-import com.mymealserver.api.reaction.service.ReactionService;
 import com.mymealserver.common.annotation.AuthenticatedMember;
 import com.mymealserver.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;

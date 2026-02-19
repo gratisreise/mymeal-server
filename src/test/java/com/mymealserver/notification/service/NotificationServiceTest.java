@@ -1,12 +1,13 @@
 package com.mymealserver.notification.service;
 
+import com.mymealserver.api.notification.service.NotificationService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.NotificationFixture;
 import com.mymealserver.domain.notification.NotificationReader;
 import com.mymealserver.domain.notification.NotificationWriter;
 import com.mymealserver.entity.Notification;
-import com.mymealserver.notification.dto.response.NotificationResponse;
+import com.mymealserver.api.notification.dto.response.NotificationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

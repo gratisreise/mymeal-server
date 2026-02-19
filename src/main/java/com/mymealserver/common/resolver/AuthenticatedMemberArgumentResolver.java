@@ -1,7 +1,7 @@
 package com.mymealserver.common.resolver;
 
 import com.mymealserver.common.annotation.AuthenticatedMember;
-import com.mymealserver.config.classes.MemberPrincipal;
+import com.mymealserver.common.security.MemberPrincipal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;

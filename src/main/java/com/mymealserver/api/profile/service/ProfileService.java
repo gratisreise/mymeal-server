@@ -1,10 +1,10 @@
-package com.mymealserver.profile.service;
+package com.mymealserver.api.profile.service;
 
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
 import com.mymealserver.entity.Member;
-import com.mymealserver.profile.dto.request.UpdateProfileRequest;
-import com.mymealserver.profile.dto.response.ProfileResponse;
+import com.mymealserver.api.profile.dto.request.UpdateProfileRequest;
+import com.mymealserver.api.profile.dto.response.ProfileResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

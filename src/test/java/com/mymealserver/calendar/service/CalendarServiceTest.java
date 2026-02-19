@@ -1,9 +1,10 @@
 package com.mymealserver.calendar.service;
 
-import com.mymealserver.calendar.domain.CalendarDataAggregator;
-import com.mymealserver.calendar.domain.CalendarReader;
-import com.mymealserver.calendar.dto.CalendarDailyResponse;
-import com.mymealserver.calendar.dto.CalendarMonthlyResponse;
+import com.mymealserver.api.calendar.domain.CalendarDataAggregator;
+import com.mymealserver.api.calendar.domain.CalendarReader;
+import com.mymealserver.api.calendar.dto.CalendarDailyResponse;
+import com.mymealserver.api.calendar.dto.CalendarMonthlyResponse;
+import com.mymealserver.api.calendar.service.CalendarService;
 import com.mymealserver.common.test.fixtures.MealFixture;
 import com.mymealserver.common.test.fixtures.ReactionFixture;
 import com.mymealserver.entity.Meal;
@@ -53,11 +54,11 @@ class CalendarServiceTest {
         // Create test meals for February 2025
         testMeals = List.of(
                 MealFixture.createCustomMeal(1L, testMemberId, MealType.BREAKFAST,
-                        LocalDateTime.of(2025, 2, 15, 8, 0), "Breakfast"),
+                        LocalDateTime.of(2025, 2, 15, 8, 0)),
                 MealFixture.createCustomMeal(2L, testMemberId, MealType.LUNCH,
-                        LocalDateTime.of(2025, 2, 15, 12, 30), "Lunch"),
+                        LocalDateTime.of(2025, 2, 15, 12, 30)),
                 MealFixture.createCustomMeal(3L, testMemberId, MealType.DINNER,
-                        LocalDateTime.of(2025, 2, 16, 19, 0), "Dinner")
+                        LocalDateTime.of(2025, 2, 16, 19, 0))
         );
 
         // Create test reactions

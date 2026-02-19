@@ -1,4 +1,4 @@
-package com.mymealserver.reaction.dto.response;
+package com.mymealserver.api.reaction.dto.response;
 
 import com.mymealserver.entity.Reaction;
 import com.mymealserver.entity.enums.GradeType;
@@ -21,6 +21,7 @@ public record ReactionResponse(
         LocalDateTime createdAt
 ) {
     public static ReactionResponse from(Reaction reaction) {
+        if(reaction == null) return null;
         return new ReactionResponse(
                 reaction.getId(),
                 reaction.getMealId(),

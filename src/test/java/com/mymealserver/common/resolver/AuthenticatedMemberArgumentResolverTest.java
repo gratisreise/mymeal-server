@@ -1,6 +1,6 @@
 package com.mymealserver.common.resolver;
 
-import com.mymealserver.config.classes.MemberPrincipal;
+import com.mymealserver.common.security.MemberPrincipal;
 import com.mymealserver.common.annotation.AuthenticatedMember;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

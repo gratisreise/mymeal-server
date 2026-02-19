@@ -16,6 +16,9 @@ public enum ErrorCode {
     REFRESH_TOKEN_INVALID(401, "AUTH_004", "리프레시 토큰이 유효하지 않습니다."),
     OAUTH_TOKEN_FAILED(401, "AUTH_005", "소셜 로그인 토큰 검증에 실패했습니다."),
     OAUTH_UNSUPPORTED_PROVIDER(400, "AUTH_006", "지원하지 않는 소셜 로그인 제공자입니다."),
+    OAUTH_API_FAILED(502, "AUTH_009", "OAuth API 호출에 실패했습니다."),
+    OAUTH_USER_INFO_FAILED(502, "AUTH_010", "사용자 정보 조회에 실패했습니다."),
+    INVALID_REDIRECT_URI(400, "AUTH_011", "허용되지 않은 리다이렉트 URI입니다."),
     ALREADY_LOGGED_IN(400, "AUTH_007", "이미 로그인된 상태입니다."),
     NOT_LOGGED_IN(401, "AUTH_008", "로그인이 필요한 서비스입니다."),
 
@@ -40,9 +43,11 @@ public enum ErrorCode {
     MEAL_TIME_INVALID(400, "MEAL_006", "식사 시간이 유효하지 않습니다."),
     MEAL_MEMO_TOO_LONG(400, "MEAL_007", "메모는 500자 이내로 작성해야 합니다."),
     MEAL_AI_ANALYSIS_FAILED(500, "MEAL_008", "AI 이미지 분석에 실패했습니다. 나중에 다시 시도해주세요."),
+    AI_ANALYSIS_ERROR(500, "AI_001", "AI 분석에 실패했습니다. 나중에 다시 시도해주세요."),
     MEAL_ALREADY_EXISTS(409, "MEAL_009", "이미 해당 시간에 식사 기록이 존재합니다."),
-    MEAL_CANNOT_UPDATE(403, "MEAL_010", "다른 사용자의 식사 기록은 수정할 수 없습니다."),
-    MEAL_CANNOT_DELETE(403, "MEAL_011", "다른 사용자의 식사 기록은 삭제할 수 없습니다."),
+    MEAL_FORBIDDEN(403, "MEAL_010", "다른 사용자의 식사 기록에 접근할 권한이 없습니다."),
+    MEAL_CANNOT_UPDATE(403, "MEAL_011", "다른 사용자의 식사 기록은 수정할 수 없습니다."),
+    MEAL_CANNOT_DELETE(403, "MEAL_012", "다른 사용자의 식사 기록은 삭제할 수 없습니다."),
 
     // ========================================================================
     // REACTION - 식후 반응 관련
@@ -78,6 +83,11 @@ public enum ErrorCode {
     RECOMMENDATION_NOT_FOUND(404, "REC_001", "추천 정보를 찾을 수 없습니다."),
     RECOMMENDATION_INSUFFICIENT_DATA(400, "REC_002", "추천을 생성하기 위한 데이터가 부족합니다. 식사를 더 기록해주세요."),
     RECOMMENDATION_LIMIT_INVALID(400, "REC_003", "추천 요청 수량은 1~10 사이여야 합니다."),
+
+    // ========================================================================
+    // FOOD - 음식 관련
+    // ========================================================================
+    FOOD_NOT_FOUND(404, "FOOD_001", "음식을 찾을 수 없습니다."),
 
     // ========================================================================
     // VALIDATION - 입력 검증

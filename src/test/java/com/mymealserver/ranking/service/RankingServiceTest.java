@@ -1,5 +1,7 @@
 package com.mymealserver.ranking.service;
 
+import com.mymealserver.api.ranking.service.DateRange;
+import com.mymealserver.api.ranking.service.RankingService;
 import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.common.test.fixtures.RankingFixture;
 import com.mymealserver.domain.meal.MealReader;
@@ -8,7 +10,7 @@ import com.mymealserver.entity.Meal;
 import com.mymealserver.entity.Reaction;
 import com.mymealserver.entity.enums.GradeType;
 import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.ranking.dto.response.RankingItemResponse;
+import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -55,17 +57,15 @@ class RankingServiceTest {
     void setUp() {
         testMemberId = 1L;
 
-        // Create test meals with various scores
         testMeals = RankingFixture.createMealsWithVariousScores();
 
-        // Create test reactions matching the meals
         List<Reaction> reactions = RankingFixture.createReactionsWithScores();
         testReactions = Map.of(
-                1L, reactions.get(0),  // score 5.0
-                2L, reactions.get(1),  // score 4.5
-                3L, reactions.get(2),  // score 3.0
-                4L, reactions.get(3),  // score 2.0
-                5L, reactions.get(4)   // score 1.0
+                1L, reactions.get(0),
+                2L, reactions.get(1),
+                3L, reactions.get(2),
+                4L, reactions.get(3),
+                5L, reactions.get(4)
         );
     }
 
@@ -90,17 +90,14 @@ class RankingServiceTest {
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(5);
 
-            // Verify descending order by score
             List<Double> scores = response.getData().stream()
                     .map(RankingItemResponse::overallScore)
                     .toList();
             assertThat(scores).isEqualTo(List.of(5.0, 4.5, 3.0, 2.0, 1.0));
 
-            // Verify ranks are assigned correctly
             assertThat(response.getData().get(0).rank()).isEqualTo(1);
             assertThat(response.getData().get(0).overallScore()).isEqualTo(5.0);
             assertThat(response.getData().get(0).grade()).isEqualTo(GradeType.GOOD);
@@ -151,13 +148,11 @@ class RankingServiceTest {
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
-            // Should only include meals with reactions
             assertThat(response.getData()).hasSize(5);
             assertThat(response.getData()).allMatch(
                     item -> item.overallScore() != null,
-                    "All items should have scores"
+                    "모든 항목에 점수가 있어야 함"
             );
         }
 
@@ -223,12 +218,10 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(reactionsByTypeMap);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, MealType.LUNCH, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(1);
             assertThat(response.getData().get(0).mealType()).isEqualTo(MealType.LUNCH);
@@ -256,17 +249,14 @@ class RankingServiceTest {
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(5);
 
-            // Verify ascending order by score (worst first)
             List<Double> scores = response.getData().stream()
                     .map(RankingItemResponse::overallScore)
                     .toList();
             assertThat(scores).isEqualTo(List.of(1.0, 2.0, 3.0, 4.5, 5.0));
 
-            // Verify ranks are assigned correctly
             assertThat(response.getData().get(0).rank()).isEqualTo(1);
             assertThat(response.getData().get(0).overallScore()).isEqualTo(1.0);
             assertThat(response.getData().get(0).grade()).isEqualTo(GradeType.BAD);
@@ -361,18 +351,15 @@ class RankingServiceTest {
 
             Pageable pageable = PageRequest.of(0, 10);
 
-            // Only return meal in February
             when(mealReader.findByMemberId(eq(testMemberId), eq(startDate), eq(endDate), isNull(), eq(pageable)))
                     .thenReturn(new PageImpl<>(List.of(mealsForDateRange.get(1)), pageable, 1));
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(reactionsMap);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, new DateRange(startDate, endDate), pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(1);
             assertThat(response.getData().get(0).mealTime()).isEqualTo(LocalDateTime.of(2025, 2, 15, 12, 0));
@@ -381,7 +368,6 @@ class RankingServiceTest {
         @Test
         @DisplayName("날짜 범위 필터링 - 시작일만 지정")
         void getBestRanking_WithStartDateOnly_ShouldReturnMealsFromDate() {
-            // Given
             LocalDate startDate = LocalDate.of(2025, 2, 1);
             Pageable pageable = PageRequest.of(0, 10);
 
@@ -390,19 +376,16 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(testReactions);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, new DateRange(startDate, null), pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
         }
 
         @Test
         @DisplayName("날짜 범위 필터링 - 종료일만 지정")
         void getBestRanking_WithEndDateOnly_ShouldReturnMealsUntilDate() {
-            // Given
             LocalDate endDate = LocalDate.of(2025, 2, 28);
             Pageable pageable = PageRequest.of(0, 10);
 
@@ -411,12 +394,10 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(testReactions);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, new DateRange(null, endDate), pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
         }
     }
@@ -428,7 +409,6 @@ class RankingServiceTest {
         @Test
         @DisplayName("페이징 - 첫 번째 페이지")
         void getBestRanking_WithFirstPage_ShouldReturnCorrectPage() {
-            // Given
             List<Meal> largeMealSet = RankingFixture.createLargeMealSet();
             List<Reaction> largeReactionSet = RankingFixture.createLargeReactionSet();
 
@@ -457,12 +437,10 @@ class RankingServiceTest {
                                 ));
                     });
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(10);
             assertThat(response.getPagination().getCurrentPage()).isEqualTo(1);
@@ -474,7 +452,6 @@ class RankingServiceTest {
         @Test
         @DisplayName("페이징 - 두 번째 페이지")
         void getBestRanking_WithSecondPage_ShouldReturnCorrectPage() {
-            // Given
             List<Meal> largeMealSet = RankingFixture.createLargeMealSet();
             List<Reaction> largeReactionSet = RankingFixture.createLargeReactionSet();
 
@@ -503,12 +480,10 @@ class RankingServiceTest {
                                 ));
                     });
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(10);
             assertThat(response.getPagination().getCurrentPage()).isEqualTo(2);
@@ -517,7 +492,6 @@ class RankingServiceTest {
         @Test
         @DisplayName("페이징 - 마지막 페이지 (부분)")
         void getBestRanking_WithLastPage_ShouldReturnPartialPage() {
-            // Given
             List<Meal> largeMealSet = RankingFixture.createLargeMealSet();
             List<Reaction> largeReactionSet = RankingFixture.createLargeReactionSet();
 
@@ -546,21 +520,18 @@ class RankingServiceTest {
                                 ));
                     });
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
-            assertThat(response.getData()).hasSize(5); // Only 5 items on last page
+            assertThat(response.getData()).hasSize(5);
             assertThat(response.getPagination().getCurrentPage()).isEqualTo(3);
         }
 
         @Test
         @DisplayName("페이징 - 페이지 크기 1")
         void getBestRanking_WithPageSizeOne_ShouldReturnSingleItem() {
-            // Given
             Pageable pageable = PageRequest.of(0, 1);
             Page<Meal> mealPage = new PageImpl<>(
                     List.of(testMeals.get(0)),
@@ -573,12 +544,10 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(Map.of(1L, testReactions.get(1L)));
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(1);
             assertThat(response.getPagination().getPageSize()).isEqualTo(1);
@@ -593,14 +562,13 @@ class RankingServiceTest {
         @Test
         @DisplayName("경계값 - 최대 점수 (5.0)")
         void getBestRanking_WithMaxScore_ShouldHandleCorrectly() {
-            // Given
             List<Meal> boundaryMeals = RankingFixture.createBoundaryScoreMeals();
             List<Reaction> boundaryReactions = RankingFixture.createBoundaryReactions();
 
             Map<Long, Reaction> boundaryReactionsMap = Map.of(
-                    20L, boundaryReactions.get(0), // score 5.0
-                    21L, boundaryReactions.get(1), // score 1.0
-                    22L, boundaryReactions.get(2)  // score 3.0
+                    20L, boundaryReactions.get(0),
+                    21L, boundaryReactions.get(1),
+                    22L, boundaryReactions.get(2)
             );
 
             Pageable pageable = PageRequest.of(0, 10);
@@ -611,12 +579,10 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(boundaryReactionsMap);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(3);
             assertThat(response.getData().get(0).overallScore()).isEqualTo(5.0);
@@ -626,14 +592,13 @@ class RankingServiceTest {
         @Test
         @DisplayName("경계값 - 최소 점수 (1.0)")
         void getWorstRanking_WithMinScore_ShouldHandleCorrectly() {
-            // Given
             List<Meal> boundaryMeals = RankingFixture.createBoundaryScoreMeals();
             List<Reaction> boundaryReactions = RankingFixture.createBoundaryReactions();
 
             Map<Long, Reaction> boundaryReactionsMap = Map.of(
-                    20L, boundaryReactions.get(0), // score 5.0
-                    21L, boundaryReactions.get(1), // score 1.0
-                    22L, boundaryReactions.get(2)  // score 3.0
+                    20L, boundaryReactions.get(0),
+                    21L, boundaryReactions.get(1),
+                    22L, boundaryReactions.get(2)
             );
 
             Pageable pageable = PageRequest.of(0, 10);
@@ -644,12 +609,10 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(boundaryReactionsMap);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getWorstRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(3);
             assertThat(response.getData().get(0).overallScore()).isEqualTo(1.0);
@@ -659,8 +622,7 @@ class RankingServiceTest {
         @Test
         @DisplayName("경계값 - 페이지 크기가 총 데이터보다 큼")
         void getBestRanking_WithPageSizeLargerThanData_ShouldReturnAllData() {
-            // Given
-            Pageable pageable = PageRequest.of(0, 100); // Much larger than 5 meals
+            Pageable pageable = PageRequest.of(0, 100);
             Page<Meal> mealPage = new PageImpl<>(testMeals, pageable, testMeals.size());
 
             when(mealReader.findByMemberId(eq(testMemberId), isNull(), isNull(), isNull(), eq(pageable)))
@@ -668,21 +630,18 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(testReactions);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
-            assertThat(response.getData()).hasSize(5); // All 5 meals
+            assertThat(response.getData()).hasSize(5);
             assertThat(response.getPagination().getTotalPages()).isEqualTo(1);
         }
 
         @Test
         @DisplayName("경계값 - 등급별 필터링 확인")
         void getBestRanking_WithVariousGrades_ShouldClassifyCorrectly() {
-            // Given
             Pageable pageable = PageRequest.of(0, 10);
             Page<Meal> mealPage = new PageImpl<>(testMeals, pageable, testMeals.size());
 
@@ -691,21 +650,18 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(testReactions);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, null, pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(5);
 
-            // Verify grade classification
-            assertThat(response.getData().get(0).grade()).isEqualTo(GradeType.GOOD);  // 5.0
-            assertThat(response.getData().get(1).grade()).isEqualTo(GradeType.GOOD);  // 4.5
-            assertThat(response.getData().get(2).grade()).isEqualTo(GradeType.NORMAL); // 3.0
-            assertThat(response.getData().get(3).grade()).isEqualTo(GradeType.NORMAL); // 2.0
-            assertThat(response.getData().get(4).grade()).isEqualTo(GradeType.BAD);   // 1.0
+            assertThat(response.getData().get(0).grade()).isEqualTo(GradeType.GOOD);
+            assertThat(response.getData().get(1).grade()).isEqualTo(GradeType.GOOD);
+            assertThat(response.getData().get(2).grade()).isEqualTo(GradeType.NORMAL);
+            assertThat(response.getData().get(3).grade()).isEqualTo(GradeType.NORMAL);
+            assertThat(response.getData().get(4).grade()).isEqualTo(GradeType.BAD);
         }
     }
 
@@ -716,12 +672,11 @@ class RankingServiceTest {
         @Test
         @DisplayName("복합 필터링 - MealType + 날짜 범위")
         void getBestRanking_WithMealTypeAndDateRange_ShouldReturnFilteredResults() {
-            // Given
             List<Meal> mealsByType = RankingFixture.createMealsByType();
             List<Reaction> reactionsByType = RankingFixture.createReactionsByType();
 
             Map<Long, Reaction> reactionsMap = Map.of(
-                    10L, reactionsByType.get(0)  // BREAKFAST
+                    10L, reactionsByType.get(0)
             );
 
             LocalDate startDate = LocalDate.of(2025, 2, 1);
@@ -734,12 +689,10 @@ class RankingServiceTest {
             when(reactionReader.findByMealIdsAsMap(any()))
                     .thenReturn(reactionsMap);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, MealType.BREAKFAST, new DateRange(startDate, endDate), pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).hasSize(1);
             assertThat(response.getData().get(0).mealType()).isEqualTo(MealType.BREAKFAST);
@@ -748,8 +701,7 @@ class RankingServiceTest {
         @Test
         @DisplayName("복합 필터링 - 필터 결과 없음")
         void getBestRanking_WithFiltersThatMatchNothing_ShouldReturnEmpty() {
-            // Given
-            LocalDate startDate = LocalDate.of(2025, 12, 1); // No meals in December
+            LocalDate startDate = LocalDate.of(2025, 12, 1);
             LocalDate endDate = LocalDate.of(2025, 12, 31);
 
             Pageable pageable = PageRequest.of(0, 10);
@@ -758,12 +710,10 @@ class RankingServiceTest {
             when(mealReader.findByMemberId(eq(testMemberId), eq(startDate), eq(endDate), isNull(), eq(pageable)))
                     .thenReturn(emptyPage);
 
-            // When
             PageResponse<RankingItemResponse> response = rankingService.getBestRanking(
                     testMemberId, null, new DateRange(startDate, endDate), pageable
             );
 
-            // Then
             assertThat(response).isNotNull();
             assertThat(response.getData()).isEmpty();
         }

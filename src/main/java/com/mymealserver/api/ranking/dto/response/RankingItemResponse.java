@@ -1,4 +1,4 @@
-package com.mymealserver.ranking.dto.response;
+package com.mymealserver.api.ranking.dto.response;
 
 import com.mymealserver.entity.enums.GradeType;
 import com.mymealserver.entity.enums.MealType;

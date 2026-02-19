@@ -1,8 +1,8 @@
 package com.mymealserver.profile.service;
 
+import com.mymealserver.api.profile.service.BodyPatternService;
 import com.mymealserver.entity.FoodMemberStats;
-import com.mymealserver.profile.dto.response.BodyPatternResponse;
-import com.mymealserver.profile.dto.response.BodyPatternTagResponse;
+import com.mymealserver.api.profile.dto.response.BodyPatternResponse;
 import com.mymealserver.repository.FoodMemberStatsRepository;
 import com.mymealserver.repository.ReactionRepository;
 import org.junit.jupiter.api.BeforeEach;

@@ -1,10 +1,9 @@
 package com.mymealserver.profile.service;
 
+import com.mymealserver.api.profile.service.StatisticsService;
 import com.mymealserver.entity.Meal;
 import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.profile.dto.response.StatisticsResponse;
-import com.mymealserver.profile.dto.response.TagCountResponse;
-import com.mymealserver.profile.dto.response.WeeklyTrendResponse;
+import com.mymealserver.api.profile.dto.response.StatisticsResponse;
 import com.mymealserver.repository.FoodMemberStatsRepository;
 import com.mymealserver.repository.MealRepository;
 import com.mymealserver.repository.ReactionRepository;

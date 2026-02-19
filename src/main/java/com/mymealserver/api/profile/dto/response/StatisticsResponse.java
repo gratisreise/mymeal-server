@@ -1,4 +1,4 @@
-package com.mymealserver.profile.dto.response;
+package com.mymealserver.api.profile.dto.response;
 
 import java.util.List;
 

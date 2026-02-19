@@ -1,11 +1,8 @@
-package com.mymealserver.ranking.service;
+package com.mymealserver.api.ranking.service;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
-/**
- * Date range value object for filtering meals by date
- */
 public class DateRange {
 
     private final LocalDate startDate;

@@ -1,10 +1,12 @@
 package com.mymealserver.auth.service;
 
+import com.mymealserver.api.auth.service.TokenBlacklistService;
+import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.MemberFixture;
 import com.mymealserver.common.test.fixtures.TokenFixture;
-import com.mymealserver.config.JwtTokenProvider;
+import com.mymealserver.common.security.JwtTokenProvider;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.entity.Member;
 import org.junit.jupiter.api.BeforeEach;

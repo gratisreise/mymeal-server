@@ -1,4 +1,4 @@
-package com.mymealserver.ranking.service;
+package com.mymealserver.api.ranking.service;
 
 import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.domain.meal.MealReader;
@@ -7,7 +7,7 @@ import com.mymealserver.entity.Meal;
 import com.mymealserver.entity.Reaction;
 import com.mymealserver.entity.enums.GradeType;
 import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.ranking.dto.response.RankingItemResponse;
+import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,9 +32,6 @@ public class RankingService {
     private final MealReader mealReader;
     private final ReactionReader reactionReader;
 
-    /**
-     * Get best meals ranking (highest scores first)
-     */
     public PageResponse<RankingItemResponse> getBestRanking(
             Long memberId,
             MealType mealType,
@@ -44,7 +41,6 @@ public class RankingService {
         log.debug("Getting best ranking for member: {}, mealType: {}, dateRange: {}",
                 memberId, mealType, dateRange);
 
-        // Fetch meals with filters
         LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
         LocalDate endDate = dateRange != null ? dateRange.getEndDate() : null;
 
@@ -54,17 +50,14 @@ public class RankingService {
             return PageResponse.from(new PageImpl<>(List.of(), pageable, 0));
         }
 
-        // Fetch reactions for these meals
         List<Long> mealIds = mealPage.getContent().stream()
                 .map(Meal::getId)
                 .toList();
 
         Map<Long, Reaction> reactionMap = reactionReader.findByMealIdsAsMap(mealIds);
 
-        // Build ranking items
         List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
 
-        // Sort by score DESC, then by mealTime DESC for tie-breaking
         rankingItems.sort((a, b) -> {
             int scoreCompare = Double.compare(b.getScore(), a.getScore());
             if (scoreCompare != 0) {
@@ -73,10 +66,8 @@ public class RankingService {
             return b.getMealTime().compareTo(a.getMealTime());
         });
 
-        // Assign ranks
         assignRanks(rankingItems);
 
-        // Convert to response and create page
         List<RankingItemResponse> responses = rankingItems.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -84,9 +75,6 @@ public class RankingService {
         return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
     }
 
-    /**
-     * Get worst meals ranking (lowest scores first)
-     */
     public PageResponse<RankingItemResponse> getWorstRanking(
             Long memberId,
             MealType mealType,
@@ -96,7 +84,6 @@ public class RankingService {
         log.debug("Getting worst ranking for member: {}, mealType: {}, dateRange: {}",
                 memberId, mealType, dateRange);
 
-        // Fetch meals with filters
         LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
         LocalDate endDate = dateRange != null ? dateRange.getEndDate() : null;
 
@@ -106,17 +93,14 @@ public class RankingService {
             return PageResponse.from(new PageImpl<>(List.of(), pageable, 0));
         }
 
-        // Fetch reactions for these meals
         List<Long> mealIds = mealPage.getContent().stream()
                 .map(Meal::getId)
                 .toList();
 
         Map<Long, Reaction> reactionMap = reactionReader.findByMealIdsAsMap(mealIds);
 
-        // Build ranking items
         List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
 
-        // Sort by score ASC, then by mealTime DESC for tie-breaking
         rankingItems.sort((a, b) -> {
             int scoreCompare = Double.compare(a.getScore(), b.getScore());
             if (scoreCompare != 0) {
@@ -125,10 +109,8 @@ public class RankingService {
             return b.getMealTime().compareTo(a.getMealTime());
         });
 
-        // Assign ranks
         assignRanks(rankingItems);
 
-        // Convert to response and create page
         List<RankingItemResponse> responses = rankingItems.stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -136,10 +118,6 @@ public class RankingService {
         return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
     }
 
-    /**
-     * Build ranking items from meals and reactions
-     * Excludes meals without reactions
-     */
     private List<RankingItem> buildRankingItems(List<Meal> meals, Map<Long, Reaction> reactionMap) {
         return meals.stream()
                 .filter(meal -> reactionMap.containsKey(meal.getId()))
@@ -147,7 +125,7 @@ public class RankingService {
                     Reaction reaction = reactionMap.get(meal.getId());
                     return new RankingItem(
                             meal.getId(),
-                            meal.getMemo(),
+                            meal.getMealType().getDescription(),
                             meal.getPhotoUrl(),
                             meal.getMealTime(),
                             meal.getMealType(),
@@ -158,10 +136,6 @@ public class RankingService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Assign ranks to sorted items
-     * Items with same score get same rank, next rank skips appropriately
-     */
     private void assignRanks(List<RankingItem> items) {
         if (items.isEmpty()) {
             return;
@@ -174,7 +148,6 @@ public class RankingService {
             RankingItem current = items.get(i);
             RankingItem previous = items.get(i - 1);
 
-            // Same score as previous? Same rank
             if (Double.compare(current.getScore(), previous.getScore()) == 0) {
                 current.setRank(previous.getRank());
             } else {
@@ -183,9 +156,6 @@ public class RankingService {
         }
     }
 
-    /**
-     * Convert RankingItem to RankingItemResponse
-     */
     private RankingItemResponse toResponse(RankingItem item) {
         return new RankingItemResponse(
                 item.getRank(),
@@ -199,9 +169,6 @@ public class RankingService {
         );
     }
 
-    /**
-     * Internal mutable ranking item class
-     */
     @Data
     private static class RankingItem {
         private final Long mealId;

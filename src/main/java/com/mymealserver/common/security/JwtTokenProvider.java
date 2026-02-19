@@ -1,4 +1,4 @@
-package com.mymealserver.common.config;
+package com.mymealserver.common.security;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;

@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * Test fixture for Ranking feature tests
@@ -33,7 +32,6 @@ public class RankingFixture {
                     .mealTime(BASE_DATE.plusHours(i))
                     .photoUrl("https://example.com/meal" + (i + 1) + ".jpg")
                     .photoKey("meal" + (i + 1) + ".jpg")
-                    .memo("Test meal " + (i + 1))
                     .build());
         }
         return meals;
@@ -97,7 +95,6 @@ public class RankingFixture {
                     .mealTime(BASE_DATE.plusDays(i))
                     .photoUrl("https://example.com/meal" + (i + 10) + ".jpg")
                     .photoKey("meal" + (i + 10) + ".jpg")
-                    .memo(types[i].getDescription() + " meal")
                     .build());
         }
         return meals;
@@ -146,7 +143,6 @@ public class RankingFixture {
                     .mealTime(BASE_DATE.plusDays(i))
                     .photoUrl("https://example.com/meal" + (i + 20) + ".jpg")
                     .photoKey("meal" + (i + 20) + ".jpg")
-                    .memo("Boundary test meal " + (i + 1))
                     .build());
         }
         return meals;
@@ -192,7 +188,6 @@ public class RankingFixture {
                     .mealTime(BASE_DATE.plusMinutes(i * 10))
                     .photoUrl("https://example.com/meal" + (i + 100) + ".jpg")
                     .photoKey("meal" + (i + 100) + ".jpg")
-                    .memo("Pagination test meal " + (i + 1))
                     .build());
         }
         return meals;
@@ -246,7 +241,6 @@ public class RankingFixture {
                     .mealTime(dates[i])
                     .photoUrl("https://example.com/meal" + (i + 30) + ".jpg")
                     .photoKey("meal" + (i + 30) + ".jpg")
-                    .memo("Date range test meal " + (i + 1))
                     .build());
         }
         return meals;
@@ -294,7 +288,6 @@ public class RankingFixture {
                     .mealTime(BASE_DATE.plusHours(i * 2)) // Different times
                     .photoUrl("https://example.com/meal" + (i + 40) + ".jpg")
                     .photoKey("meal" + (i + 40) + ".jpg")
-                    .memo("Same score meal " + (i + 1))
                     .build());
         }
         return meals;
@@ -340,7 +333,6 @@ public class RankingFixture {
                     .mealTime(BASE_DATE.plusDays(i))
                     .photoUrl("https://example.com/meal" + (i + 50) + ".jpg")
                     .photoKey("meal" + (i + 50) + ".jpg")
-                    .memo("Meal without reaction " + (i + 1))
                     .build());
         }
         return meals;

@@ -1,4 +1,4 @@
-package com.mymealserver.notification.dto.response;
+package com.mymealserver.api.notification.dto.response;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
