@@ -1,4 +1,4 @@
-package com.mymealserver.notification.dto.response;
+package com.mymealserver.api.notification.dto.response;
 
 import com.mymealserver.common.response.classes.Pagination;
 

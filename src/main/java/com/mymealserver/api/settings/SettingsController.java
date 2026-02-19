@@ -26,7 +26,7 @@ public class SettingsController {
     @GetMapping
     @Operation(summary = "사용자 설정 조회", description = "알림 설정 및 식사 시간을 조회합니다")
     public ResponseEntity<SuccessResponse<SettingsResponse>> getSettings(
-            @Parameter(description = "인증된 회원 ID", hidden = true)
+            @Parameter(hidden = true)
             @AuthenticatedMember Long memberId
     ) {
         log.info("getSettings called - memberId: {}", memberId);
@@ -38,7 +38,7 @@ public class SettingsController {
     @PutMapping("/notifications")
     @Operation(summary = "알림 설정 수정", description = "알림 및 식사 시간 설정을 수정합니다")
     public ResponseEntity<SuccessResponse<Void>> updateNotificationSettings(
-            @Parameter(description = "인증된 회원 ID", hidden = true)
+            @Parameter(hidden = true)
             @AuthenticatedMember Long memberId,
 
             @Valid @RequestBody UpdateNotificationRequest request

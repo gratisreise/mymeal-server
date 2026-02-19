@@ -1,13 +1,13 @@
-package com.mymealserver.profile;
+package com.mymealserver.api.profile;
 
 import com.mymealserver.common.response.SuccessResponse;
-import com.mymealserver.profile.dto.request.UpdateProfileRequest;
-import com.mymealserver.profile.dto.response.BodyPatternResponse;
-import com.mymealserver.profile.dto.response.ProfileResponse;
-import com.mymealserver.profile.dto.response.StatisticsResponse;
-import com.mymealserver.profile.service.BodyPatternService;
-import com.mymealserver.profile.service.ProfileService;
-import com.mymealserver.profile.service.StatisticsService;
+import com.mymealserver.api.profile.dto.request.UpdateProfileRequest;
+import com.mymealserver.api.profile.dto.response.BodyPatternResponse;
+import com.mymealserver.api.profile.dto.response.ProfileResponse;
+import com.mymealserver.api.profile.dto.response.StatisticsResponse;
+import com.mymealserver.api.profile.service.BodyPatternService;
+import com.mymealserver.api.profile.service.ProfileService;
+import com.mymealserver.api.profile.service.StatisticsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

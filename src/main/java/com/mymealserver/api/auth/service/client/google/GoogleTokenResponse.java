@@ -1,4 +1,4 @@
-package com.mymealserver.auth.service.client.google;
+package com.mymealserver.api.auth.service.client.google;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -1,9 +1,9 @@
-package com.mymealserver.auth.service;
+package com.mymealserver.api.auth.service;
 
-import com.mymealserver.auth.dto.request.LoginRequest;
-import com.mymealserver.auth.dto.request.RegisterRequest;
-import com.mymealserver.auth.dto.request.WithdrawRequest;
-import com.mymealserver.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.request.LoginRequest;
+import com.mymealserver.api.auth.dto.request.RegisterRequest;
+import com.mymealserver.api.auth.dto.request.WithdrawRequest;
+import com.mymealserver.api.auth.dto.response.AuthResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.domain.member.MemberReader;
@@ -19,9 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * 인증 서비스 (이메일 회원가입, 로그인, 로그아웃, 탈퇴)
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,9 +33,6 @@ public class AuthService {
     private final MemberWithdrawalRepository memberWithdrawalRepository;
     private final TokenBlacklistService tokenBlacklistService;
 
-    /**
-     * 이메일 회원가입
-     */
     @Transactional
     public void register(RegisterRequest request) {
         log.info("이메일 회원가입 시도: {}", request.email());
@@ -65,9 +59,6 @@ public class AuthService {
         log.info("기본 설정 생성 완료 - 회원 ID: {}", member.getId());
     }
 
-    /**
-     * 이메일 로그인
-     */
     @Transactional
     public AuthResponse login(LoginRequest request) {
         log.info("이메일 로그인 시도: {}", request.email());
@@ -100,9 +91,6 @@ public class AuthService {
         return tokenService.generateTokens(member);
     }
 
-    /**
-     * 로그아웃
-     */
     @Transactional
     public void logout(Long memberId, String refreshToken) {
         log.info("로그아웃 - 회원 ID: {}", memberId);
@@ -116,9 +104,6 @@ public class AuthService {
         log.info("로그아웃 완료 - 회원 ID: {}", memberId);
     }
 
-    /**
-     * 회원 탈퇴
-     */
     @Transactional
     public void withdraw(Long memberId, WithdrawRequest request) {
         log.info("회원 탈퇴 - 회원 ID: {}", memberId);

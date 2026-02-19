@@ -1,16 +1,16 @@
-package com.mymealserver.auth;
+package com.mymealserver.api.auth;
 
 
-import com.mymealserver.auth.dto.request.LoginRequest;
-import com.mymealserver.auth.dto.request.OAuthRequest;
-import com.mymealserver.auth.dto.request.RefreshTokenRequest;
-import com.mymealserver.auth.dto.request.RegisterRequest;
-import com.mymealserver.auth.dto.request.WithdrawRequest;
-import com.mymealserver.auth.dto.response.AuthResponse;
-import com.mymealserver.auth.service.AuthService;
-import com.mymealserver.auth.service.OAuthService;
-import com.mymealserver.auth.service.TokenService;
-import com.mymealserver.auth.service.factory.OAuthServiceFactory;
+import com.mymealserver.api.auth.dto.request.LoginRequest;
+import com.mymealserver.api.auth.dto.request.OAuthRequest;
+import com.mymealserver.api.auth.dto.request.RefreshTokenRequest;
+import com.mymealserver.api.auth.dto.request.RegisterRequest;
+import com.mymealserver.api.auth.dto.request.WithdrawRequest;
+import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.service.AuthService;
+import com.mymealserver.api.auth.service.OAuthService;
+import com.mymealserver.api.auth.service.TokenService;
+import com.mymealserver.api.auth.service.factory.OAuthServiceFactory;
 import com.mymealserver.common.response.SuccessResponse;
 import com.mymealserver.entity.enums.ProviderType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,11 +64,8 @@ public class AuthController {
     ) {
         log.info("OAuth login request for provider: {}", request.provider());
 
-        // Get provider from request body
-        ProviderType providerType = request.provider();
-
         // Get provider-specific OAuth service from factory
-        OAuthService oauthService = oauthServiceFactory.getOAuthService(providerType);
+        OAuthService oauthService = oauthServiceFactory.getOAuthService(request);
 
         // Authenticate and get JWT tokens
         AuthResponse response = oauthService.authenticate(request);

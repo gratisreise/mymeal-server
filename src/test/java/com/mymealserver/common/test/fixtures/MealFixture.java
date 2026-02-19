@@ -24,7 +24,6 @@ public class MealFixture {
                 .photoUrl("https://example.com/breakfast.jpg")
                 .photoKey("meal/breakfast.jpg")
                 .analysisStatus(AnalysisStatus.PENDING)
-                .memo("Delicious breakfast")
                 .build();
     }
 
@@ -40,7 +39,6 @@ public class MealFixture {
                 .photoUrl("https://example.com/lunch.jpg")
                 .photoKey("meal/lunch.jpg")
                 .analysisStatus(AnalysisStatus.PENDING)
-                .memo("Healthy lunch")
                 .build();
     }
 
@@ -56,7 +54,6 @@ public class MealFixture {
                 .photoUrl("https://example.com/dinner.jpg")
                 .photoKey("meal/dinner.jpg")
                 .analysisStatus(AnalysisStatus.PENDING)
-                .memo("Light dinner")
                 .build();
     }
 
@@ -72,7 +69,6 @@ public class MealFixture {
                 .photoUrl("https://example.com/snack.jpg")
                 .photoKey("meal/snack.jpg")
                 .analysisStatus(AnalysisStatus.PENDING)
-                .memo("Afternoon snack")
                 .build();
     }
 
@@ -83,8 +79,7 @@ public class MealFixture {
             Long id,
             Long memberId,
             MealType mealType,
-            LocalDateTime mealTime,
-            String memo
+            LocalDateTime mealTime
     ) {
         return Meal.builder()
                 .id(id)
@@ -94,7 +89,6 @@ public class MealFixture {
                 .photoUrl("https://example.com/meal.jpg")
                 .photoKey("meal/meal.jpg")
                 .analysisStatus(AnalysisStatus.PENDING)
-                .memo(memo)
                 .build();
     }
 
@@ -110,7 +104,6 @@ public class MealFixture {
                 .photoUrl("https://example.com/analyzed.jpg")
                 .photoKey("meal/analyzed.jpg")
                 .analysisStatus(AnalysisStatus.COMPLETED)
-                .memo("Analyzed meal")
                 .build();
     }
 }

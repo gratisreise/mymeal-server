@@ -1,4 +1,4 @@
-package com.mymealserver.auth.dto.response;
+package com.mymealserver.api.auth.dto.response;
 
 import lombok.Builder;
 

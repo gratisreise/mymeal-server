@@ -1,4 +1,4 @@
-package com.mymealserver.recommendation.dto.response;
+package com.mymealserver.api.recommendation.dto.response;
 
 import java.util.List;
 

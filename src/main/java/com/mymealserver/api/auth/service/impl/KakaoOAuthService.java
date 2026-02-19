@@ -1,12 +1,12 @@
-package com.mymealserver.auth.service.impl;
+package com.mymealserver.api.auth.service.impl;
 
-import com.mymealserver.auth.dto.request.OAuthRequest;
-import com.mymealserver.auth.dto.response.AuthResponse;
-import com.mymealserver.auth.service.OAuthService;
-import com.mymealserver.auth.service.TokenService;
-import com.mymealserver.auth.service.client.kakao.KakaoApiClient;
-import com.mymealserver.auth.service.client.kakao.KakaoTokenResponse;
-import com.mymealserver.auth.service.client.kakao.KakaoUserInfoResponse;
+import com.mymealserver.api.auth.dto.request.OAuthRequest;
+import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.service.OAuthService;
+import com.mymealserver.api.auth.service.TokenService;
+import com.mymealserver.api.auth.service.client.kakao.KakaoApiClient;
+import com.mymealserver.api.auth.service.client.kakao.KakaoTokenResponse;
+import com.mymealserver.api.auth.service.client.kakao.KakaoUserInfoResponse;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
 import com.mymealserver.domain.member.MemberSettingsWriter;
@@ -17,9 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/**
- * Kakao OAuth 서비스 구현체
- */
 @Slf4j
 @Service
 @RequiredArgsConstructor

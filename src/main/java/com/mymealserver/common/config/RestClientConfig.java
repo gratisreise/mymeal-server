@@ -1,10 +1,8 @@
 package com.mymealserver.common.config;
 
-import com.mymealserver.common.exception.BusinessException;
-import com.mymealserver.common.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
@@ -14,19 +12,15 @@ import org.springframework.web.client.RestClient;
  */
 @Slf4j
 @Configuration
-public class OAuthConfig {
+public class RestClientConfig {
 
     /**
      * OAuth API 호출을 위한 RestClient Bean
      */
-    @org.springframework.context.annotation.Bean
+    @Bean
     public RestClient oauthRestClient(RestClient.Builder builder) {
         return builder
                 .requestFactory(new JdkClientHttpRequestFactory())
-                .defaultStatusHandler(HttpStatusCode::isError, (request, response) -> {
-                    log.error("OAuth API 호출 실패: {} {}", response.getStatusCode(), request.getURI());
-                    throw new BusinessException(ErrorCode.OAUTH_API_FAILED);
-                })
                 .build();
     }
 }

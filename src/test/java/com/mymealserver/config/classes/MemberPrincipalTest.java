@@ -1,5 +1,6 @@
 package com.mymealserver.config.classes;
 
+import com.mymealserver.common.security.MemberPrincipal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

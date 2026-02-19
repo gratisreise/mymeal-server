@@ -1,9 +1,12 @@
 package com.mymealserver.auth.service;
 
-import com.mymealserver.auth.dto.request.LoginRequest;
-import com.mymealserver.auth.dto.request.RegisterRequest;
-import com.mymealserver.auth.dto.request.WithdrawRequest;
-import com.mymealserver.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.request.LoginRequest;
+import com.mymealserver.api.auth.dto.request.RegisterRequest;
+import com.mymealserver.api.auth.dto.request.WithdrawRequest;
+import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.service.AuthService;
+import com.mymealserver.api.auth.service.TokenBlacklistService;
+import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.MemberFixture;
@@ -14,7 +17,6 @@ import com.mymealserver.domain.member.MemberWriter;
 import com.mymealserver.entity.Member;
 import com.mymealserver.entity.MemberSettings;
 import com.mymealserver.entity.MemberWithdrawal;
-import com.mymealserver.entity.enums.ProviderType;
 import com.mymealserver.repository.MemberWithdrawalRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

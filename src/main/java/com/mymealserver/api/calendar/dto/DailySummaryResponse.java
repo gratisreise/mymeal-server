@@ -1,4 +1,4 @@
-package com.mymealserver.calendar.dto;
+package com.mymealserver.api.calendar.dto;
 
 import com.mymealserver.entity.enums.GradeType;
 import com.mymealserver.entity.enums.MealType;

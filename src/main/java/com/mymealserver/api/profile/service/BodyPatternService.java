@@ -1,10 +1,10 @@
-package com.mymealserver.profile.service;
+package com.mymealserver.api.profile.service;
 
 import com.mymealserver.entity.FoodMemberStats;
 import com.mymealserver.repository.FoodMemberStatsRepository;
 import com.mymealserver.repository.ReactionRepository;
-import com.mymealserver.profile.dto.response.BodyPatternResponse;
-import com.mymealserver.profile.dto.response.BodyPatternTagResponse;
+import com.mymealserver.api.profile.dto.response.BodyPatternResponse;
+import com.mymealserver.api.profile.dto.response.BodyPatternTagResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

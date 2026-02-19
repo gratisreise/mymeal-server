@@ -1,6 +1,7 @@
 package com.mymealserver.auth.service.factory;
 
-import com.mymealserver.auth.service.OAuthService;
+import com.mymealserver.api.auth.service.OAuthService;
+import com.mymealserver.api.auth.service.factory.OAuthServiceFactory;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.entity.enums.ProviderType;
@@ -17,7 +18,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("OAuthServiceFactory 단위 테스트")

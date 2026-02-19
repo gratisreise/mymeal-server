@@ -1,8 +1,8 @@
-package com.mymealserver.calendar.controller;
+package com.mymealserver.api.calendar.controller;
 
-import com.mymealserver.calendar.dto.CalendarDailyResponse;
-import com.mymealserver.calendar.dto.CalendarMonthlyResponse;
-import com.mymealserver.calendar.service.CalendarService;
+import com.mymealserver.api.calendar.dto.CalendarDailyResponse;
+import com.mymealserver.api.calendar.dto.CalendarMonthlyResponse;
+import com.mymealserver.api.calendar.service.CalendarService;
 import com.mymealserver.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,10 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-/**
- * Calendar Controller
- * 캘린더 관련 API 엔드포인트를 제공하는 컨트롤러
- */
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/calendar")

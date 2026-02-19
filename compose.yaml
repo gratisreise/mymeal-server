@@ -1,0 +1,79 @@
+# mymeal-server Docker Compose Configuration
+#
+# Usage:
+#   Start:   docker compose -f compose.yaml up -d
+#   Stop:    docker compose -f compose.yaml down
+#   Status:  docker compose -f compose.yaml ps
+#   Logs:    docker compose -f compose.yaml logs -f
+#
+# Features:
+#   - PostgreSQL 16 with pgvector extension (food vector similarity search)
+#   - Redis 7 with AOF persistence (session storage)
+#   - Health checks for service availability monitoring
+#   - Named volumes for data persistence
+#   - Custom network for service isolation
+
+services:
+  # PostgreSQL 16 with pgvector extension
+  # pgvector: 벡터 유형 지원 (음식 유사도 검색)
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: mymeal-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mymeal
+      TZ: Asia/Seoul
+      # 성능 튜닝 (로컬 개발용)
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=C"
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    volumes:
+      - mymeal-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - mymeal-network
+
+  # Redis 7 with AOF persistence
+  # Session storage, caching
+  redis:
+    image: redis:7-alpine
+    container_name: mymeal-redis
+    restart: always
+    command: >
+      redis-server
+      --requirepass myredispassword
+      --port 6379
+      --appendonly yes
+      --appendfsync everysec
+    ports:
+      - "6379:6379"
+    volumes:
+      - mymeal-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "myredispassword", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - mymeal-network
+
+# 데이터 영속성을 위한 볼륨 정의
+volumes:
+  mymeal-postgres-data:
+    driver: local
+  mymeal-redis-data:
+    driver: local
+
+# 서비스 간 통신을 위한 네트워크 정의
+networks:
+  mymeal-network:
+    driver: bridge

@@ -19,10 +19,6 @@ public class SettingsService {
     private final MemberSettingsReader memberSettingsReader;
     private final MemberSettingsWriter memberSettingsWriter;
 
-    /**
-     * Get user settings
-     * Returns notification preferences and meal times
-     */
     public SettingsResponse getSettings(Long memberId) {
         log.debug("Getting settings for memberId: {}", memberId);
 
@@ -42,18 +38,12 @@ public class SettingsService {
         );
     }
 
-    /**
-     * Update notification settings
-     * Only updates fields that are provided (non-null)
-     * Meal times are updated if mealTimes object is provided
-     */
     @Transactional
     public void updateNotificationSettings(Long memberId, UpdateNotificationRequest request) {
         log.debug("Updating notification settings for memberId: {}", memberId);
 
         MemberSettings settings = memberSettingsReader.findByMemberId(memberId);
 
-        // Update notification flags if provided
         if (request.recommendationEnabled() != null) {
             if (request.recommendationEnabled()) {
                 settings.enableRecommendation();
@@ -81,7 +71,6 @@ public class SettingsService {
             log.debug("Updated mealReminderEnabled to: {}", request.mealReminderEnabled());
         }
 
-        // Update meal times if provided
         if (request.mealTimes() != null) {
             UpdateNotificationRequest.MealTimesData mealTimes = request.mealTimes();
 
@@ -101,7 +90,6 @@ public class SettingsService {
             }
         }
 
-        // Save updated settings
         memberSettingsWriter.save(settings);
         log.info("Updated notification settings for memberId: {}", memberId);
     }

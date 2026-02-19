@@ -6,7 +6,6 @@ spring:
   messages:
     basename: messages
     encoding: UTF-8
-    default-encoding: UTF-8
     fallback-to-system-locale: false
 
   # JPA + Spring Data JPA
@@ -49,6 +48,18 @@ spring:
   security:
     filter:
       order: 10
+  ai:
+    openai:
+      api-key: ${OPENAI_API_KEY}
+      embedding:
+        options:
+          model: text-embedding-3-small
+    google:
+      genai:
+        api-key: ${GEMINI_API_KEY}
+        chat:
+          options:
+            model: gemini-2.5-flash
 
 # SpringDoc OpenAPI 2.x
 springdoc:
@@ -64,22 +75,15 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
-# Logging (pattern only)
-logging:
-  pattern:
-    console: '%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n'
-
-# Server
-server:
-  servlet:
-    encoding:
-      charset: UTF-8
-      enabled: true
-      force: true
-  shutdown: graceful
-
 # File Upload (Meal Photos, Profile Images)
 spring.servlet.multipart:
   enabled: true
   max-file-size: 10MB
   max-request-size: 10MB
+
+# OAuth 2.0 Configuration
+oauth:
+  redirect-uris:
+    - http://localhost:3000/oauth/callback
+    - http://localhost:8080/oauth/callback
+    - https://mymeal.app/oauth/callback

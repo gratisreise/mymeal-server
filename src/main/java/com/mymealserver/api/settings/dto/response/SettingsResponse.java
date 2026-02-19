@@ -1,4 +1,4 @@
-package com.mymealserver.settings.dto.response;
+package com.mymealserver.api.settings.dto.response;
 
 import java.time.LocalTime;
 

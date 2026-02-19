@@ -1,4 +1,4 @@
-package com.mymealserver.api.reaction.service;
+package com.mymealserver.api.reaction;
 
 import com.mymealserver.api.reaction.dto.request.ReactionRequest;
 import com.mymealserver.api.reaction.dto.response.ReactionResponse;
@@ -39,8 +39,6 @@ public class ReactionService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.MEAL_NOT_FOUND));
 
         if (!meal.getMemberId().equals(memberId)) {
-            log.warn("Member {} attempted to access meal {} owned by {}",
-                    memberId, mealId, meal.getMemberId());
             throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
         }
 
