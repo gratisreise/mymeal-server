@@ -1,23 +1,23 @@
-package com.mymealserver.meal;
+package com.mymealserver.api.meal;
 
 import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.common.response.SuccessResponse;
-import com.mymealserver.entity.Meal;
 import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.meal.dto.request.MealCreateRequest;
-import com.mymealserver.meal.dto.request.MealRetakePhotoRequest;
-import com.mymealserver.meal.dto.response.MealDetailResponse;
-import com.mymealserver.meal.dto.response.MealResponse;
-import com.mymealserver.meal.service.MealService;
+import com.mymealserver.api.meal.dto.request.MealRetakePhotoRequest;
+import com.mymealserver.api.meal.dto.response.MealDetailResponse;
+import com.mymealserver.api.meal.dto.response.MealResponse;
+import com.mymealserver.api.meal.service.MealService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.ResponseEntity;
 import com.mymealserver.common.annotation.AuthenticatedMember;
 import org.springframework.validation.annotation.Validated;
@@ -35,13 +35,16 @@ public class MealController {
 
     private final MealService mealService;
 
-    @PostMapping
-    @Operation(summary = "식사 생성", description = "사진을 업로드하고 식사를 저장합니다. AI 음식 분석이 백그라운드에서 진행됩니다.")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "식사 생성", description = "사진을 업로드하고 식사를 저장합니다. AI 음식 분석이 비동기로 진행.")
     public ResponseEntity<SuccessResponse<MealResponse>> createMeal(
             @AuthenticatedMember Long memberId,
-            @Valid @ModelAttribute MealCreateRequest request
+            @Parameter(description = "식사 사진", required = true)
+            @RequestParam(value = "photo") MultipartFile photo,
+            @Parameter(description = "식사 유형 (BREAKFAST, LUNCH, DINNER, SNACK)", required = true)
+            @RequestParam(value = "mealType") MealType mealType
     ) {
-        MealResponse response = mealService.createMeal(memberId, request);
+        MealResponse response = mealService.createMeal(memberId, photo, mealType);
         return SuccessResponse.toCreated(response);
     }
 

@@ -1,4 +1,4 @@
-package com.mymealserver.meal.dto.response;
+package com.mymealserver.api.meal.dto.response;
 
 import com.mymealserver.entity.Meal;
 import com.mymealserver.entity.enums.MealType;
@@ -10,7 +10,6 @@ public record MealResponse(
         MealType mealType,
         LocalDateTime mealTime,
         String photoUrl,
-        String memo,
         Boolean hasReaction,
         LocalDateTime createdAt
 ) {
@@ -20,7 +19,6 @@ public record MealResponse(
                 meal.getMealType(),
                 meal.getMealTime(),
                 meal.getPhotoUrl(),
-                meal.getMemo(),
                 hasReaction,
                 meal.getCreatedAt()
         );

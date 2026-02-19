@@ -1,4 +1,4 @@
-package com.mymealserver.meal.dto.request;
+package com.mymealserver.api.meal.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
