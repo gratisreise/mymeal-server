@@ -74,6 +74,18 @@ public class MemberSettings extends BaseEntity {
         this.mealReminderEnabled = true;
     }
 
+    public void setBreakfastTime(LocalTime breakfastTime) {
+        this.breakfastTime = breakfastTime;
+    }
+
+    public void setLunchTime(LocalTime lunchTime) {
+        this.lunchTime = lunchTime;
+    }
+
+    public void setDinnerTime(LocalTime dinnerTime) {
+        this.dinnerTime = dinnerTime;
+    }
+
     public static MemberSettings createDefault(Member member) {
         return MemberSettings.builder()
                 .memberId(member.getId())
