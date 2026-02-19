@@ -1,5 +1,7 @@
 package com.mymealserver.meal.service;
 
+import com.mymealserver.api.meal.service.MealAnalysisService;
+import com.mymealserver.api.meal.service.MealService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.MealAnalysisFixture;
@@ -14,13 +16,10 @@ import com.mymealserver.entity.MealAnalysis;
 import com.mymealserver.entity.Reaction;
 import com.mymealserver.entity.enums.AnalysisStatus;
 import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.meal.dto.request.MealCreateRequest;
-import com.mymealserver.meal.dto.request.MealRetakePhotoRequest;
-import com.mymealserver.meal.dto.response.AIAnalysisResponse;
-import com.mymealserver.meal.dto.response.MealDetailResponse;
-import com.mymealserver.meal.dto.response.MealResponse;
-import com.mymealserver.reaction.domain.ReactionReader;
-import com.mymealserver.reaction.dto.response.ReactionResponse;
+import com.mymealserver.api.meal.dto.request.MealRetakePhotoRequest;
+import com.mymealserver.api.meal.dto.response.MealDetailResponse;
+import com.mymealserver.api.meal.dto.response.MealResponse;
+import com.mymealserver.api.reaction.domain.ReactionReader;
 import com.mymealserver.service.storage.FileStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -34,10 +33,12 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -53,6 +54,8 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.argThat;
+import org.mockito.ArgumentCaptor;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -104,7 +107,6 @@ class MealServiceTest {
                             .photoUrl(meal.getPhotoUrl())
                             .photoKey(meal.getPhotoKey())
                             .analysisStatus(meal.getAnalysisStatus())
-                            .memo(meal.getMemo())
                             .build();
                     return savedMeal;
                 });
@@ -112,7 +114,7 @@ class MealServiceTest {
 
         // MealAnalysisService 기본 mock 설정
         lenient().doAnswer(invocation -> null)
-                .when(mealAnalysisService).analyzeMealAsync(anyLong(), any(MultipartFile.class));
+                .when(mealAnalysisService).analyzeMealAsync(anyLong(), any(MealType.class), any(Resource.class));
     }
 
     @Nested
@@ -123,15 +125,11 @@ class MealServiceTest {
         @DisplayName("유효한 데이터로 식사 생성에 성공한다")
         void createMeal_WithValidData_ShouldReturnMealResponse() {
             // Given
-            MealCreateRequest request = new MealCreateRequest(
-                    MultipartFileFixture.createValidJpegPhoto(),
-                    MealType.LUNCH,
-                    LocalDateTime.of(2025, 2, 15, 12, 0),
-                    "점심 식사"
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
+            MealType mealType = MealType.LUNCH;
 
             // When
-            MealResponse response = mealService.createMeal(testMemberId, request);
+            MealResponse response = mealService.createMeal(testMemberId, photo, mealType);
 
             // Then
             assertThat(response).isNotNull();
@@ -142,22 +140,18 @@ class MealServiceTest {
             verify(fileStorageService).uploadMealPhoto(any(), eq(testMemberId));
             verify(fileStorageService).extractPhotoKey(anyString());
             verify(mealWriter).save(any(Meal.class));
-            verify(mealAnalysisService).analyzeMealAsync(eq(1L), any(MultipartFile.class));
+            verify(mealAnalysisService).analyzeMealAsync(eq(1L), any(MealType.class), any(Resource.class));
         }
 
         @Test
-        @DisplayName("mealTime이 null이면 현재 시간을 사용한다")
-        void createMeal_WithNullMealTime_ShouldUseCurrentTime() {
+        @DisplayName("DINNER 타입으로 식사 생성에 성공한다")
+        void createMeal_WithDinnerType_ShouldSucceed() {
             // Given
-            MealCreateRequest request = new MealCreateRequest(
-                    MultipartFileFixture.createValidJpegPhoto(),
-                    MealType.DINNER,
-                    null,
-                    "저녁 식사"
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
+            MealType mealType = MealType.DINNER;
 
             // When
-            MealResponse response = mealService.createMeal(testMemberId, request);
+            MealResponse response = mealService.createMeal(testMemberId, photo, mealType);
 
             // Then
             assertThat(response).isNotNull();
@@ -169,15 +163,10 @@ class MealServiceTest {
         @DisplayName("모든 MealType으로 식사 생성에 성공한다")
         void createMeal_WithAllMealTypes_ShouldSucceed(MealType mealType) {
             // Given
-            MealCreateRequest request = new MealCreateRequest(
-                    MultipartFileFixture.createValidJpegPhoto(),
-                    mealType,
-                    LocalDateTime.now(),
-                    "테스트 식사"
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             // When
-            MealResponse response = mealService.createMeal(testMemberId, request);
+            MealResponse response = mealService.createMeal(testMemberId, photo, mealType);
 
             // Then
             assertThat(response).isNotNull();
@@ -185,59 +174,17 @@ class MealServiceTest {
         }
 
         @Test
-        @DisplayName("memo가 null이어도 식사 생성에 성공한다")
-        void createMeal_WithNullMemo_ShouldSucceed() {
-            // Given
-            MealCreateRequest request = new MealCreateRequest(
-                    MultipartFileFixture.createValidJpegPhoto(),
-                    MealType.SNACK,
-                    LocalDateTime.now(),
-                    null
-            );
-
-            // When
-            MealResponse response = mealService.createMeal(testMemberId, request);
-
-            // Then
-            assertThat(response).isNotNull();
-            assertThat(response.memo()).isNull();
-        }
-
-        @Test
-        @DisplayName("memo가 빈 문자열이어도 식사 생성에 성공한다")
-        void createMeal_WithEmptyMemo_ShouldSucceed() {
-            // Given
-            MealCreateRequest request = new MealCreateRequest(
-                    MultipartFileFixture.createValidJpegPhoto(),
-                    MealType.BREAKFAST,
-                    LocalDateTime.now(),
-                    ""
-            );
-
-            // When
-            MealResponse response = mealService.createMeal(testMemberId, request);
-
-            // Then
-            assertThat(response).isNotNull();
-            assertThat(response.memo()).isEmpty();
-        }
-
-        @Test
         @DisplayName("AI 분석이 비동기로 호출되는지 확인한다")
         void createMeal_ShouldTriggerAIAnalysisAsync() {
             // Given
-            MealCreateRequest request = new MealCreateRequest(
-                    MultipartFileFixture.createValidJpegPhoto(),
-                    MealType.LUNCH,
-                    LocalDateTime.now(),
-                    "AI 분석 테스트"
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
+            MealType mealType = MealType.LUNCH;
 
             // When
-            mealService.createMeal(testMemberId, request);
+            mealService.createMeal(testMemberId, photo, mealType);
 
             // Then
-            verify(mealAnalysisService).analyzeMealAsync(anyLong(), any(MultipartFile.class));
+            verify(mealAnalysisService).analyzeMealAsync(anyLong(), any(MealType.class), any(Resource.class));
         }
     }
 
@@ -662,7 +609,7 @@ class MealServiceTest {
             verify(fileStorageService).uploadMealPhoto(any(), eq(testMemberId));
             verify(fileStorageService).deletePhoto(anyString());
             verify(mealWriter).save(meal);
-            verify(mealAnalysisService).analyzeMealAsync(eq(testMealId), any(MultipartFile.class));
+            verify(mealAnalysisService).analyzeMealAsync(eq(testMealId), any(MealType.class), any(Resource.class));
         }
 
         @Test
@@ -766,7 +713,69 @@ class MealServiceTest {
             mealService.retakePhoto(testMemberId, testMealId, request);
 
             // Then
-            verify(mealAnalysisService).analyzeMealAsync(eq(testMealId), any(MultipartFile.class));
+            verify(mealAnalysisService).analyzeMealAsync(eq(testMealId), any(MealType.class), any(Resource.class));
+        }
+
+        @Test
+        @DisplayName("MultipartFile이 ByteArrayResource로 변환되어 전달된다")
+        void retakePhoto_ShouldConvertMultipartFileToByteArrayResource() {
+            // Given
+            Meal meal = MealFixture.createDefaultLunch();
+            MockMultipartFile mockPhoto = new MockMultipartFile(
+                    "photo",
+                    "test-meal.jpg",
+                    "image/jpeg",
+                    "test-image-content".getBytes()
+            );
+            MealRetakePhotoRequest request = new MealRetakePhotoRequest(mockPhoto);
+
+            when(mealReader.findById(meal.getId())).thenReturn(meal);
+            when(reactionReader.existsByMealId(meal.getId())).thenReturn(false);
+
+            // When
+            mealService.retakePhoto(testMemberId, meal.getId(), request);
+
+            // Then
+            ArgumentCaptor<Resource> resourceCaptor = ArgumentCaptor.forClass(Resource.class);
+            verify(mealAnalysisService).analyzeMealAsync(
+                    eq(meal.getId()),
+                    any(MealType.class),
+                    resourceCaptor.capture()
+            );
+
+            // Verify the captured Resource
+            Resource capturedResource = resourceCaptor.getValue();
+            assertThat(capturedResource).isNotNull();
+            assertThat("test-meal.jpg").isEqualTo(capturedResource.getFilename());
+        }
+
+        @Test
+        @DisplayName("사진 읽기 실패 시 FILE_UPLOAD_FAILED 예외가 발생한다")
+        void retakePhoto_WhenPhotoReadFails_ShouldThrowException() {
+            // Given
+            Meal meal = MealFixture.createDefaultBreakfast();
+
+            // Create a mock MultipartFile that throws exception on getBytes()
+            MultipartFile failingPhoto = mock(MultipartFile.class);
+            when(failingPhoto.getOriginalFilename()).thenReturn("fail.jpg");
+            when(failingPhoto.getContentType()).thenReturn("image/jpeg");
+            try {
+                when(failingPhoto.getBytes()).thenThrow(new java.io.IOException("Read failed"));
+            } catch (java.io.IOException e) {
+                // This won't happen during mock setup
+            }
+
+            MealRetakePhotoRequest request = new MealRetakePhotoRequest(failingPhoto);
+
+            when(mealReader.findById(testMealId)).thenReturn(meal);
+
+            // When & Then
+            assertThatThrownBy(() -> mealService.retakePhoto(testMemberId, testMealId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .satisfies(e -> assertThat(((BusinessException) e).getCode())
+                            .isEqualTo(ErrorCode.FILE_UPLOAD_FAILED));
+
+            verify(fileStorageService, never()).uploadMealPhoto(any(), any());
         }
     }
 }
