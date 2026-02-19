@@ -15,6 +15,14 @@ public class NotificationWriter {
     private final NotificationRepository notificationRepository;
 
     /**
+     * 알림 저장
+     */
+    @Transactional
+    public Notification save(Notification notification) {
+        return notificationRepository.save(notification);
+    }
+
+    /**
      * 알림 읽음 상태 변경 (단일)
      */
     @Transactional
