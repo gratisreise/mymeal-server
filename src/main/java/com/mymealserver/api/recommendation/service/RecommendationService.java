@@ -42,10 +42,6 @@ public class RecommendationService {
     private static final int DEFAULT_LIMIT = 3;
     private static final int RECOMMENDATION_DAYS = 30;
 
-    /**
-     * Get personalized meal recommendations
-     * Based on past meals with good reactions
-     */
     public List<RecommendationResponse> getRecommendations(Long memberId, MealType mealType, Integer limit) {
         log.debug("Getting recommendations for memberId: {}, mealType: {}, limit: {}",
                 memberId, mealType, limit);
@@ -131,10 +127,6 @@ public class RecommendationService {
                 .collect(Collectors.toList());
     }
 
-    /**
-     * Get recommendation schedule for push notifications
-     * Returns scheduled recommendations based on user's meal time settings
-     */
     public List<RecommendationScheduleResponse> getRecommendationSchedule(Long memberId) {
         log.debug("Getting recommendation schedule for memberId: {}", memberId);
 
@@ -197,18 +189,11 @@ public class RecommendationService {
         return schedules;
     }
 
-    /**
-     * Get a single recommendation for a specific meal type
-     * Returns null if no recommendation available
-     */
     private RecommendationResponse getSingleRecommendation(Long memberId, MealType mealType) {
         List<RecommendationResponse> recommendations = getRecommendations(memberId, mealType, 1);
         return recommendations.isEmpty() ? null : recommendations.get(0);
     }
 
-    /**
-     * Internal record for recommendation items
-     */
     private record RecommendationItem(
             String mealName,
             String reason,
