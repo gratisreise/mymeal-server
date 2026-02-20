@@ -1,5 +1,8 @@
 package com.mymealserver.api.recommendation.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mymealserver.api.recommendation.dto.response.RecommendationResponse;
 import com.mymealserver.api.recommendation.dto.response.RecommendationScheduleResponse;
 import com.mymealserver.common.exception.BusinessException;
@@ -8,9 +11,11 @@ import com.mymealserver.domain.meal.MealAnalysisReader;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.member.MemberSettingsReader;
 import com.mymealserver.domain.reaction.ReactionReader;
+import com.mymealserver.domain.recommendation.RecommendationReader;
 import com.mymealserver.entity.Meal;
 import com.mymealserver.entity.MealAnalysis;
 import com.mymealserver.entity.MemberSettings;
+import com.mymealserver.entity.Recommendation;
 import com.mymealserver.entity.Reaction;
 import com.mymealserver.entity.enums.GradeType;
 import com.mymealserver.entity.enums.MealType;
@@ -38,10 +43,16 @@ public class RecommendationService {
     private final ReactionReader reactionReader;
     private final MealAnalysisReader mealAnalysisReader;
     private final MemberSettingsReader memberSettingsReader;
+    private final RecommendationReader recommendationReader;
+    private final ObjectMapper objectMapper;
 
     private static final int DEFAULT_LIMIT = 3;
     private static final int RECOMMENDATION_DAYS = 30;
 
+    /**
+     * Get recommendations from batch-generated AI recommendations
+     * Falls back to rule-based recommendations if no batch recommendations exist
+     */
     public List<RecommendationResponse> getRecommendations(Long memberId, MealType mealType, Integer limit) {
         log.debug("Getting recommendations for memberId: {}, mealType: {}, limit: {}",
                 memberId, mealType, limit);
@@ -50,17 +61,129 @@ public class RecommendationService {
                 ? limit
                 : DEFAULT_LIMIT;
 
-        // Calculate date range for past meals
+        // Try to get batch-generated recommendations first
+        List<Recommendation> batchRecommendations = mealType != null
+                ? recommendationReader.findByMemberIdAndMealType(memberId, mealType)
+                : recommendationReader.findByMemberId(memberId);
+
+        // Filter for today's recommendations only
+        LocalDate today = LocalDate.now();
+        List<Recommendation> todayRecommendations = batchRecommendations.stream()
+                .filter(rec -> {
+                    LocalDate recDate = rec.getScheduledTime().toLocalDate();
+                    return recDate.equals(today) || !rec.isNotificationSent();
+                })
+                .limit(recommendationLimit)
+                .toList();
+
+        if (!todayRecommendations.isEmpty()) {
+            log.info("Found {} batch-generated recommendations for memberId: {}",
+                    todayRecommendations.size(), memberId);
+            return todayRecommendations.stream()
+                    .map(this::convertToResponse)
+                    .collect(Collectors.toList());
+        }
+
+        // Fallback to rule-based recommendations
+        log.debug("No batch recommendations found, using rule-based fallback");
+        return getRuleBasedRecommendations(memberId, mealType, recommendationLimit);
+    }
+
+    /**
+     * Get recommendation schedule from batch-generated recommendations
+     */
+    public List<RecommendationScheduleResponse> getRecommendationSchedule(Long memberId) {
+        log.debug("Getting recommendation schedule for memberId: {}", memberId);
+
+        MemberSettings settings = memberSettingsReader.findByMemberIdOrNull(memberId);
+
+        if (settings == null) {
+            log.debug("No settings found for memberId: {}", memberId);
+            return List.of();
+        }
+
+        // Get today's batch recommendations
+        List<Recommendation> todayRecommendations = recommendationReader.findByMemberIdAndDateRange(
+                memberId,
+                LocalDate.now()
+        );
+
+        List<RecommendationScheduleResponse> schedules = new ArrayList<>();
+
+        // Convert batch recommendations to schedule responses
+        for (Recommendation rec : todayRecommendations) {
+            schedules.add(new RecommendationScheduleResponse(
+                    rec.getMealType(),
+                    rec.getScheduledTime(),
+                    extractMealName(rec.getMenuDetails()),
+                    rec.getPushMessage()
+            ));
+        }
+
+        // If no batch recommendations, fall back to schedule placeholders
+        if (schedules.isEmpty()) {
+            log.debug("No batch recommendations found, using fallback schedule");
+            return getFallbackSchedule(memberId, settings);
+        }
+
+        log.debug("Generated {} recommendation schedules for memberId: {}", schedules.size(), memberId);
+        return schedules;
+    }
+
+    private RecommendationResponse convertToResponse(Recommendation recommendation) {
+        String mealName = extractMealName(recommendation.getMenuDetails());
+        String reason = extractReason(recommendation.getMenuDetails());
+
+        return new RecommendationResponse(
+                mealName,
+                reason,
+                List.of(), // Empty tags list
+                null,     // No average score for AI recommendations
+                null      // No reference meal ID for AI recommendations
+        );
+    }
+
+    private String extractMealName(String menuDetailsJson) {
+        if (menuDetailsJson == null || menuDetailsJson.isBlank()) {
+            return "AI 추천 식단";
+        }
+
+        try {
+            JsonNode root = objectMapper.readTree(menuDetailsJson);
+            return root.has("mealName") ? root.get("mealName").asText() : "AI 추천 식단";
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to parse menu details JSON: {}", menuDetailsJson);
+            return "AI 추천 식단";
+        }
+    }
+
+    private String extractReason(String menuDetailsJson) {
+        if (menuDetailsJson == null || menuDetailsJson.isBlank()) {
+            return "AI가 분석한 개인 맞춤 추천입니다";
+        }
+
+        try {
+            JsonNode root = objectMapper.readTree(menuDetailsJson);
+            return root.has("reason") ? root.get("reason").asText() : "AI가 분석한 개인 맞춤 추천입니다";
+        } catch (JsonProcessingException e) {
+            log.warn("Failed to parse menu details JSON: {}", menuDetailsJson);
+            return "AI가 분석한 개인 맞춤 추천입니다";
+        }
+    }
+
+    private List<RecommendationResponse> getRuleBasedRecommendations(
+            Long memberId,
+            MealType mealType,
+            int limit
+    ) {
         LocalDate endDate = LocalDate.now();
         LocalDate startDate = endDate.minusDays(RECOMMENDATION_DAYS);
 
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
 
-        // Fetch past meals with same meal type
         List<Meal> meals = mealReader.findByMemberIdAndDateRange(memberId, startDateTime, endDateTime);
 
-        // Filter by meal type if specified
         List<Meal> filteredMeals = mealType != null
                 ? meals.stream()
                     .filter(meal -> meal.getMealType() == mealType)
@@ -72,14 +195,12 @@ public class RecommendationService {
             return List.of();
         }
 
-        // Get reactions for these meals
         List<Long> mealIds = filteredMeals.stream()
                 .map(Meal::getId)
                 .toList();
 
         Map<Long, Reaction> reactionMap = reactionReader.findByMealIdsAsMap(mealIds);
 
-        // Get meal analyses for meal names
         Map<Long, MealAnalysis> analysisMap = mealIds.stream()
                 .map(mealAnalysisReader::findByMealId)
                 .filter(Optional::isPresent)
@@ -88,7 +209,6 @@ public class RecommendationService {
                         analysis -> analysis.get()
                 ));
 
-        // Filter meals with GOOD reactions and build recommendations
         List<RecommendationItem> recommendations = filteredMeals.stream()
                 .filter(meal -> {
                     Reaction reaction = reactionMap.get(meal.getId());
@@ -110,82 +230,67 @@ public class RecommendationService {
                     );
                 })
                 .sorted((a, b) -> Double.compare(b.averageScore(), a.averageScore()))
-                .limit(recommendationLimit)
+                .limit(limit)
                 .toList();
 
-        log.info("Generated {} recommendations for memberId: {}", recommendations.size(), memberId);
+        log.info("Generated {} rule-based recommendations for memberId: {}", recommendations.size(), memberId);
 
-        // Convert to response
         return recommendations.stream()
                 .map(item -> new RecommendationResponse(
                         item.mealName(),
                         item.reason(),
-                        List.of(), // Empty tags list for now - full AI implementation deferred
+                        List.of(),
                         item.averageScore(),
                         item.referenceMealId()
                 ))
                 .collect(Collectors.toList());
     }
 
-    public List<RecommendationScheduleResponse> getRecommendationSchedule(Long memberId) {
-        log.debug("Getting recommendation schedule for memberId: {}", memberId);
-
-        MemberSettings settings = memberSettingsReader.findByMemberIdOrNull(memberId);
-
-        if (settings == null) {
-            log.debug("No settings found for memberId: {}", memberId);
-            return List.of();
-        }
-
+    private List<RecommendationScheduleResponse> getFallbackSchedule(
+            Long memberId,
+            MemberSettings settings
+    ) {
         List<RecommendationScheduleResponse> schedules = new ArrayList<>();
         LocalDateTime today = LocalDate.now().atStartOfDay();
 
-        // Schedule for each enabled meal reminder
         if (Boolean.TRUE.equals(settings.getMealReminderEnabled())) {
-            // Breakfast
             if (settings.getBreakfastTime() != null) {
-                LocalDateTime breakfastTime = today.with(settings.getBreakfastTime());
                 RecommendationResponse breakfastRec = getSingleRecommendation(
                         memberId, MealType.BREAKFAST);
 
                 schedules.add(new RecommendationScheduleResponse(
                         MealType.BREAKFAST,
-                        breakfastTime,
+                        today.with(settings.getBreakfastTime()),
                         breakfastRec != null ? breakfastRec.mealName() : null,
                         breakfastRec != null ? breakfastRec.reason() : "건강한 아침 식사를 추천합니다"
                 ));
             }
 
-            // Lunch
             if (settings.getLunchTime() != null) {
-                LocalDateTime lunchTime = today.with(settings.getLunchTime());
                 RecommendationResponse lunchRec = getSingleRecommendation(
                         memberId, MealType.LUNCH);
 
                 schedules.add(new RecommendationScheduleResponse(
                         MealType.LUNCH,
-                        lunchTime,
+                        today.with(settings.getLunchTime()),
                         lunchRec != null ? lunchRec.mealName() : null,
                         lunchRec != null ? lunchRec.reason() : "점심 식사를 추천합니다"
                 ));
             }
 
-            // Dinner
             if (settings.getDinnerTime() != null) {
-                LocalDateTime dinnerTime = today.with(settings.getDinnerTime());
                 RecommendationResponse dinnerRec = getSingleRecommendation(
                         memberId, MealType.DINNER);
 
                 schedules.add(new RecommendationScheduleResponse(
                         MealType.DINNER,
-                        dinnerTime,
+                        today.with(settings.getDinnerTime()),
                         dinnerRec != null ? dinnerRec.mealName() : null,
                         dinnerRec != null ? dinnerRec.reason() : "저녁 식사를 추천합니다"
                 ));
             }
         }
 
-        log.debug("Generated {} recommendation schedules for memberId: {}", schedules.size(), memberId);
         return schedules;
     }
 
