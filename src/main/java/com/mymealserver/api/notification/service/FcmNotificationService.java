@@ -3,6 +3,8 @@ package com.mymealserver.api.notification.service;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
+import com.mymealserver.common.exception.BusinessException;
+import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.domain.notification.NotificationWriter;
 import com.mymealserver.domain.member.MemberSettingsReader;
 import com.mymealserver.entity.MemberSettings;
@@ -104,6 +106,50 @@ public class FcmNotificationService {
             }
         } catch (Exception e) {
             log.error("Unexpected error sending FCM for member: {}, meal: {}", memberId, mealId, e);
+        }
+    }
+
+    /**
+     * 식단 추천 알림 발송
+     *
+     * @param fcmToken FCM 토큰
+     * @param message  추천 메시지
+     */
+    public void sendRecommendationNotification(String fcmToken, String message) {
+        try {
+            // FCM 메시지 생성
+            String title = "🍽️ 오늘의 식단 추천";
+
+            // Data payload
+            Map<String, String> data = new HashMap<>();
+            data.put("redirectTo", "recommendations");
+            data.put("type", "RECOMMENDATION");
+
+            Message fcmMessage = Message.builder()
+                    .setToken(fcmToken)
+                    .setNotification(com.google.firebase.messaging.Notification.builder()
+                            .setTitle(title)
+                            .setBody(message)
+                            .build())
+                    .putAllData(data)
+                    .build();
+
+            // FCM 발송
+            String messageId = firebaseMessaging.send(fcmMessage);
+            log.info("FCM recommendation notification sent successfully. MessageId: {}", messageId);
+
+        } catch (FirebaseMessagingException e) {
+            log.error("FCM send failed for recommendation notification", e);
+
+            // 토큰 만료 등의 경우
+            if (e.getMessagingErrorCode() != null) {
+                log.warn("FCM token error: {}", e.getMessagingErrorCode());
+                throw new BusinessException(ErrorCode.NOTIFICATION_FCM_TOKEN_INVALID);
+            }
+            throw new BusinessException(ErrorCode.EXTERNAL_API_ERROR);
+        } catch (Exception e) {
+            log.error("Unexpected error sending FCM recommendation notification", e);
+            throw new BusinessException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }

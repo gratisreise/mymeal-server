@@ -28,7 +28,8 @@ spring:
   # Spring Batch
   batch:
     job:
-      enabled: false
+      enabled: false  # Set to true to enable batch job execution
+      name: recommendationGenerationJob
     jdbc:
       initialize-schema: always
 
