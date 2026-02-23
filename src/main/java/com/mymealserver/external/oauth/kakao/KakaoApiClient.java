@@ -1,9 +1,10 @@
-package com.mymealserver.api.auth.service.client.google;
+package com.mymealserver.external.oauth.kakao;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -12,31 +13,32 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GoogleApiClient {
+public class KakaoApiClient {
 
     private final RestClient restClient;
 
-    @Value("${oauth.google.client-id}")
+    @Value("${oauth.kakao.client-id}")
     private String clientId;
 
-    @Value("${oauth.google.client-secret}")
+    @Value("${oauth.kakao.client-secret}")
     private String clientSecret;
 
-    @Value("${oauth.google.token-url}")
+    @Value("${oauth.kakao.token-url}")
     private String tokenUrl;
 
-    @Value("${oauth.google.user-info-url}")
+    @Value("${oauth.kakao.user-info-url}")
     private String userInfoUrl;
 
-    @Value("${oauth.google.redirect-uri}")
+    @Value("${oauth.kakao.redirect-uri}")
     private String redirectUri;
 
-    public GoogleTokenResponse exchangeCodeForToken(String code) {
-        log.info("Exchanging authorization code for access token with Google");
+    public KakaoTokenResponse exchangeCodeForToken(String code) {
+        log.info("Exchanging authorization code for access token with Kakao");
         log.debug("Using redirect URI: {}", redirectUri);
 
         return restClient.post()
                 .uri(tokenUrl)
+                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(Map.of(
                         "code", code,
                         "client_id", clientId,
@@ -45,16 +47,16 @@ public class GoogleApiClient {
                         "grant_type", "authorization_code"
                 ))
                 .retrieve()
-                .body(GoogleTokenResponse.class);
+                .body(KakaoTokenResponse.class);
     }
 
-    public GoogleUserInfoResponse getUserInfo(String accessToken) {
-        log.info("Fetching user info from Google");
+    public KakaoUserInfoResponse getUserInfo(String accessToken) {
+        log.info("Fetching user info from Kakao");
 
         return restClient.get()
                 .uri(userInfoUrl)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
-                .body(GoogleUserInfoResponse.class);
+                .body(KakaoUserInfoResponse.class);
     }
 }

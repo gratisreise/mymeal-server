@@ -1,11 +1,11 @@
-package com.mymealserver.api.auth.service.client.kakao;
+package com.mymealserver.external.oauth.naver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Kakao OAuth token response
+ * Naver OAuth token response
  */
-public record KakaoTokenResponse(
+public record NaverTokenResponse(
 
         @JsonProperty("access_token")
         String accessToken,
@@ -17,12 +17,6 @@ public record KakaoTokenResponse(
         Long expiresIn,
 
         @JsonProperty("refresh_token")
-        String refreshToken,
-
-        @JsonProperty("scope")
-        String scope,
-
-        @JsonProperty("refresh_token_expires_in")
-        Long refreshTokenExpiresIn
+        String refreshToken
 ) {
 }

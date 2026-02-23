@@ -1,4 +1,4 @@
-package com.mymealserver.api.auth.service.client.naver;
+package com.mymealserver.external.oauth.google;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,27 +12,27 @@ import java.util.Map;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class NaverApiClient {
+public class GoogleApiClient {
 
     private final RestClient restClient;
 
-    @Value("${oauth.naver.client-id}")
+    @Value("${oauth.google.client-id}")
     private String clientId;
 
-    @Value("${oauth.naver.client-secret}")
+    @Value("${oauth.google.client-secret}")
     private String clientSecret;
 
-    @Value("${oauth.naver.token-url}")
+    @Value("${oauth.google.token-url}")
     private String tokenUrl;
 
-    @Value("${oauth.naver.user-info-url}")
+    @Value("${oauth.google.user-info-url}")
     private String userInfoUrl;
 
-    @Value("${oauth.naver.redirect-uri}")
+    @Value("${oauth.google.redirect-uri}")
     private String redirectUri;
 
-    public NaverTokenResponse exchangeCodeForToken(String code) {
-        log.info("Exchanging authorization code for access token with Naver");
+    public GoogleTokenResponse exchangeCodeForToken(String code) {
+        log.info("Exchanging authorization code for access token with Google");
         log.debug("Using redirect URI: {}", redirectUri);
 
         return restClient.post()
@@ -45,16 +45,16 @@ public class NaverApiClient {
                         "grant_type", "authorization_code"
                 ))
                 .retrieve()
-                .body(NaverTokenResponse.class);
+                .body(GoogleTokenResponse.class);
     }
 
-    public NaverUserInfoResponse getUserInfo(String accessToken) {
-        log.info("Fetching user info from Naver");
+    public GoogleUserInfoResponse getUserInfo(String accessToken) {
+        log.info("Fetching user info from Google");
 
         return restClient.get()
                 .uri(userInfoUrl)
                 .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
                 .retrieve()
-                .body(NaverUserInfoResponse.class);
+                .body(GoogleUserInfoResponse.class);
     }
 }

@@ -8,9 +8,9 @@ import com.mymealserver.api.auth.dto.request.RegisterRequest;
 import com.mymealserver.api.auth.dto.request.WithdrawRequest;
 import com.mymealserver.api.auth.dto.response.AuthResponse;
 import com.mymealserver.api.auth.service.AuthService;
-import com.mymealserver.api.auth.service.OAuthService;
+import com.mymealserver.api.auth.service.oauth.OAuthService;
 import com.mymealserver.api.auth.service.TokenService;
-import com.mymealserver.api.auth.service.factory.OAuthServiceFactory;
+import com.mymealserver.api.auth.service.oauth.factory.OAuthServiceFactory;
 import com.mymealserver.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +33,7 @@ import com.mymealserver.common.annotation.AuthenticatedMember;
 public class AuthController {
 
     private final AuthService authService;
-    private final OAuthServiceFactory oauthServiceFactory;
+    private final OAuthServiceFactory oAuthServiceFactory;
     private final TokenService tokenService;
 
     @PostMapping("/register")
@@ -61,14 +61,9 @@ public class AuthController {
     public ResponseEntity<SuccessResponse<AuthResponse>> oauthLogin(
             @Valid @RequestBody OAuthRequest request
     ) {
-        log.info("OAuth login request for provider: {}", request.provider());
-
-        // Get provider-specific OAuth service from factory
-        OAuthService oauthService = oauthServiceFactory.getOAuthService(request);
-
-        // Authenticate and get JWT tokens
-        AuthResponse response = oauthService.authenticate(request);
-
+        log.info("Social Login request platform: {}", request.provider());
+        OAuthService oAuthService = oAuthServiceFactory.getOAuthService(request);
+        AuthResponse response = oAuthService.authenticate(request);
         return SuccessResponse.toOk(response);
     }
 

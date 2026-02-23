@@ -18,7 +18,7 @@ public record MemberResponse(
 
         ProviderType provider,
 
-        Boolean isActive,
+        boolean isActive,
 
         LocalDateTime lastLoginAt
 

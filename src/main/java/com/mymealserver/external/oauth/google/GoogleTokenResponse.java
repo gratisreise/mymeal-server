@@ -1,11 +1,11 @@
-package com.mymealserver.api.auth.service.client.naver;
+package com.mymealserver.external.oauth.google;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Naver OAuth token response
+ * Google OAuth token response
  */
-public record NaverTokenResponse(
+public record GoogleTokenResponse(
 
         @JsonProperty("access_token")
         String accessToken,
@@ -17,6 +17,12 @@ public record NaverTokenResponse(
         Long expiresIn,
 
         @JsonProperty("refresh_token")
-        String refreshToken
+        String refreshToken,
+
+        @JsonProperty("scope")
+        String scope,
+
+        @JsonProperty("id_token")
+        String idToken
 ) {
 }

@@ -1,11 +1,11 @@
-package com.mymealserver.api.auth.service.client.google;
+package com.mymealserver.external.oauth.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Google OAuth token response
+ * Kakao OAuth token response
  */
-public record GoogleTokenResponse(
+public record KakaoTokenResponse(
 
         @JsonProperty("access_token")
         String accessToken,
@@ -22,7 +22,7 @@ public record GoogleTokenResponse(
         @JsonProperty("scope")
         String scope,
 
-        @JsonProperty("id_token")
-        String idToken
+        @JsonProperty("refresh_token_expires_in")
+        Long refreshTokenExpiresIn
 ) {
 }

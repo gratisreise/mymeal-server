@@ -1,7 +1,7 @@
-package com.mymealserver.api.auth.service.client.kakao;
+package com.mymealserver.external.oauth.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mymealserver.api.auth.service.OAuth2UserInfo;
+import com.mymealserver.external.oauth.OAuth2UserInfo;
 
 /**
  * Kakao OAuth 사용자 정보 응답 래퍼

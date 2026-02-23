@@ -1,6 +1,6 @@
 package com.mymealserver.api.auth.dto.request;
 
-import com.mymealserver.domain.MemberWithdrawal.MemberWithdrawal;
+import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
 import com.mymealserver.common.enums.WithdrawalReason;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
