@@ -1,4 +1,4 @@
-package com.mymealserver.domain.MealAnalysis;
+package com.mymealserver.domain.mealanalysis;
 
 import com.mymealserver.domain.base.BaseEntity;
 import jakarta.persistence.*;

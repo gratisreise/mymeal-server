@@ -1,4 +1,4 @@
-package com.mymealserver.domain.MealLog;
+package com.mymealserver.domain.meallog;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

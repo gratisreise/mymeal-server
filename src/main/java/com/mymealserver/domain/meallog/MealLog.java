@@ -1,6 +1,6 @@
-package com.mymealserver.domain.MealLog;
+package com.mymealserver.domain.meallog;
 
-import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 import com.mymealserver.domain.base.SoftDeletable;
 import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.reaction.Reaction;

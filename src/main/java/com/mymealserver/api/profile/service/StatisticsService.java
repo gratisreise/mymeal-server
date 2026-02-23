@@ -1,7 +1,7 @@
 package com.mymealserver.api.profile.service;
 
 import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.FoodMemberStats.FoodMemberStatsRepository;
+import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
 import com.mymealserver.domain.meal.MealRepository;
 import com.mymealserver.domain.reaction.ReactionRepository;
 import com.mymealserver.api.profile.dto.response.StatisticsResponse;

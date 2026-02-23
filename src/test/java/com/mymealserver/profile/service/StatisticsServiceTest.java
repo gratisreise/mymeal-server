@@ -4,7 +4,7 @@ import com.mymealserver.api.profile.service.StatisticsService;
 import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.api.profile.dto.response.StatisticsResponse;
-import com.mymealserver.domain.FoodMemberStats.FoodMemberStatsRepository;
+import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
 import com.mymealserver.domain.meal.MealRepository;
 import com.mymealserver.domain.reaction.ReactionRepository;
 import org.junit.jupiter.api.BeforeEach;

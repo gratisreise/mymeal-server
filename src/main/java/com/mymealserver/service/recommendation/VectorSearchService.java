@@ -1,10 +1,10 @@
 package com.mymealserver.service.recommendation;
 
 import com.mymealserver.domain.meal.MealReader;
-import com.mymealserver.domain.MealAnalysis.MealAnalysisReader;
+import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
 import com.mymealserver.domain.reaction.ReactionReader;
 import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.common.enums.GradeType;
 import lombok.RequiredArgsConstructor;

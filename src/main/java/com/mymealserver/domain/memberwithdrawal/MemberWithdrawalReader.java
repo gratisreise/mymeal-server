@@ -1,12 +1,8 @@
-package com.mymealserver.domain.MemberWithdrawal;
+package com.mymealserver.domain.memberwithdrawal;
 
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.MemberWithdrawal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +14,5 @@ public class MemberWithdrawalReader {
     public MemberWithdrawal findById(Long id) {
         return memberWithdrawalRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("MemberWithdrawal not found"));
-    }
-
-    public List<MemberWithdrawal> findByMember(Member member) {
-        return memberWithdrawalRepository.findByMember(member);
     }
 }

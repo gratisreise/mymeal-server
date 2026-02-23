@@ -1,4 +1,4 @@
-package com.mymealserver.domain.MemberSettings;
+package com.mymealserver.domain.membersettings;
 
 import com.mymealserver.domain.base.BaseEntity;
 import com.mymealserver.domain.member.Member;

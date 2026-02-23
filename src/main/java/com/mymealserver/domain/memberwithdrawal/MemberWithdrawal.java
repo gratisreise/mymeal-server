@@ -1,4 +1,4 @@
-package com.mymealserver.domain.MemberWithdrawal;
+package com.mymealserver.domain.memberwithdrawal;
 
 import com.mymealserver.common.enums.WithdrawalReason;
 import jakarta.persistence.*;

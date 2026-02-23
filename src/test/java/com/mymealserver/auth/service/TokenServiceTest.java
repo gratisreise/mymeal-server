@@ -1,6 +1,6 @@
 package com.mymealserver.auth.service;
 
-import com.mymealserver.api.auth.service.TokenBlacklistService;
+import com.mymealserver.external.redis.service.TokenBlacklistService;
 import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;

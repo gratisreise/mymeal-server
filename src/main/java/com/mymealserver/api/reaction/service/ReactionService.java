@@ -9,7 +9,7 @@ import com.mymealserver.domain.reaction.ReactionReader;
 import com.mymealserver.domain.reaction.ReactionWriter;
 import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.reaction.Reaction;
-import com.mymealserver.service.reaction.MealLogService;
+import com.mymealserver.api.meal.service.MealLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

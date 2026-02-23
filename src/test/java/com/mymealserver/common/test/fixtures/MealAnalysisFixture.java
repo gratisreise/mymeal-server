@@ -1,6 +1,6 @@
 package com.mymealserver.common.test.fixtures;
 
-import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 
 /**
  * Test fixture for MealAnalysis entities

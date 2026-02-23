@@ -1,4 +1,4 @@
-package com.mymealserver.domain.MemberSettings;
+package com.mymealserver.domain.membersettings;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;

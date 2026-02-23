@@ -1,6 +1,4 @@
-package com.mymealserver.domain.MemberWithdrawal;
-
-import com.mymealserver.entity.MemberWithdrawal;
+package com.mymealserver.domain.memberwithdrawal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

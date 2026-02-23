@@ -1,4 +1,4 @@
-package com.mymealserver.domain.MealAnalysis;
+package com.mymealserver.domain.mealanalysis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

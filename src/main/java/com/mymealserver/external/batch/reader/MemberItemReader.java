@@ -1,9 +1,9 @@
 package com.mymealserver.external.batch.reader;
 
 import com.mymealserver.domain.member.Member;
-import com.mymealserver.domain.memberSettings.MemberSettings;
+import com.mymealserver.domain.membersettings.MemberSettings;
 import com.mymealserver.domain.member.MemberRepository;
-import com.mymealserver.domain.memberSettings.MemberSettingsRepository;
+import com.mymealserver.domain.membersettings.MemberSettingsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemReader;

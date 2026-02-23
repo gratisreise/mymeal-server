@@ -1,4 +1,4 @@
-package com.mymealserver.domain.FoodMemberStats;
+package com.mymealserver.domain.foodmemberstats;
 
 import com.mymealserver.domain.base.BaseEntity;
 import jakarta.persistence.*;

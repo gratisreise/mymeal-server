@@ -3,7 +3,7 @@ package com.mymealserver.service.recommendation;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.member.Member;
-import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 import com.mymealserver.domain.reaction.Reaction;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;

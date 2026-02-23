@@ -1,6 +1,4 @@
-package com.mymealserver.domain.FoodMemberStats;
-
-import com.mymealserver.entity.FoodMemberStats;
+package com.mymealserver.domain.foodmemberstats;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
