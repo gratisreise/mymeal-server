@@ -8,18 +8,18 @@ import com.mymealserver.common.test.fixtures.MealAnalysisFixture;
 import com.mymealserver.common.test.fixtures.MealFixture;
 import com.mymealserver.common.test.fixtures.MultipartFileFixture;
 import com.mymealserver.common.test.fixtures.ReactionFixture;
-import com.mymealserver.domain.mealAnalysis.MealAnalysisReader;
+import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
 import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.mealAnalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.common.enums.AnalysisStatus;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.meal.dto.response.MealResponse;
 import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.service.storage.FileStorageService;
+import com.mymealserver.external.s3.service.FileStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -376,7 +376,7 @@ class MealServiceTest {
             when(mealAnalysisReader.findByMealId(meal.getId()))
                     .thenReturn(Optional.of(analysis));
             when(reactionReader.findByMealId(meal.getId()))
-                    .thenReturn(Optional.of(reaction));
+                    .thenReturn(reaction);
 
             // When
             MealDetailResponse response = mealService.getMealDetail(testMemberId, meal.getId());
@@ -401,7 +401,7 @@ class MealServiceTest {
             when(mealAnalysisReader.findByMealId(meal.getId()))
                     .thenReturn(Optional.of(analysis));
             when(reactionReader.findByMealId(meal.getId()))
-                    .thenReturn(Optional.empty());
+                    .thenReturn(null);
 
             // When
             MealDetailResponse response = mealService.getMealDetail(testMemberId, meal.getId());
@@ -424,7 +424,7 @@ class MealServiceTest {
             when(mealAnalysisReader.findByMealId(testMealId))
                     .thenReturn(Optional.empty());
             when(reactionReader.findByMealId(testMealId))
-                    .thenReturn(Optional.of(reaction));
+                    .thenReturn(reaction);
 
             // When
             MealDetailResponse response = mealService.getMealDetail(testMemberId, testMealId);
@@ -446,7 +446,7 @@ class MealServiceTest {
             when(mealAnalysisReader.findByMealId(testMealId))
                     .thenReturn(Optional.empty());
             when(reactionReader.findByMealId(testMealId))
-                    .thenReturn(Optional.empty());
+                    .thenReturn(null);
 
             // When
             MealDetailResponse response = mealService.getMealDetail(testMemberId, testMealId);
@@ -498,7 +498,7 @@ class MealServiceTest {
             when(mealAnalysisReader.findByMealId(meal.getId()))
                     .thenReturn(Optional.empty());
             when(reactionReader.findByMealId(meal.getId()))
-                    .thenReturn(Optional.empty());
+                    .thenReturn(null);
 
             // When
             MealDetailResponse response = mealService.getMealDetail(testMemberId, meal.getId());

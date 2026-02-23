@@ -144,6 +144,12 @@ public enum ErrorCode {
     DATABASE_ERROR(500, "SYS_002", "데이터베이스 오류가 발생했습니다."),
     EXTERNAL_API_ERROR(502, "SYS_003", "외부 API 호출에 실패했습니다."),
     FILE_STORAGE_ERROR(500, "SYS_004", "파일 저장에 실패했습니다."),
+    FILE_STORAGE_ACCESS_DENIED(503, "FILE_001", "파일 저장소 접근이 거부되었습니다."),
+    FILE_STORAGE_BUCKET_NOT_FOUND(503, "FILE_002", "S3 버킷을 찾을 수 없습니다."),
+    FILE_READ_ERROR(500, "FILE_003", "파일 읽기에 실패했습니다."),
+    FILE_EMPTY(400, "FILE_004", "파일이 비어있습니다."),
+    FILE_SIZE_EXCEEDED(413, "FILE_005", "파일 크기가 10MB를 초과했습니다."),
+    FILE_INVALID_TYPE(400, "FILE_006", "지원하지 않는 파일 형식입니다."),
     RATE_LIMIT_EXCEEDED(429, "SYS_005", "요청 한도를 초과했습니다. 잠시 후 다시 시도해주세요."),
     SERVICE_UNAVAILABLE(503, "SYS_006", "서비스를 일시적으로 사용할 수 없습니다."),
 

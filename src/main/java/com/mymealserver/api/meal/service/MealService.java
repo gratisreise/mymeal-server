@@ -11,7 +11,7 @@ import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.meal.dto.response.MealResponse;
 import com.mymealserver.domain.reaction.ReactionReader;
 import com.mymealserver.api.reaction.dto.response.ReactionResponse;
-import com.mymealserver.service.storage.FileStorageService;
+import com.mymealserver.external.s3.service.FileStorageService;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
 import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
