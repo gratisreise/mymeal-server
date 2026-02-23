@@ -1,7 +1,7 @@
 package com.mymealserver.api.auth.dto.response;
 
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.enums.ProviderType;
+import com.mymealserver.domain.member.Member;
+import com.mymealserver.common.enums.ProviderType;
 import java.time.LocalDateTime;
 import lombok.Builder;
 
@@ -18,7 +18,7 @@ public record MemberResponse(
 
         ProviderType provider,
 
-        Boolean isActive,
+        boolean isActive,
 
         LocalDateTime lastLoginAt
 

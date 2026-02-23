@@ -1,7 +1,7 @@
 package com.mymealserver.api.meal.dto.response;
 
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.common.enums.MealType;
 
 import java.time.LocalDateTime;
 

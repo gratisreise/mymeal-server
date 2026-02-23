@@ -8,18 +8,17 @@ import com.mymealserver.common.test.fixtures.MealAnalysisFixture;
 import com.mymealserver.common.test.fixtures.MealFixture;
 import com.mymealserver.common.test.fixtures.MultipartFileFixture;
 import com.mymealserver.common.test.fixtures.ReactionFixture;
-import com.mymealserver.domain.meal.MealAnalysisReader;
+import com.mymealserver.domain.mealAnalysis.MealAnalysisReader;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.MealAnalysis;
-import com.mymealserver.entity.Reaction;
-import com.mymealserver.entity.enums.AnalysisStatus;
-import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.api.meal.dto.request.MealRetakePhotoRequest;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.mealAnalysis.MealAnalysis;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.common.enums.AnalysisStatus;
+import com.mymealserver.common.enums.MealType;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.meal.dto.response.MealResponse;
-import com.mymealserver.api.reaction.domain.ReactionReader;
+import com.mymealserver.domain.reaction.ReactionReader;
 import com.mymealserver.service.storage.FileStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,7 +41,6 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,7 +52,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.*;
-import static org.mockito.ArgumentMatchers.argThat;
+
 import org.mockito.ArgumentCaptor;
 
 @ExtendWith(MockitoExtension.class)
@@ -588,9 +586,7 @@ class MealServiceTest {
         void retakePhoto_WithValidData_ShouldReplacePhotoAndRetriggerAnalysis() {
             // Given
             Meal meal = MealFixture.createDefaultBreakfast();
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(
-                    MultipartFileFixture.createValidJpegPhoto()
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             when(mealReader.findById(testMealId)).thenReturn(meal);
             when(fileStorageService.uploadMealPhoto(any(), eq(testMemberId)))
@@ -600,7 +596,7 @@ class MealServiceTest {
             when(reactionReader.existsByMealId(testMealId)).thenReturn(false);
 
             // When
-            MealResponse response = mealService.retakePhoto(testMemberId, testMealId, request);
+            MealResponse response = mealService.retakePhoto(testMemberId, testMealId, photo);
 
             // Then
             assertThat(response.photoUrl()).contains("new-uuid");
@@ -617,9 +613,7 @@ class MealServiceTest {
         void retakePhoto_WithExistingReaction_ShouldPreserveReaction() {
             // Given
             Meal meal = MealFixture.createDefaultLunch();
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(
-                    MultipartFileFixture.createValidJpegPhoto()
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             when(mealReader.findById(meal.getId())).thenReturn(meal);
             // These methods are called by retakePhoto, so we need to trigger the lenient stubs
@@ -630,7 +624,7 @@ class MealServiceTest {
             when(reactionReader.existsByMealId(meal.getId())).thenReturn(true);
 
             // When
-            MealResponse response = mealService.retakePhoto(testMemberId, meal.getId(), request);
+            MealResponse response = mealService.retakePhoto(testMemberId, meal.getId(), photo);
 
             // Then
             assertThat(response.hasReaction()).isTrue();
@@ -642,14 +636,12 @@ class MealServiceTest {
             // Given
             Long differentMemberId = 999L;
             Meal meal = MealFixture.createDefaultBreakfast();
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(
-                    MultipartFileFixture.createValidJpegPhoto()
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             when(mealReader.findById(testMealId)).thenReturn(meal);
 
             // When & Then
-            assertThatThrownBy(() -> mealService.retakePhoto(differentMemberId, testMealId, request))
+            assertThatThrownBy(() -> mealService.retakePhoto(differentMemberId, testMealId, photo))
                     .isInstanceOf(BusinessException.class)
                     .satisfies(e -> assertThat(((BusinessException) e).getCode())
                             .isEqualTo(ErrorCode.MEAL_FORBIDDEN));
@@ -661,15 +653,13 @@ class MealServiceTest {
         @DisplayName("존재하지 않는 식사의 사진 재촬영 시 예외가 발생한다")
         void retakePhoto_WithNonExistentMeal_ShouldThrowException() {
             // Given
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(
-                    MultipartFileFixture.createValidJpegPhoto()
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             when(mealReader.findById(testMealId))
                     .thenThrow(new BusinessException(ErrorCode.MEAL_NOT_FOUND));
 
             // When & Then
-            assertThatThrownBy(() -> mealService.retakePhoto(testMemberId, testMealId, request))
+            assertThatThrownBy(() -> mealService.retakePhoto(testMemberId, testMealId, photo))
                     .isInstanceOf(BusinessException.class)
                     .satisfies(e -> assertThat(((BusinessException) e).getCode())
                             .isEqualTo(ErrorCode.MEAL_NOT_FOUND));
@@ -682,15 +672,13 @@ class MealServiceTest {
         void retakePhoto_ShouldUpdateAnalysisStatusToPending() {
             // Given
             Meal meal = MealFixture.createMealWithCompletedAnalysis(); // COMPLETED 상태
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(
-                    MultipartFileFixture.createValidJpegPhoto()
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             when(mealReader.findById(meal.getId())).thenReturn(meal);
             when(reactionReader.existsByMealId(meal.getId())).thenReturn(false);
 
             // When
-            mealService.retakePhoto(testMemberId, meal.getId(), request);
+            mealService.retakePhoto(testMemberId, meal.getId(), photo);
 
             // Then
             // Verify the state was updated
@@ -702,15 +690,13 @@ class MealServiceTest {
         void retakePhoto_ShouldTriggerAIReanalysisAsync() {
             // Given
             Meal meal = MealFixture.createDefaultBreakfast();
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(
-                    MultipartFileFixture.createValidJpegPhoto()
-            );
+            MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             when(mealReader.findById(testMealId)).thenReturn(meal);
             when(reactionReader.existsByMealId(testMealId)).thenReturn(false);
 
             // When
-            mealService.retakePhoto(testMemberId, testMealId, request);
+            mealService.retakePhoto(testMemberId, testMealId, photo);
 
             // Then
             verify(mealAnalysisService).analyzeMealAsync(eq(testMealId), any(MealType.class), any(Resource.class));
@@ -727,13 +713,12 @@ class MealServiceTest {
                     "image/jpeg",
                     "test-image-content".getBytes()
             );
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(mockPhoto);
 
             when(mealReader.findById(meal.getId())).thenReturn(meal);
             when(reactionReader.existsByMealId(meal.getId())).thenReturn(false);
 
             // When
-            mealService.retakePhoto(testMemberId, meal.getId(), request);
+            mealService.retakePhoto(testMemberId, meal.getId(), mockPhoto);
 
             // Then
             ArgumentCaptor<Resource> resourceCaptor = ArgumentCaptor.forClass(Resource.class);
@@ -765,12 +750,10 @@ class MealServiceTest {
                 // This won't happen during mock setup
             }
 
-            MealRetakePhotoRequest request = new MealRetakePhotoRequest(failingPhoto);
-
             when(mealReader.findById(testMealId)).thenReturn(meal);
 
             // When & Then
-            assertThatThrownBy(() -> mealService.retakePhoto(testMemberId, testMealId, request))
+            assertThatThrownBy(() -> mealService.retakePhoto(testMemberId, testMealId, failingPhoto))
                     .isInstanceOf(BusinessException.class)
                     .satisfies(e -> assertThat(((BusinessException) e).getCode())
                             .isEqualTo(ErrorCode.FILE_UPLOAD_FAILED));

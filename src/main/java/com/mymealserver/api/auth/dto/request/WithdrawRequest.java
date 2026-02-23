@@ -1,7 +1,7 @@
 package com.mymealserver.api.auth.dto.request;
 
-import com.mymealserver.entity.MemberWithdrawal;
-import com.mymealserver.entity.enums.WithdrawalReason;
+import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
+import com.mymealserver.common.enums.WithdrawalReason;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;

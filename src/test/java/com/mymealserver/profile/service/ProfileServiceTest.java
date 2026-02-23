@@ -7,7 +7,7 @@ import com.mymealserver.common.test.fixtures.MemberFixture;
 import com.mymealserver.common.test.fixtures.ProfileFixture;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
-import com.mymealserver.entity.Member;
+import com.mymealserver.domain.member.Member;
 import com.mymealserver.api.profile.dto.request.UpdateProfileRequest;
 import com.mymealserver.api.profile.dto.response.ProfileResponse;
 import org.junit.jupiter.api.BeforeEach;

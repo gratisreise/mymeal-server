@@ -2,9 +2,7 @@ package com.mymealserver.domain.member;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.enums.ProviderType;
-import com.mymealserver.repository.MemberRepository;
+import com.mymealserver.common.enums.ProviderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

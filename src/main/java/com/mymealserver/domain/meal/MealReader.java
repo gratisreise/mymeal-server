@@ -2,9 +2,7 @@ package com.mymealserver.domain.meal;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.repository.MealRepository;
+import com.mymealserver.common.enums.MealType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

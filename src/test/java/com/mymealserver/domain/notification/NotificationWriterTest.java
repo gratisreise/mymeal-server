@@ -1,8 +1,6 @@
 package com.mymealserver.domain.notification;
 
 import com.mymealserver.common.test.fixtures.NotificationFixture;
-import com.mymealserver.entity.Notification;
-import com.mymealserver.repository.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -12,7 +10,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 

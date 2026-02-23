@@ -2,8 +2,8 @@ package com.mymealserver.api.calendar.domain;
 
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.Reaction;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.reaction.Reaction;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

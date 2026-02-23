@@ -4,15 +4,18 @@ import com.mymealserver.api.auth.dto.request.LoginRequest;
 import com.mymealserver.api.auth.dto.request.RegisterRequest;
 import com.mymealserver.api.auth.dto.request.WithdrawRequest;
 import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.service.oauth.factory.OAuthServiceFactory;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
-import com.mymealserver.domain.member.MemberSettingsWriter;
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.MemberSettings;
-import com.mymealserver.entity.MemberWithdrawal;
-import com.mymealserver.repository.MemberWithdrawalRepository;
+import com.mymealserver.domain.membersettings.MemberSettingsWriter;
+import com.mymealserver.domain.member.Member;
+import com.mymealserver.domain.membersettings.MemberSettings;
+import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
+import com.mymealserver.domain.memberwithdrawal.MemberWithdrawalRepository;
+import com.mymealserver.external.redis.service.TokenBlacklistService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,6 +35,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final MemberWithdrawalRepository memberWithdrawalRepository;
     private final TokenBlacklistService tokenBlacklistService;
+
 
     @Transactional
     public void register(RegisterRequest request) {

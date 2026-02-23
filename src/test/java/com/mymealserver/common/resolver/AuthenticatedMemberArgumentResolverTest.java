@@ -1,5 +1,6 @@
 package com.mymealserver.common.resolver;
 
+import com.mymealserver.common.security.AuthenticatedMemberArgumentResolver;
 import com.mymealserver.common.security.MemberPrincipal;
 import com.mymealserver.common.annotation.AuthenticatedMember;
 import org.junit.jupiter.api.AfterEach;

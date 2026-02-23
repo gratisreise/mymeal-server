@@ -2,8 +2,8 @@ package com.mymealserver.api.notification.dto.response;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mymealserver.entity.Notification;
-import com.mymealserver.entity.enums.NotificationType;
+import com.mymealserver.domain.notification.Notification;
+import com.mymealserver.common.enums.NotificationType;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;

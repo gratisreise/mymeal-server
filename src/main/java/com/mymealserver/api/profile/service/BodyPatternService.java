@@ -1,8 +1,8 @@
 package com.mymealserver.api.profile.service;
 
-import com.mymealserver.entity.FoodMemberStats;
-import com.mymealserver.repository.FoodMemberStatsRepository;
-import com.mymealserver.repository.ReactionRepository;
+import com.mymealserver.domain.foodmemberstats.FoodMemberStats;
+import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
+import com.mymealserver.domain.reaction.ReactionRepository;
 import com.mymealserver.api.profile.dto.response.BodyPatternResponse;
 import com.mymealserver.api.profile.dto.response.BodyPatternTagResponse;
 import lombok.RequiredArgsConstructor;

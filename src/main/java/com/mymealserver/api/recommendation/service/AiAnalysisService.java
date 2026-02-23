@@ -2,7 +2,7 @@ package com.mymealserver.api.recommendation.service;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.common.enums.MealType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 // Temporarily commented out for compilation

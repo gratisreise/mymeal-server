@@ -1,10 +1,10 @@
 package com.mymealserver.profile.service;
 
 import com.mymealserver.api.profile.service.BodyPatternService;
-import com.mymealserver.entity.FoodMemberStats;
+import com.mymealserver.domain.foodmemberstats.FoodMemberStats;
 import com.mymealserver.api.profile.dto.response.BodyPatternResponse;
-import com.mymealserver.repository.FoodMemberStatsRepository;
-import com.mymealserver.repository.ReactionRepository;
+import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
+import com.mymealserver.domain.reaction.ReactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

@@ -6,7 +6,7 @@ import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.NotificationFixture;
 import com.mymealserver.domain.notification.NotificationReader;
 import com.mymealserver.domain.notification.NotificationWriter;
-import com.mymealserver.entity.Notification;
+import com.mymealserver.domain.notification.Notification;
 import com.mymealserver.api.notification.dto.response.NotificationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

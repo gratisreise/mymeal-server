@@ -1,7 +1,35 @@
 {
   "permissions": {
     "allow": [
-      "Bash(./gradlew:*)"
+      "Bash(./gradlew:*)",
+      "Bash(docker:*)",
+      "Bash(docker compose:*)",
+      "Bash(git:*)",
+      "Bash(java:*)",
+      "Bash(javac:*)",
+      "Bash(cat:*)",
+      "Bash(grep:*)",
+      "Bash(find:*)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(mv:*)",
+      "Bash(ls:*)",
+      "Bash(pwd:*)",
+      "Bash(curl:*)",
+      "Bash(lsof:*)",
+      "Bash(ps:*)",
+      "Bash(tail:*)",
+      "Bash(head:*)",
+      "Bash(sed:*)",
+      "Bash(awk:*)",
+      "Bash(chmod:*)",
+      "Bash(wc:*)",
+      "Bash(sort:*)",
+      "Bash(uniq:*)",
+      "Bash(date:*)",
+      "Bash(sleep:*)",
+      "Bash(echo:*)",
+      "Bash(cd:*)"
     ]
   }
 }

@@ -1,13 +1,13 @@
 package com.mymealserver.common.test.fixtures;
 
-import com.mymealserver.api.auth.service.client.google.GoogleTokenResponse;
-import com.mymealserver.api.auth.service.client.google.GoogleUserInfoResponse;
-import com.mymealserver.api.auth.service.client.kakao.KakaoProfile;
-import com.mymealserver.api.auth.service.client.kakao.KakaoTokenResponse;
-import com.mymealserver.api.auth.service.client.kakao.KakaoUserInfoResponse;
-import com.mymealserver.api.auth.service.client.naver.NaverProfile;
-import com.mymealserver.api.auth.service.client.naver.NaverTokenResponse;
-import com.mymealserver.api.auth.service.client.naver.NaverUserInfoResponse;
+import com.mymealserver.external.oauth.google.GoogleTokenResponse;
+import com.mymealserver.external.oauth.google.GoogleUserInfoResponse;
+import com.mymealserver.external.oauth.kakao.KakaoProfile;
+import com.mymealserver.external.oauth.kakao.KakaoTokenResponse;
+import com.mymealserver.external.oauth.kakao.KakaoUserInfoResponse;
+import com.mymealserver.external.oauth.naver.NaverProfile;
+import com.mymealserver.external.oauth.naver.NaverTokenResponse;
+import com.mymealserver.external.oauth.naver.NaverUserInfoResponse;
 
 /**
  * Test fixture for OAuth-related test data

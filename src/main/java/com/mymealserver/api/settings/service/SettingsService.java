@@ -2,9 +2,9 @@ package com.mymealserver.api.settings.service;
 
 import com.mymealserver.api.profile.dto.request.UpdateNotificationRequest;
 import com.mymealserver.api.settings.dto.response.SettingsResponse;
-import com.mymealserver.domain.member.MemberSettingsReader;
-import com.mymealserver.domain.member.MemberSettingsWriter;
-import com.mymealserver.entity.MemberSettings;
+import com.mymealserver.domain.membersettings.MemberSettingsReader;
+import com.mymealserver.domain.membersettings.MemberSettingsWriter;
+import com.mymealserver.domain.membersettings.MemberSettings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

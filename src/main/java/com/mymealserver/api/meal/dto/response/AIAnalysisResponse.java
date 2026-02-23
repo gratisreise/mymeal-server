@@ -1,6 +1,6 @@
 package com.mymealserver.api.meal.dto.response;
 
-import com.mymealserver.entity.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 
 import java.util.List;
 

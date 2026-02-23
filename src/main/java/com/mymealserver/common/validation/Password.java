@@ -32,13 +32,7 @@ public @interface Password {
 
     Class<? extends Payload>[] payload() default {};
 
-    /**
-     * 최소 비밀번호 길이 (기본값: 8)
-     */
     int minLength() default 8;
 
-    /**
-     * 최대 비밀번호 길이 (기본값: 20)
-     */
     int maxLength() default 20;
 }

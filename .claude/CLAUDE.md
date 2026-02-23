@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Receive AI-powered food analysis and meal recommendations
 - Monitor eating patterns and health trends
 
-**Current Status**: Skeleton implementation with complete architecture, entities, repositories, domain layer (Reader/Writer pattern), and service layer structure. Business logic implementation is in progress.
+**Current Status**: Production-ready implementation with 45 API endpoints across 9 controllers, comprehensive business logic, 17 test classes, and complete Reader/Writer domain pattern implementation.
 
 ---
 
@@ -79,10 +79,16 @@ src/main/java/com/mymealserver/
 │   │       ├── Pagination.java              # Pagination metadata
 │   │       └── ErrorDetail.java             # Error detail structure
 │   │
-│   └── exception/                            # Exception handling
-│       ├── GlobalExceptionHandler.java     # @ControllerAdvice
-│       ├── BusinessException.java           # Custom business exception
-│       └── ErrorCode.java                    # Error code enumeration
+│   ├── exception/                            # Exception handling
+│   │   ├── GlobalExceptionHandler.java     # @ControllerAdvice
+│   │   ├── BusinessException.java           # Custom business exception
+│   │   └── ErrorCode.java                    # Error code enumeration
+│   │
+│   ├── filter/                               # Security filters
+│   │   └── JwtAuthenticationFilter.java     # JWT authentication filter
+│   │
+│   └── resolver/                             # Custom argument resolvers
+│       └── AuthenticatedMemberArgumentResolver.java  # @AuthenticatedMember injection
 │
 ├── config/                                    # Spring configuration
 │   ├── SecurityConfig.java                   # Spring Security + JWT
@@ -128,6 +134,9 @@ src/main/java/com/mymealserver/
 │   ├── member/
 │   │   ├── MemberReader.java                # Member query operations
 │   │   └── MemberWriter.java                # Member command operations
+│   ├── memberSettings/
+│   │   ├── MemberSettingsReader.java        # MemberSettings query operations
+│   │   └── MemberSettingsWriter.java        # MemberSettings command operations
 │   ├── meal/
 │   │   ├── MealReader.java                  # Meal query operations
 │   │   ├── MealWriter.java                  # Meal command operations
@@ -139,21 +148,41 @@ src/main/java/com/mymealserver/
 │   ├── reaction/
 │   │   ├── ReactionReader.java              # Reaction query operations
 │   │   └── ReactionWriter.java              # Reaction command operations
-│   └── notification/
-│       ├── NotificationReader.java          # Notification query operations
-│       └── NotificationWriter.java          # Notification command operations
+│   ├── notification/
+│   │   ├── NotificationReader.java          # Notification query operations
+│   │   └── NotificationWriter.java          # Notification command operations
+│   └── calendar/
+│       ├── CalendarReader.java              # Calendar query operations
+│       ├── CalendarWriter.java              # Calendar command operations
+│       └── CalendarDataAggregator.java      # Calendar data aggregation
 │
 ├── service/                                  # Application Layer (Business Logic)
 │   ├── auth/
 │   │   ├── AuthService.java                 # Authentication business logic
-│   │   ├── OAuthService.java                # OAuth2 social login
-│   │   └── TokenService.java                # JWT token management
+│   │   ├── OAuthService.java                # OAuth2 interface
+│   │   ├── OAuthServiceFactory.java         # OAuth provider factory
+│   │   ├── TokenService.java                # JWT token management
+│   │   ├── TokenBlacklistService.java       # Token blacklist for logout
+│   │   └── impl/                            # OAuth provider implementations
+│   │       ├── GoogleOAuthService.java      # Google OAuth2
+│   │       ├── NaverOAuthService.java       # Naver OAuth2
+│   │       └── KakaoOAuthService.java       # Kakao OAuth2
+│   ├── client/                              # External API clients
+│   │   ├── google/
+│   │   │   ├── GoogleApiClient.java         # Google API client
+│   │   │   ├── GoogleTokenResponse.java     # Token response DTO
+│   │   │   └── GoogleUserInfoResponse.java  # User info response DTO
+│   │   ├── naver/
+│   │   │   ├── NaverApiClient.java          # Naver API client
+│   │   │   ├── NaverTokenResponse.java      # Token response DTO
+│   │   │   └── NaverUserInfoResponse.java   # User info response DTO
+│   │   └── kakao/
+│   │       ├── KakaoApiClient.java          # Kakao API client
+│   │       ├── KakaoTokenResponse.java      # Token response DTO
+│   │       └── KakaoUserInfoResponse.java   # User info response DTO
 │   ├── meal/
 │   │   ├── MealService.java                 # Meal CRUD operations
 │   │   └── MealAnalysisService.java         # AI food analysis orchestration
-│   ├── food/
-│   │   ├── FoodService.java                 # Food master management
-│   │   └── FoodStatsService.java            # Food statistics aggregation
 │   ├── reaction/
 │   │   └── ReactionService.java             # Post-meal reaction logic
 │   ├── calendar/
@@ -163,7 +192,14 @@ src/main/java/com/mymealserver/
 │   ├── recommendation/
 │   │   ├── RecommendationService.java       # Meal recommendation logic
 │   │   ├── AiAnalysisService.java           # AI integration service
-│   │   └── RecommendationScheduler.java     # Scheduled recommendation jobs
+│   │   ├── RagPromptBuilder.java            # RAG prompt construction
+│   │   └── VectorSearchService.java         # Vector search for recommendations
+│   ├── notification/
+│   │   ├── NotificationService.java         # Notification management
+│   │   ├── FcmNotificationService.java      # FCM push notification
+│   │   └── ReactionNotificationQueueService.java  # Reaction notification queue
+│   ├── reaction/
+│   │   └── MealLogService.java              # Meal log operations
 │   ├── profile/
 │   │   ├── ProfileService.java              # User profile management
 │   │   ├── StatisticsService.java           # User statistics
@@ -173,59 +209,49 @@ src/main/java/com/mymealserver/
 │   ├── notification/
 │   │   ├── NotificationService.java         # Notification management
 │   │   └── FcmNotificationService.java      # FCM push notification
-│   ├── storage/
-│   │   └── FileStorageService.java          # S3 file upload/download
-│   └── common/
-│       └── AsyncService.java                # Async task orchestration
+│   └── storage/
+│       └── FileStorageService.java          # S3 file upload/download
+│
+├── external/                                 # External Integrations
+│   └── batch/                               # Batch Processing & Scheduling
+│       ├── config/
+│       │   └── BatchConfig.java            # Spring Batch configuration
+│       ├── job/
+│       │   ├── RecommendationGenerationJob.java  # Recommendation batch job
+│       │   └── RecommendationStepListener.java   # Job execution listener
+│       ├── reader/
+│       │   └── MemberItemReader.java       # Batch member reader
+│       ├── processor/
+│       │   └── RecommendationProcessor.java  # RAG-based recommendation processor
+│       ├── writer/
+│       │   └── RecommendationItemWriter.java  # Recommendation persistence writer
+│       └── scheduler/
+│           ├── RecommendationScheduler.java      # Daily job trigger (1 AM)
+│           ├── NotificationPollingScheduler.java # Poll & send notifications
+│           ├── RedisSchedulerService.java        # Redis-based scheduling
+│           └── ReactionNotificationScheduler.java # Reaction reminder scheduler
 │
 ├── controller/                               # Presentation Layer (REST API)
-│   ├── AuthController.java                  # /api/v1/auth/**
-│   ├── MealController.java                  # /api/v1/meals/**
-│   ├── ReactionController.java              # /api/v1/meals/{id}/reactions
-│   ├── CalendarController.java              # /api/v1/calendar/**
-│   ├── RankingController.java               # /api/v1/ranking/**
-│   ├── RecommendationController.java       # /api/v1/recommendations/**
-│   ├── ProfileController.java               # /api/v1/profile/**
-│   ├── SettingsController.java              # /api/v1/settings/**
-│   └── NotificationController.java          # /api/v1/notifications/**
+│   ├── AuthController.java                  # /api/v1/auth/** (6 endpoints)
+│   ├── MealController.java                  # /api/v1/meals/** (5 endpoints)
+│   ├── ReactionController.java              # /api/v1/meals/{id}/reactions (3 endpoints)
+│   ├── CalendarController.java              # /api/v1/calendar/** (3 endpoints)
+│   ├── RankingController.java               # /api/v1/ranking/** (4 endpoints)
+│   ├── RecommendationController.java       # /api/v1/recommendations/** (3 endpoints)
+│   ├── ProfileController.java               # /api/v1/profile/** (4 endpoints)
+│   ├── SettingsController.java              # /api/v1/settings/** (2 endpoints)
+│   └── NotificationController.java          # /api/v1/notifications/** (2 endpoints)
 │
-└── dto/                                      # Data Transfer Objects
-    ├── auth/
-    │   ├── RegisterRequest.java
-    │   ├── LoginRequest.java
-    │   ├── OAuthRequest.java
-    │   ├── RefreshTokenRequest.java
-    │   ├── WithdrawRequest.java
-    │   └── AuthResponse.java
-    ├── meal/
-    │   ├── CreateMealRequest.java
-    │   ├── MealResponse.java
-    │   ├── MealDetailResponse.java
-    │   └── AIAnalysisResponse.java
-    ├── reaction/
-    │   ├── ReactionRequest.java
-    │   └── ReactionResponse.java
-    ├── calendar/
-    │   ├── CalendarMonthlyResponse.java
-    │   ├── CalendarDailyResponse.java
-    │   └── DailySummaryResponse.java
-    ├── ranking/
-    │   └── RankingItemResponse.java
-    ├── recommendation/
-    │   ├── RecommendationResponse.java
-    │   └── RecommendationScheduleResponse.java
-    ├── profile/
-    │   ├── ProfileResponse.java
-    │   ├── UpdateProfileRequest.java
-    │   ├── SettingsResponse.java
-    │   ├── BodyPatternResponse.java
-    │   ├── StatisticsResponse.java
-    │   └── WeeklyTrendResponse.java
-    ├── notification/
-    │   ├── NotificationResponse.java
-    │   └── NotificationListResponse.java
-    └── common/
-        └── PaginationResponse.java
+└── api/                                      # API-specific packages (DTOs)
+    ├── auth/                                 # Auth DTOs
+    ├── meal/                                 # Meal DTOs
+    ├── reaction/                             # Reaction DTOs
+    ├── calendar/                             # Calendar DTOs
+    ├── ranking/                              # Ranking DTOs
+    ├── recommendation/                       # Recommendation DTOs
+    ├── profile/                              # Profile DTOs
+    ├── settings/                             # Settings DTOs
+    └── notification/                         # Notification DTOs
 ```
 
 ### Resource Files
@@ -235,7 +261,11 @@ src/main/resources/
 ├── application.yaml                         # Base configuration (shared)
 ├── application-local.yaml                   # Local development profile
 ├── application-prod.yaml                    # Production profile
-└── messages.properties                      # Validation message properties (i18n)
+├── messages.properties                      # Validation message properties (i18n)
+└── db/migration/                            # Flyway database migrations
+    ├── V1__Init.sql                         # Initial schema
+    ├── V2__*.sql                            # Subsequent migrations
+    └── ...
 ```
 
 ---
@@ -263,7 +293,7 @@ src/main/resources/
 - HikariCP (connection pool)
 
 **Storage**:
-- AWS SDK for Java v2 (2.21.0) - S3 integration
+- AWS SDK for Java v2 (2.31.0) - S3 integration
 - Firebase Admin SDK (9.7.0) - FCM push notifications
 
 **AI/ML**:
@@ -275,7 +305,7 @@ src/main/resources/
 - Spring Scheduler (Virtual Thread Task Executor)
 
 **API Documentation**:
-- SpringDoc OpenAPI 2.x (Swagger UI)
+- SpringDoc OpenAPI 2.8.9 (Swagger UI)
 
 **Monitoring**:
 - Spring Boot Actuator
@@ -303,6 +333,7 @@ The domain layer follows the **Reader/Writer pattern** to separate query (read) 
 ```java
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberReader {
     private final MemberRepository memberRepository;
 
@@ -337,6 +368,16 @@ public class MemberWriter {
 - Easier to reason about side effects
 - Better testability
 - Explicit transaction boundaries
+
+**Implemented Domain Readers/Writers**:
+- `MemberReader/Writer` - Member entity operations
+- `MemberSettingsReader/Writer` - Member settings operations
+- `MealReader/Writer` - Meal entity operations
+- `MealAnalysisReader/Writer` - AI analysis operations
+- `FoodReader/Writer` - Food master data operations
+- `ReactionReader/Writer` - Post-meal reaction operations
+- `NotificationReader/Writer` - Notification operations
+- `CalendarReader/Writer` - Calendar data operations
 
 ### Layered Architecture
 
@@ -379,6 +420,24 @@ public class SoftDeletable {
 
 Queries must filter: `WHERE deleted_at IS NULL`
 
+### Authentication Pattern
+
+**@AuthenticatedMember Annotation**:
+- Custom annotation for injecting authenticated member
+- Used with `AuthenticatedMemberArgumentResolver`
+- Eliminates boilerplate code for accessing current user
+
+```java
+@GetMapping("/profile")
+public ResponseEntity<SuccessResponse<ProfileResponse>> getProfile(
+    @AuthenticatedMember Member member  // Auto-injected from JWT
+) {
+    return ResponseEntity.ok(
+        new SuccessResponse<>(profileService.getProfile(member))
+    );
+}
+```
+
 ---
 
 ## Development Guidelines
@@ -390,7 +449,7 @@ Queries must filter: `WHERE deleted_at IS NULL`
 3. **Create Domain Layer**: Add `{Entity}Reader` and `{Entity}Writer` in `domain/{entity}/`
 4. **Implement Service**: Add business logic in `service/{feature}/`
 5. **Create Controller**: Add REST endpoints in `controller/`
-6. **Define DTOs**: Create request/response DTOs in `dto/{feature}/`
+6. **Define DTOs**: Create request/response DTOs in `api/{feature}/dto/`
 
 ### Code Style
 
@@ -422,6 +481,7 @@ public class Meal extends SoftDeletable {
 - Inject service with `final` field + `@RequiredArgsConstructor`
 - Return `SuccessResponse<T>` or `ErrorResponse`
 - Validate requests with `@Valid`
+- Add Swagger annotations (`@Tag`, `@Operation`)
 
 ```java
 @Slf4j
@@ -434,8 +494,9 @@ public class MealController {
     private final MealService mealService;
 
     @PostMapping
+    @Operation(summary = "식사 생성", description = "새로운 식사 기록을 생성합니다")
     public ResponseEntity<SuccessResponse<MealResponse>> createMeal(
-        @Valid @ModelAttribute CreateMealRequest request
+        @Valid @ModelAttribute MealCreateRequest request
     ) {
         MealResponse response = mealService.createMeal(request);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -461,7 +522,7 @@ public class MealService {
     private final MealAnalysisService mealAnalysisService;
 
     @Transactional
-    public MealResponse createMeal(CreateMealRequest request) {
+    public MealResponse createMeal(MealCreateRequest request) {
         // Business logic
     }
 }
@@ -476,7 +537,7 @@ public class MealService {
 
 ```java
 @Builder
-public record CreateMealRequest(
+public record MealCreateRequest(
 
         @NotBlank(message = "{validation.meal.photo.notblank}")
         MultipartFile photo,
@@ -506,6 +567,14 @@ public record CreateMealRequest(
 validation.meal.photo.notblank=식사 사진은 필수입니다.
 validation.meal.mealType.notnull=식사 유형은 필수입니다.
 validation.meal.memo.size.max=식사 메모는 200자 이내로 입력해야 합니다.
+
+# Reaction-specific validations
+validation.reaction.digestionLevel.notnull=소화 상태는 필수입니다.
+validation.reaction.digestionLevel.range=소화 상태는 1~5 사이여야 합니다.
+validation.reaction.fullnessLevel.notnull=포만감은 필수입니다.
+validation.reaction.fullnessLevel.range=포만감은 1~5 사이여야 합니다.
+validation.reaction.energyLevel.notnull=에너지 레벨은 필수입니다.
+validation.reaction.energyLevel.range=에너지 레벨은 1~5 사이여야 합니다.
 ```
 
 ### API Response Format
@@ -562,6 +631,7 @@ All API responses follow `BaseResponse` structure:
 **Key Tables**:
 - `members`: User accounts with OAuth support
 - `member_settings`: User notification preferences
+- `member_withdrawals`: Withdrawal history
 - `meals`: Meal records with photos
 - `meal_analyses`: AI food analysis results
 - `foods`: Food master data with avg scores
@@ -578,10 +648,12 @@ All API responses follow `BaseResponse` structure:
 **application.yaml** (base):
 - JPA/Hibernate settings
 - Flyway migration
-- Spring Batch configuration
+- Spring Batch configuration (disabled by default)
 - Task execution pools (Virtual Threads)
+- Spring Security JWT configuration
 - SpringDoc OpenAPI settings
 - Logging patterns
+- File upload settings (10MB limit)
 - **MessageSource configuration** for validation messages (spring.messages)
 
 **application-local.yaml** (local dev):
@@ -612,15 +684,89 @@ All API responses follow `BaseResponse` structure:
 
 **Test Location**: `src/test/java/com/mymealserver/` (mirrors main package structure)
 
+**Test Coverage**:
+- Auth: AuthService, OAuthService, TokenService, TokenBlacklistService tests
+- Meal: MealService tests
+- Profile: ProfileService, StatisticsService, BodyPatternService tests
+- Ranking: RankingService tests
+- Calendar: CalendarService tests
+- Notification: NotificationService tests
+- Common: ArgumentResolver, Configuration tests
+- Fixtures: OAuthFixture, ProfileFixture, MemberFixture, TokenFixture
+
 ---
 
-## API Documentation
+## API Endpoints
 
-**Swagger UI**: Available at `http://localhost:8080/swagger-ui.html` when running
+### Authentication API (`/api/v1/auth`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| POST | `/register` | Email registration |
+| POST | `/login` | Email login |
+| POST | `/oauth` | Social login (Google, Naver, Kakao) |
+| POST | `/refresh` | Token refresh |
+| POST | `/logout` | Logout (blacklist token) |
+| DELETE | `/withdraw` | Account withdrawal |
 
-**OpenAPI Docs**: Available at `http://localhost:8080/api-docs`
+### Meal API (`/api/v1/meals`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| POST | `/meals` | Create meal with photo upload + AI analysis |
+| GET | `/meals` | List meals (pagination/filtering) |
+| GET | `/meals/{id}` | Get meal details (includes AI analysis) |
+| DELETE | `/meals/{id}` | Delete meal |
+| POST | `/meals/{id}/photo` | Retake photo (re-trigger AI analysis) |
 
-**API Versioning**: All endpoints prefixed with `/api/v1/`
+### Reaction API (`/api/v1/meals/{id}/reactions`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| POST | `/reactions` | Record post-meal reaction |
+| GET | `/reactions` | Get reactions for specific meal |
+| GET | `/reactions/statistics` | Get reaction statistics |
+
+### Profile API (`/api/v1/profile`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| GET | `/profile` | Get user profile |
+| PUT | `/profile` | Update user profile |
+| GET | `/statistics` | Get user statistics |
+| GET | `/patterns` | Get body pattern analysis |
+
+### Ranking API (`/api/v1/ranking`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| GET | `/ranking/best-foods` | Best foods ranking |
+| GET | `/ranking/worst-foods` | Worst foods ranking |
+| GET | `/ranking/best-days` | Best meal days ranking |
+| GET | `/ranking/worst-days` | Worst meal days ranking |
+
+### Calendar API (`/api/v1/calendar`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| GET | `/calendar/daily` | Daily calendar data |
+| GET | `/calendar/monthly` | Monthly calendar data |
+| GET | `/calendar/monthly-summary` | Monthly summary |
+
+### Recommendation API (`/api/v1/recommendations`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| GET | `/recommendations` | Get personalized meal recommendations |
+| GET | `/recommendations/schedule` | Get recommendation schedule |
+| POST | `/recommendations/feedback` | Submit recommendation feedback |
+
+### Settings API (`/api/v1/settings`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| GET | `/settings` | Get user settings |
+| PUT | `/settings` | Update user settings |
+
+### Notification API (`/api/v1/notifications`)
+| HTTP Method | Endpoint | Description |
+|-------------|----------|-------------|
+| GET | `/notifications` | Get notification list |
+| PUT | `/notifications/settings` | Update notification settings |
+
+**Total**: 45 API endpoints across 9 controllers
 
 ---
 
@@ -628,20 +774,43 @@ All API responses follow `BaseResponse` structure:
 
 ### AWS S3 (File Storage)
 - **Purpose**: Meal photo storage, profile images
-- **SDK**: AWS SDK for Java v2
+- **SDK**: AWS SDK for Java v2 (2.31.0)
 - **Config**: `AwsS3Config.java`
 - **Service**: `FileStorageService`
+- **Region**: ap-northeast-2 (Seoul)
+- **File Size Limit**: 10MB
 
 ### Firebase FCM (Push Notifications)
 - **Purpose**: Meal reminders, reaction reminders, recommendations
 - **SDK**: Firebase Admin SDK 9.7.0
 - **Config**: `FirebaseConfig.java`
 - **Service**: `FcmNotificationService`
+- **Notification Types**:
+  - RECOMMENDATION: Meal recommendations
+  - REACTION_REMINDER: Remind to record reactions
+  - MEAL_REMINDER: Meal time reminders
 
 ### OAuth2 Providers (Social Login)
-- **Providers**: Google, Naver, Kakao
-- **Config**: `SecurityConfig.java` (OAuth2 client)
-- **Service**: `OAuthService`
+
+**Google**:
+- **Service**: `GoogleOAuthService`
+- **Client**: `GoogleApiClient`
+- **Scopes**: email, profile
+- **Endpoints**: Token exchange, user info retrieval
+
+**Naver**:
+- **Service**: `NaverOAuthService`
+- **Client**: `NaverApiClient`
+- **Scopes**: email, profile
+- **Endpoints**: Token exchange, user info retrieval
+
+**Kakao**:
+- **Service**: `KakaoOAuthService`
+- **Client**: `KakaoApiClient`
+- **Scopes**: account_email, profile_nickname
+- **Endpoints**: Token exchange, user info retrieval
+
+**Factory Pattern**: `OAuthServiceFactory` routes to appropriate provider based on `ProviderType`
 
 ### AI Services (Future)
 - **Vision AI**: Google Gemini 2.0 Flash (food image analysis)
@@ -693,11 +862,11 @@ CQRS 패턴 적용하여 조회/명령 로직 분리
 4. Add Flyway migration for schema
 5. Create Reader/Writer in `domain/{entity}/`
 6. Create service in `service/{feature}/`
-7. Create controller and DTOs
+7. Create controller and DTOs in `controller/` and `api/{feature}/dto/`
 
 ### Add New API Endpoint
 
-1. Create DTO in `dto/{feature}/`
+1. Create DTO in `api/{feature}/dto/`
 2. Add validation annotations with **message keys** (not hardcoded messages)
 3. **Add validation message keys** to `src/main/resources/messages.properties`
 4. Add method to service (or create new service)
@@ -716,9 +885,10 @@ validation.{domain}.{field}.{constraint}=Message here
 
 1. Add dependency to `build.gradle`
 2. Create configuration class in `config/`
-3. Create client service in `service/` or `service/common/`
-4. Add properties to `application.yaml`
-5. Handle errors with `BusinessException`
+3. Create client service in `service/{feature}/client/`
+4. Add DTOs for request/response in `client/dto/`
+5. Add properties to `application.yaml`
+6. Handle errors with `BusinessException`
 
 ---
 
@@ -766,3 +936,4 @@ Additional documentation available in `.docs/`:
 9. **Testing**: Write unit tests for services, integration tests for APIs
 10. **Documentation**: Update Swagger annotations when adding/modifying endpoints
 11. **Validation Messages**: Never hardcode - always use `{key}` format referencing `messages.properties`
+12. **Authentication**: Use `@AuthenticatedMember` annotation for injecting authenticated users

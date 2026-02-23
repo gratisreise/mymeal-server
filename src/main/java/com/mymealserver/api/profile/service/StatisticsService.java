@@ -1,9 +1,9 @@
 package com.mymealserver.api.profile.service;
 
-import com.mymealserver.entity.Meal;
-import com.mymealserver.repository.FoodMemberStatsRepository;
-import com.mymealserver.repository.MealRepository;
-import com.mymealserver.repository.ReactionRepository;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
+import com.mymealserver.domain.meal.MealRepository;
+import com.mymealserver.domain.reaction.ReactionRepository;
 import com.mymealserver.api.profile.dto.response.StatisticsResponse;
 import com.mymealserver.api.profile.dto.response.TagCountResponse;
 import com.mymealserver.api.profile.dto.response.WeeklyTrendResponse;
