@@ -1,7 +1,7 @@
 package com.mymealserver.common.test.fixtures;
 
-import com.mymealserver.entity.Notification;
-import com.mymealserver.entity.enums.NotificationType;
+import com.mymealserver.domain.notification.Notification;
+import com.mymealserver.common.enums.NotificationType;
 
 import java.time.LocalDateTime;
 

@@ -1,7 +1,5 @@
 package com.mymealserver.domain.recommendation;
 
-import com.mymealserver.entity.Recommendation;
-import com.mymealserver.repository.RecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

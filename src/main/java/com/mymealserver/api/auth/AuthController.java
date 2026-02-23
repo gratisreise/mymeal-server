@@ -12,7 +12,6 @@ import com.mymealserver.api.auth.service.OAuthService;
 import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.api.auth.service.factory.OAuthServiceFactory;
 import com.mymealserver.common.response.SuccessResponse;
-import com.mymealserver.entity.enums.ProviderType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

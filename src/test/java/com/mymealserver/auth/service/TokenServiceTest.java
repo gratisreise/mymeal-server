@@ -8,7 +8,7 @@ import com.mymealserver.common.test.fixtures.MemberFixture;
 import com.mymealserver.common.test.fixtures.TokenFixture;
 import com.mymealserver.common.security.JwtTokenProvider;
 import com.mymealserver.domain.member.MemberReader;
-import com.mymealserver.entity.Member;
+import com.mymealserver.domain.member.Member;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

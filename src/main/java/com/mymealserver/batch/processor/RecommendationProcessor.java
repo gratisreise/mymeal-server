@@ -4,12 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mymealserver.api.recommendation.service.AiAnalysisService;
+import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.MemberSettings;
-import com.mymealserver.entity.Recommendation;
-import com.mymealserver.domain.member.MemberSettingsReader;
+import com.mymealserver.domain.member.Member;
+import com.mymealserver.domain.MemberSettings.MemberSettings;
+import com.mymealserver.domain.recommendation.Recommendation;
+import com.mymealserver.domain.MemberSettings.MemberSettingsReader;
 import com.mymealserver.service.recommendation.RagPromptBuilder;
 import com.mymealserver.service.recommendation.VectorSearchService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,7 +86,7 @@ public class RecommendationProcessor implements ItemProcessor<Member, List<Recom
                 recommendations.add(createRecommendation(
                         member.getId(),
                         recommendationsJson.get("breakfast"),
-                        com.mymealserver.entity.enums.MealType.BREAKFAST,
+                        MealType.BREAKFAST,
                         breakfastTime
                 ));
             }
@@ -97,7 +97,7 @@ public class RecommendationProcessor implements ItemProcessor<Member, List<Recom
                 recommendations.add(createRecommendation(
                         member.getId(),
                         recommendationsJson.get("lunch"),
-                        com.mymealserver.entity.enums.MealType.LUNCH,
+                        MealType.LUNCH,
                         lunchTime
                 ));
             }
@@ -108,7 +108,7 @@ public class RecommendationProcessor implements ItemProcessor<Member, List<Recom
                 recommendations.add(createRecommendation(
                         member.getId(),
                         recommendationsJson.get("dinner"),
-                        com.mymealserver.entity.enums.MealType.DINNER,
+                        MealType.DINNER,
                         dinnerTime
                 ));
             }
@@ -165,7 +165,7 @@ public class RecommendationProcessor implements ItemProcessor<Member, List<Recom
     private Recommendation createRecommendation(
             Long memberId,
             JsonNode mealRec,
-            com.mymealserver.entity.enums.MealType mealType,
+            MealType mealType,
             LocalDateTime scheduledTime
     ) {
         String mealName = mealRec.get("mealName").asText();

@@ -6,7 +6,7 @@ import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.security.JwtTokenProvider;
 import com.mymealserver.domain.member.MemberReader;
-import com.mymealserver.entity.Member;
+import com.mymealserver.domain.member.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

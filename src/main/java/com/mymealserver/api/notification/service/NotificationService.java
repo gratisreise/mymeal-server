@@ -2,7 +2,7 @@ package com.mymealserver.api.notification.service;
 
 import com.mymealserver.domain.notification.NotificationReader;
 import com.mymealserver.domain.notification.NotificationWriter;
-import com.mymealserver.entity.Notification;
+import com.mymealserver.domain.notification.Notification;
 import com.mymealserver.api.notification.dto.response.NotificationResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,12 +1,12 @@
 package com.mymealserver.profile.service;
 
 import com.mymealserver.api.profile.service.StatisticsService;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.common.enums.MealType;
 import com.mymealserver.api.profile.dto.response.StatisticsResponse;
-import com.mymealserver.repository.FoodMemberStatsRepository;
-import com.mymealserver.repository.MealRepository;
-import com.mymealserver.repository.ReactionRepository;
+import com.mymealserver.domain.FoodMemberStats.FoodMemberStatsRepository;
+import com.mymealserver.domain.meal.MealRepository;
+import com.mymealserver.domain.reaction.ReactionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

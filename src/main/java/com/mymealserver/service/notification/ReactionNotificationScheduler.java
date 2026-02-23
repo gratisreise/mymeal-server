@@ -2,7 +2,7 @@ package com.mymealserver.service.notification;
 
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
-import com.mymealserver.entity.Meal;
+import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.api.notification.service.FcmNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

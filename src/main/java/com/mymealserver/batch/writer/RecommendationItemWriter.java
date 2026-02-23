@@ -1,7 +1,7 @@
 package com.mymealserver.batch.writer;
 
 import com.mymealserver.domain.recommendation.RecommendationWriter;
-import com.mymealserver.entity.Recommendation;
+import com.mymealserver.domain.recommendation.Recommendation;
 import com.mymealserver.service.recommendation.RedisSchedulerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

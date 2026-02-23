@@ -3,8 +3,6 @@ package com.mymealserver.domain.notification;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.NotificationFixture;
-import com.mymealserver.entity.Notification;
-import com.mymealserver.repository.NotificationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

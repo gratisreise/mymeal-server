@@ -1,7 +1,5 @@
 package com.mymealserver.domain.member;
 
-import com.mymealserver.entity.Member;
-import com.mymealserver.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

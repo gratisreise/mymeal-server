@@ -1,6 +1,6 @@
 package com.mymealserver.common.config;
 
-import com.mymealserver.common.resolver.AuthenticatedMemberArgumentResolver;
+import com.mymealserver.common.security.AuthenticatedMemberArgumentResolver;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;

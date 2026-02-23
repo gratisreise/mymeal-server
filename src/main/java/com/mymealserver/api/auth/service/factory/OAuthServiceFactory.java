@@ -4,7 +4,7 @@ import com.mymealserver.api.auth.dto.request.OAuthRequest;
 import com.mymealserver.api.auth.service.OAuthService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.entity.enums.ProviderType;
+import com.mymealserver.common.enums.ProviderType;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

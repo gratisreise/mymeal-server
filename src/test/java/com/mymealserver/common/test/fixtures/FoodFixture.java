@@ -1,6 +1,6 @@
 package com.mymealserver.common.test.fixtures;
 
-import com.mymealserver.entity.Food;
+import com.mymealserver.domain.food.Food;
 
 /**
  * Test fixture for Food entities

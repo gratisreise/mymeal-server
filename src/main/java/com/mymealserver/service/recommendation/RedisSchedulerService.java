@@ -1,6 +1,6 @@
 package com.mymealserver.service.recommendation;
 
-import com.mymealserver.entity.Recommendation;
+import com.mymealserver.domain.recommendation.Recommendation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service

@@ -1,8 +1,8 @@
 package com.mymealserver.common.test.fixtures;
 
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.enums.AnalysisStatus;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.common.enums.AnalysisStatus;
+import com.mymealserver.common.enums.MealType;
 
 import java.time.LocalDateTime;
 

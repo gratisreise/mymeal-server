@@ -2,15 +2,13 @@ package com.mymealserver.api.meal;
 
 import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.common.response.SuccessResponse;
-import com.mymealserver.entity.enums.MealType;
-import com.mymealserver.api.meal.dto.request.MealRetakePhotoRequest;
+import com.mymealserver.common.enums.MealType;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.meal.dto.response.MealResponse;
 import com.mymealserver.api.meal.service.MealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Parameter;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -81,14 +79,15 @@ public class MealController {
         return SuccessResponse.toOk(null);
     }
 
-    @PostMapping("/{id}/photo")
+    @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(summary = "사진 재촬영", description = "기존 식사의 사진을 새로운 사진으로 교체하고 AI 재분석을 진행합니다. 기존 식후 반응 데이터는 보존됩니다.")
     public ResponseEntity<SuccessResponse<MealResponse>> retakePhoto(
             @AuthenticatedMember Long memberId,
             @PathVariable Long id,
-            @Valid @ModelAttribute MealRetakePhotoRequest request
+            @Parameter(description = "새로운 식사 사진", required = true)
+            @RequestParam(value = "photo") MultipartFile photo
     ) {
-        MealResponse response = mealService.retakePhoto(memberId, id, request);
+        MealResponse response = mealService.retakePhoto(memberId, id, photo);
         return SuccessResponse.toOk(response);
     }
 }

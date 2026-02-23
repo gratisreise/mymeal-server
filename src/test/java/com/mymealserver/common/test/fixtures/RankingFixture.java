@@ -1,9 +1,9 @@
 package com.mymealserver.common.test.fixtures;
 
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.Reaction;
-import com.mymealserver.entity.enums.GradeType;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.common.enums.GradeType;
+import com.mymealserver.common.enums.MealType;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

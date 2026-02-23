@@ -1,16 +1,16 @@
 package com.mymealserver.calendar.service;
 
-import com.mymealserver.api.calendar.domain.CalendarDataAggregator;
+import com.mymealserver.api.calendar.service.CalendarDataAggregator;
 import com.mymealserver.api.calendar.domain.CalendarReader;
 import com.mymealserver.api.calendar.dto.CalendarDailyResponse;
 import com.mymealserver.api.calendar.dto.CalendarMonthlyResponse;
 import com.mymealserver.api.calendar.service.CalendarService;
 import com.mymealserver.common.test.fixtures.MealFixture;
 import com.mymealserver.common.test.fixtures.ReactionFixture;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.Reaction;
-import com.mymealserver.entity.enums.GradeType;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.common.enums.GradeType;
+import com.mymealserver.common.enums.MealType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,20 +1,18 @@
 package com.mymealserver.api.meal.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mymealserver.common.exception.BusinessException;
-import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.entity.Food;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.MealAnalysis;
-import com.mymealserver.entity.enums.AnalysisStatus;
+import com.mymealserver.domain.food.Food;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.common.enums.AnalysisStatus;
 import com.mymealserver.domain.food.FoodReader;
 import com.mymealserver.domain.food.FoodWriter;
-import com.mymealserver.domain.meal.MealAnalysisWriter;
+import com.mymealserver.domain.MealAnalysis.MealAnalysisWriter;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
 import com.mymealserver.api.recommendation.service.AiAnalysisService;
 import com.mymealserver.api.recommendation.service.FoodAnalysisResult;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.common.enums.MealType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;

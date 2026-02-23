@@ -1,14 +1,13 @@
 package com.mymealserver.service.reaction;
 
-import com.mymealserver.domain.meal.MealAnalysisReader;
-import com.mymealserver.domain.meal.MealLogReader;
-import com.mymealserver.domain.meal.MealLogWriter;
+import com.mymealserver.domain.MealAnalysis.MealAnalysisReader;
+import com.mymealserver.domain.MealLog.MealLogWriter;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.MealAnalysis;
-import com.mymealserver.entity.MealLog;
-import com.mymealserver.entity.Reaction;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.domain.MealLog.MealLog;
+import com.mymealserver.domain.reaction.Reaction;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.embedding.EmbeddingModel;

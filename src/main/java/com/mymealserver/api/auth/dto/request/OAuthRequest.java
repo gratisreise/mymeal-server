@@ -1,6 +1,6 @@
 package com.mymealserver.api.auth.dto.request;
 
-import com.mymealserver.entity.enums.ProviderType;
+import com.mymealserver.common.enums.ProviderType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;

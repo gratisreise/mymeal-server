@@ -4,7 +4,7 @@ import com.mymealserver.api.auth.service.OAuthService;
 import com.mymealserver.api.auth.service.factory.OAuthServiceFactory;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.entity.enums.ProviderType;
+import com.mymealserver.common.enums.ProviderType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

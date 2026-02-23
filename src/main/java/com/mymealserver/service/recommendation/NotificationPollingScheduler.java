@@ -1,21 +1,18 @@
 package com.mymealserver.service.recommendation;
 
-import com.mymealserver.common.exception.BusinessException;
-import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.domain.member.MemberReader;
-import com.mymealserver.domain.member.MemberSettingsReader;
+import com.mymealserver.domain.MemberSettings.MemberSettingsReader;
 import com.mymealserver.domain.recommendation.RecommendationReader;
 import com.mymealserver.domain.recommendation.RecommendationWriter;
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.MemberSettings;
-import com.mymealserver.entity.Recommendation;
+import com.mymealserver.domain.member.Member;
+import com.mymealserver.domain.MemberSettings.MemberSettings;
+import com.mymealserver.domain.recommendation.Recommendation;
 import com.mymealserver.api.notification.service.FcmNotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
 import java.util.Set;
 
 @Slf4j

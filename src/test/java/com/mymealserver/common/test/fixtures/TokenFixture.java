@@ -2,8 +2,8 @@ package com.mymealserver.common.test.fixtures;
 
 import com.mymealserver.api.auth.dto.response.AuthResponse;
 import com.mymealserver.api.auth.dto.response.MemberResponse;
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.enums.ProviderType;
+import com.mymealserver.domain.member.Member;
+import com.mymealserver.common.enums.ProviderType;
 
 import java.time.LocalDateTime;
 

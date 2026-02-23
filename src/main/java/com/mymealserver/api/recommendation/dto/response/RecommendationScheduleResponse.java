@@ -1,6 +1,6 @@
 package com.mymealserver.api.recommendation.dto.response;
 
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.common.enums.MealType;
 
 import java.time.LocalDateTime;
 

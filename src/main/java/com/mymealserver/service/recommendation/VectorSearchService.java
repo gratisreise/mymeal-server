@@ -1,12 +1,12 @@
 package com.mymealserver.service.recommendation;
 
 import com.mymealserver.domain.meal.MealReader;
-import com.mymealserver.domain.meal.MealAnalysisReader;
+import com.mymealserver.domain.MealAnalysis.MealAnalysisReader;
 import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.entity.Meal;
-import com.mymealserver.entity.MealAnalysis;
-import com.mymealserver.entity.Reaction;
-import com.mymealserver.entity.enums.GradeType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.common.enums.GradeType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

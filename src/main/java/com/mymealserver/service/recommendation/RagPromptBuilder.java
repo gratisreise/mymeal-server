@@ -1,9 +1,10 @@
 package com.mymealserver.service.recommendation;
 
-import com.mymealserver.entity.Member;
-import com.mymealserver.entity.MealAnalysis;
-import com.mymealserver.entity.Reaction;
-import com.mymealserver.entity.enums.GradeType;
+import com.mymealserver.common.enums.MealType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.member.Member;
+import com.mymealserver.domain.MealAnalysis.MealAnalysis;
+import com.mymealserver.domain.reaction.Reaction;
 import lombok.Builder;
 import lombok.extern.slf4j.Slf4j;
 
@@ -110,7 +111,7 @@ public class RagPromptBuilder {
 
     @Builder
     public record MealWithReaction(
-            com.mymealserver.entity.Meal meal,
+            Meal meal,
             MealAnalysis mealAnalysis,
             Reaction reaction
     ) {
@@ -118,7 +119,7 @@ public class RagPromptBuilder {
             return mealAnalysis != null ? mealAnalysis.getMealName() : null;
         }
 
-        public com.mymealserver.entity.enums.MealType getMealType() {
+        public MealType getMealType() {
             return meal.getMealType();
         }
     }

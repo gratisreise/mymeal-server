@@ -1,7 +1,7 @@
 package com.mymealserver.common.test.fixtures;
 
-import com.mymealserver.entity.Reaction;
-import com.mymealserver.entity.enums.GradeType;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.common.enums.GradeType;
 
 /**
  * Test fixture for Reaction entities

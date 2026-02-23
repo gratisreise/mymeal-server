@@ -1,7 +1,7 @@
 package com.mymealserver.api.ranking.dto.response;
 
-import com.mymealserver.entity.enums.GradeType;
-import com.mymealserver.entity.enums.MealType;
+import com.mymealserver.common.enums.GradeType;
+import com.mymealserver.common.enums.MealType;
 
 import java.time.LocalDateTime;
 
