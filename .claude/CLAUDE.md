@@ -192,7 +192,14 @@ src/main/java/com/mymealserver/
 │   ├── recommendation/
 │   │   ├── RecommendationService.java       # Meal recommendation logic
 │   │   ├── AiAnalysisService.java           # AI integration service
-│   │   └── RecommendationScheduler.java     # Scheduled recommendation jobs
+│   │   ├── RagPromptBuilder.java            # RAG prompt construction
+│   │   └── VectorSearchService.java         # Vector search for recommendations
+│   ├── notification/
+│   │   ├── NotificationService.java         # Notification management
+│   │   ├── FcmNotificationService.java      # FCM push notification
+│   │   └── ReactionNotificationQueueService.java  # Reaction notification queue
+│   ├── reaction/
+│   │   └── MealLogService.java              # Meal log operations
 │   ├── profile/
 │   │   ├── ProfileService.java              # User profile management
 │   │   ├── StatisticsService.java           # User statistics
@@ -204,6 +211,25 @@ src/main/java/com/mymealserver/
 │   │   └── FcmNotificationService.java      # FCM push notification
 │   └── storage/
 │       └── FileStorageService.java          # S3 file upload/download
+│
+├── external/                                 # External Integrations
+│   └── batch/                               # Batch Processing & Scheduling
+│       ├── config/
+│       │   └── BatchConfig.java            # Spring Batch configuration
+│       ├── job/
+│       │   ├── RecommendationGenerationJob.java  # Recommendation batch job
+│       │   └── RecommendationStepListener.java   # Job execution listener
+│       ├── reader/
+│       │   └── MemberItemReader.java       # Batch member reader
+│       ├── processor/
+│       │   └── RecommendationProcessor.java  # RAG-based recommendation processor
+│       ├── writer/
+│       │   └── RecommendationItemWriter.java  # Recommendation persistence writer
+│       └── scheduler/
+│           ├── RecommendationScheduler.java      # Daily job trigger (1 AM)
+│           ├── NotificationPollingScheduler.java # Poll & send notifications
+│           ├── RedisSchedulerService.java        # Redis-based scheduling
+│           └── ReactionNotificationScheduler.java # Reaction reminder scheduler
 │
 ├── controller/                               # Presentation Layer (REST API)
 │   ├── AuthController.java                  # /api/v1/auth/** (6 endpoints)
