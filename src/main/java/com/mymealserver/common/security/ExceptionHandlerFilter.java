@@ -1,11 +1,11 @@
 package com.mymealserver.common.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.response.ErrorResponse;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -20,25 +20,12 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws IOException {
+        throws IOException, ServletException {
         try {
             filterChain.doFilter(request, response);
-        } catch (ExpiredJwtException e) {
-            setErrorResponse(HttpStatus.UNAUTHORIZED, response, ErrorCode.TOKEN_EXPIRED);
-        } catch (JwtException e) {
-            setErrorResponse(HttpStatus.UNAUTHORIZED, response, ErrorCode.TOKEN_INVALID);
-        } catch (Exception e) {
-            setErrorResponse(response, ErrorCode.INTERNAL_SERVER_ERROR, e);
+        } catch (BusinessException e) {
+            setErrorResponse(HttpStatus.UNAUTHORIZED, response, e.getCode());
         }
-    }
-
-    private void setErrorResponse(HttpServletResponse response, ErrorCode errorCode, Exception ex)
-        throws IOException {
-        response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.setContentType("application/json; charset=UTF-8");
-        ErrorResponse errorResponse = ErrorResponse.unknown(ex);
-
-        generateBody(response, errorResponse);
     }
 
     private void setErrorResponse(HttpStatus status, HttpServletResponse response, ErrorCode errorCode)
