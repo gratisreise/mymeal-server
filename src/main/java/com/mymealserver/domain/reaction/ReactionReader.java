@@ -1,10 +1,9 @@
 package com.mymealserver.domain.reaction;
 
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,9 +19,6 @@ public class ReactionReader {
         return reactionRepository.findAllByMealIdIn(mealIds);
     }
 
-    /**
-     * Find reactions by meal IDs and return as Map for efficient lookup
-     */
     public Map<Long, Reaction> findByMealIdsAsMap(List<Long> mealIds) {
         List<Reaction> reactions = findAllByMealIds(mealIds);
         return reactions.stream()

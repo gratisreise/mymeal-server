@@ -1,15 +1,15 @@
 package com.mymealserver.api.reaction.service;
 
+import com.mymealserver.api.meal.service.MealLogService;
 import com.mymealserver.api.reaction.dto.request.ReactionRequest;
 import com.mymealserver.api.reaction.dto.response.ReactionResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
+import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.meal.MealReader;
+import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.domain.reaction.ReactionReader;
 import com.mymealserver.domain.reaction.ReactionWriter;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.reaction.Reaction;
-import com.mymealserver.api.meal.service.MealLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,38 +26,30 @@ public class ReactionService {
     private final MealReader mealReader;
     private final MealLogService mealLogService;
 
-    /**
-     * Create a new reaction for a meal
-     * Verifies meal ownership and validates data
-     */
     @Transactional
     public ReactionResponse createReaction(Long memberId, Long mealId, ReactionRequest request) {
-        log.debug("Creating reaction for memberId: {}, mealId: {}", memberId, mealId);
-
-        // Verify meal exists and belongs to member
+        // 식사가 존재하고 회원의 소유인지 확인
         Meal meal = mealReader.findById(mealId);
 
         if (!meal.getMemberId().equals(memberId)) {
             throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
         }
 
-        // Check if reaction already exists
+        // 반응이 이미 존재하는지 확인
         Reaction existingReaction = reactionReader.findByMealId(mealId);
         if (existingReaction != null) {
-            log.warn("Reaction already exists for mealId: {}", mealId);
+            log.warn("식사 ID {}에 대한 반응이 이미 존재합니다", mealId);
             throw new BusinessException(ErrorCode.REACTION_ALREADY_EXISTS);
         }
 
-        // Build reaction entity from request
+        // 요청에서 반응 엔티티 생성
         Reaction reaction = request.toEntity(mealId);
 
-        // Calculate overall score and grade
+        // 전체 점수 및 등급 계산
         reaction.calculateOverallScore();
 
-        // Save reaction
+        // 반응 저장
         Reaction savedReaction = reactionWriter.save(reaction);
-        log.info("Created reaction for mealId: {} with overallScore: {}, grade: {}",
-                mealId, savedReaction.getOverallScore(), savedReaction.getGrade());
 
         // Meal + MealAnalysis + Reaction → MealLog 생성 및 임베딩 (비동기)
         mealLogService.createMealLogAndEmbedAsync(mealId, savedReaction.getId());
@@ -65,66 +57,49 @@ public class ReactionService {
         return ReactionResponse.from(savedReaction);
     }
 
-    /**
-     * Get reaction by meal ID
-     * Returns null if no reaction exists
-     */
     public ReactionResponse getReactionByMealId(Long memberId, Long mealId) {
-        log.debug("Getting reaction for memberId: {}, mealId: {}", memberId, mealId);
-
-        // Verify meal exists and belongs to member
+        // 식사가 존재하고 회원의 소유인지 확인
         Meal meal = mealReader.findById(mealId);
 
         if (!meal.getMemberId().equals(memberId)) {
-            log.warn("Member {} attempted to access meal {} owned by {}",
-                    memberId, mealId, meal.getMemberId());
+            log.warn("회원 {}이 소유하지 않은 식사 {}에 접근 시도", memberId, mealId);
             throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
         }
 
-        // Find reaction
+        // 반응 조회
         Reaction reaction = reactionReader.findByMealId(mealId);
         if (reaction == null) {
-            log.debug("No reaction found for mealId: {}", mealId);
             return null;
         }
 
         return ReactionResponse.from(reaction);
     }
 
-    /**
-     * 기존에 분석중인 서비스가 있으면 수정불가
-     * 기존데이터를 다른 사진으로 대체
-     */
     @Transactional
     public ReactionResponse updateReaction(Long memberId, Long mealId, ReactionRequest request) {
-        log.debug("Updating reaction for memberId: {}, mealId: {}", memberId, mealId);
-
-        // Verify meal exists and belongs to member
+        // 식사가 존재하고 회원의 소유인지 확인
         Meal meal = mealReader.findById(mealId);
 
         if (!meal.getMemberId().equals(memberId)) {
-            log.warn("Member {} attempted to access meal {} owned by {}",
-                    memberId, mealId, meal.getMemberId());
+            log.warn("회원 {}이 소유하지 않은 식사 {}에 접근 시도", memberId, mealId);
             throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
         }
 
-        // Find existing reaction
+        // 기존 반응 조회
         Reaction reaction = reactionReader.findByMealId(mealId);
         if (reaction == null) {
-            log.warn("No reaction found for mealId: {}", mealId);
+            log.warn("식사 ID {}에 대한 반응을 찾을 수 없습니다", mealId);
             throw new BusinessException(ErrorCode.REACTION_NOT_FOUND);
         }
 
-        // Update reaction fields
+        // 반응 필드 업데이트
         reaction.update(request);
 
-        // Recalculate overall score and grade
+        // 전체 점수 및 등급 재계산
         reaction.calculateOverallScore();
 
-        // Save updated reaction
+        // 업데이트된 반응 저장
         Reaction savedReaction = reactionWriter.save(reaction);
-        log.info("Updated reaction for mealId: {} with overallScore: {}, grade: {}",
-                mealId, savedReaction.getOverallScore(), savedReaction.getGrade());
 
         return ReactionResponse.from(savedReaction);
     }

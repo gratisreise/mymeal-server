@@ -1,8 +1,7 @@
 package com.mymealserver.api.reaction.dto.response;
 
-import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.common.enums.GradeType;
-
+import com.mymealserver.domain.reaction.Reaction;
 import java.time.LocalDateTime;
 
 public record ReactionResponse(
