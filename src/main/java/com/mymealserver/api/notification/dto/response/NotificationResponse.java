@@ -2,12 +2,11 @@ package com.mymealserver.api.notification.dto.response;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mymealserver.domain.notification.Notification;
 import com.mymealserver.common.enums.NotificationType;
-import lombok.extern.slf4j.Slf4j;
-
+import com.mymealserver.domain.notification.Notification;
 import java.time.LocalDateTime;
 import java.util.Map;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public record NotificationResponse(
@@ -42,4 +41,5 @@ public record NotificationResponse(
                 notification.getCreatedAt()
         );
     }
+
 }
