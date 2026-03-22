@@ -5,23 +5,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mymealserver.api.recommendation.dto.response.RecommendationResponse;
 import com.mymealserver.api.recommendation.dto.response.RecommendationScheduleResponse;
-import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
-import com.mymealserver.domain.meal.MealReader;
-import com.mymealserver.domain.membersettings.MemberSettingsReader;
-import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.domain.recommendation.RecommendationReader;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.mealanalysis.MealAnalysis;
-import com.mymealserver.domain.membersettings.MemberSettings;
-import com.mymealserver.domain.recommendation.Recommendation;
-import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.common.enums.GradeType;
 import com.mymealserver.common.enums.MealType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.meal.MealReader;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
+import com.mymealserver.domain.membersettings.MemberSettings;
+import com.mymealserver.domain.membersettings.MemberSettingsReader;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.domain.reaction.ReactionReader;
+import com.mymealserver.domain.recommendation.Recommendation;
+import com.mymealserver.domain.recommendation.RecommendationReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -46,10 +45,7 @@ public class RecommendationService {
     private static final int DEFAULT_LIMIT = 3;
     private static final int RECOMMENDATION_DAYS = 30;
 
-    /**
-     * Get recommendations from batch-generated AI recommendations
-     * Falls back to rule-based recommendations if no batch recommendations exist
-     */
+
     public List<RecommendationResponse> getRecommendations(Long memberId, MealType mealType, Integer limit) {
         log.debug("Getting recommendations for memberId: {}, mealType: {}, limit: {}",
                 memberId, mealType, limit);
@@ -86,9 +82,6 @@ public class RecommendationService {
         return getRuleBasedRecommendations(memberId, mealType, recommendationLimit);
     }
 
-    /**
-     * Get recommendation schedule from batch-generated recommendations
-     */
     public List<RecommendationScheduleResponse> getRecommendationSchedule(Long memberId) {
         log.debug("Getting recommendation schedule for memberId: {}", memberId);
 
@@ -117,7 +110,6 @@ public class RecommendationService {
             ));
         }
 
-        // If no batch recommendations, fall back to schedule placeholders
         if (schedules.isEmpty()) {
             log.debug("No batch recommendations found, using fallback schedule");
             return getFallbackSchedule(memberId, settings);
@@ -134,9 +126,9 @@ public class RecommendationService {
         return new RecommendationResponse(
                 mealName,
                 reason,
-                List.of(), // Empty tags list
-                null,     // No average score for AI recommendations
-                null      // No reference meal ID for AI recommendations
+                List.of(),
+                null,
+                null
         );
     }
 
