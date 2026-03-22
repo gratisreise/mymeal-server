@@ -1,18 +1,20 @@
 package com.mymealserver.api.meal.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mymealserver.domain.food.Food;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.mealanalysis.MealAnalysis;
-import com.mymealserver.common.enums.AnalysisStatus;
-import com.mymealserver.domain.food.FoodReader;
-import com.mymealserver.domain.food.FoodWriter;
-import com.mymealserver.domain.mealanalysis.MealAnalysisWriter;
-import com.mymealserver.domain.meal.MealReader;
-import com.mymealserver.domain.meal.MealWriter;
 import com.mymealserver.api.recommendation.service.AiAnalysisService;
 import com.mymealserver.api.recommendation.service.FoodAnalysisResult;
+import com.mymealserver.common.enums.AnalysisStatus;
 import com.mymealserver.common.enums.MealType;
+import com.mymealserver.domain.food.Food;
+import com.mymealserver.domain.food.FoodReader;
+import com.mymealserver.domain.food.FoodWriter;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.meal.MealReader;
+import com.mymealserver.domain.meal.MealWriter;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysisWriter;
+import com.mymealserver.domain.meallog.MealLogWriter;
+import com.mymealserver.domain.reaction.ReactionWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -29,12 +31,14 @@ public class MealAnalysisService {
     private final MealReader mealReader;
     private final MealWriter mealWriter;
     private final MealAnalysisWriter mealAnalysisWriter;
+    private final MealLogWriter mealLogWriter;
+    private final ReactionWriter reactionWriter;
     private final FoodReader foodReader;
     private final FoodWriter foodWriter;
     private final ObjectMapper objectMapper;
 
-    @Async("mealAnalysisExecutor")
     @Transactional
+    @Async("mealAnalysisExecutor")
     public void analyzeMealAsync(Long mealId, MealType mealType, Resource imageResource) {
         try {
             Meal meal = mealReader.findById(mealId);
@@ -62,9 +66,6 @@ public class MealAnalysisService {
             mealAnalysisWriter.save(mealAnalysis);
 
             meal.updateAnalysisStatus(AnalysisStatus.COMPLETED);
-            mealWriter.save(meal);
-
-            log.info("AI 분석 완료 - mealId: {}, mealName: {}", mealId, analysis.mealName());
 
         } catch (Exception e) {
             log.error("AI 분석 실패 - mealId: {}", mealId, e);

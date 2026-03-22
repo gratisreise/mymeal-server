@@ -1,21 +1,24 @@
 package com.mymealserver.api.meal.service;
 
-import com.mymealserver.common.exception.BusinessException;
-import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.reaction.Reaction;
-import com.mymealserver.common.enums.AnalysisStatus;
-import com.mymealserver.common.enums.MealType;
 import com.mymealserver.api.meal.dto.response.AIAnalysisResponse;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.meal.dto.response.MealResponse;
-import com.mymealserver.domain.reaction.ReactionReader;
 import com.mymealserver.api.reaction.dto.response.ReactionResponse;
-import com.mymealserver.external.s3.service.FileStorageService;
+import com.mymealserver.common.enums.AnalysisStatus;
+import com.mymealserver.common.enums.MealType;
+import com.mymealserver.common.exception.BusinessException;
+import com.mymealserver.common.exception.ErrorCode;
+import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
 import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
-import com.mymealserver.external.redis.service.ReactionNotificationQueueService;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.domain.reaction.ReactionReader;
+import com.mymealserver.external.redis.NotificationPayload;
+import com.mymealserver.external.redis.UnifiedNotificationService;
+import com.mymealserver.external.s3.S3Service;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -24,9 +27,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -38,15 +38,15 @@ public class MealService {
     private final MealWriter mealWriter;
     private final ReactionReader reactionReader;
     private final MealAnalysisReader mealAnalysisReader;
-    private final FileStorageService fileStorageService;
+    private final S3Service s3Service;
     private final MealAnalysisService mealAnalysisService;
-    private final ReactionNotificationQueueService reactionNotificationQueueService;
+    private final UnifiedNotificationService unifiedNotificationService;
 
     @Transactional
     public MealResponse createMeal(Long memberId, MultipartFile photo, MealType mealType) {
         Resource imageResource = photo.getResource();
-        String photoUrl = fileStorageService.uploadMealPhoto(photo, memberId);
-        String photoKey = fileStorageService.extractPhotoKey(photoUrl);
+        String photoUrl = s3Service.uploadMealPhoto(photo, memberId);
+        String photoKey = s3Service.extractPhotoKey(photoUrl);
 
         Meal meal = Meal.builder()
                 .memberId(memberId)
@@ -59,11 +59,12 @@ public class MealService {
         meal = mealWriter.save(meal);
         mealAnalysisService.analyzeMealAsync(meal.getId(), mealType, imageResource);
 
-        // 알림 예약 (MealLog는 생성하지 않음 - 반응 입력 시 생성)
-        reactionNotificationQueueService.scheduleReactionNotification(
-                meal.getId(),
-                meal.getMealTime().plusMinutes(30)
+        // 알림 예약 (식후 60분 후 반응 알림)
+        NotificationPayload payload = NotificationPayload.forReactionReminder(
+                memberId,
+                meal.getId()
         );
+        unifiedNotificationService.schedule(payload, meal.getMealTime().plusMinutes(60));
 
         return MealResponse.from(meal, false);
     }
@@ -130,10 +131,10 @@ public class MealService {
         }
 
         Resource imageResource = photo.getResource();
-        String newPhotoUrl = fileStorageService.uploadMealPhoto(photo, memberId);
-        String newPhotoKey = fileStorageService.extractPhotoKey(newPhotoUrl);
+        String newPhotoUrl = s3Service.uploadMealPhoto(photo, memberId);
+        String newPhotoKey = s3Service.extractPhotoKey(newPhotoUrl);
 
-        fileStorageService.deletePhoto(meal.getPhotoKey());
+        s3Service.deletePhoto(meal.getPhotoKey());
 
         meal.updatePhoto(newPhotoUrl, newPhotoKey);
         meal.updateAnalysisStatus(AnalysisStatus.PENDING);
