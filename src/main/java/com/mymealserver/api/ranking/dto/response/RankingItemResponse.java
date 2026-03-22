@@ -2,7 +2,6 @@ package com.mymealserver.api.ranking.dto.response;
 
 import com.mymealserver.common.enums.GradeType;
 import com.mymealserver.common.enums.MealType;
-
 import java.time.LocalDateTime;
 
 public record RankingItemResponse(

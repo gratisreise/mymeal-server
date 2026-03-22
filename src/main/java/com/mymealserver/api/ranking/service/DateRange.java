@@ -2,7 +2,9 @@ package com.mymealserver.api.ranking.service;
 
 import java.time.LocalDate;
 import java.util.Objects;
+import lombok.Getter;
 
+@Getter
 public class DateRange {
 
     private final LocalDate startDate;
@@ -11,14 +13,6 @@ public class DateRange {
     public DateRange(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
-    }
-
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
     }
 
     @Override

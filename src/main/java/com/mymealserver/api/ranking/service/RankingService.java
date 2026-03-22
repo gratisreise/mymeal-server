@@ -1,13 +1,18 @@
 package com.mymealserver.api.ranking.service;
 
-import com.mymealserver.common.response.PageResponse;
-import com.mymealserver.domain.meal.MealReader;
-import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
 import com.mymealserver.common.enums.GradeType;
 import com.mymealserver.common.enums.MealType;
-import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
+import com.mymealserver.common.response.PageResponse;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.meal.MealReader;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.domain.reaction.ReactionReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +21,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
