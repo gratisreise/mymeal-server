@@ -1,7 +1,7 @@
 package com.mymealserver.api.auth.dto.request;
 
-import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
 import com.mymealserver.common.enums.WithdrawalReason;
+import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -18,12 +18,6 @@ public record WithdrawRequest(
         @Size(max = 500, message = "{validation.withdraw.reasonDetail.size.max}")
         String reasonDetail
 ) {
-    /**
-     * MemberWithdrawal 엔티티로 변환
-     *
-     * @param memberId 탈퇴 회원 ID
-     * @return MemberWithdrawal 엔티티
-     */
     public MemberWithdrawal toEntity(Long memberId) {
         WithdrawalReason withdrawalReason = WithdrawalReason.fromString(reason);
 

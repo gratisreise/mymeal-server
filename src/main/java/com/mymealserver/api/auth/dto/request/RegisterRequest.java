@@ -1,8 +1,8 @@
 package com.mymealserver.api.auth.dto.request;
 
+import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.common.validation.Password;
 import com.mymealserver.domain.member.Member;
-import com.mymealserver.common.enums.ProviderType;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

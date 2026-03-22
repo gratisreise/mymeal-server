@@ -1,7 +1,6 @@
 package com.mymealserver.api.calendar.dto;
 
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
-
 import java.time.LocalDate;
 import java.util.List;
 

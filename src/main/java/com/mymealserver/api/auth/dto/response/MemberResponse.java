@@ -1,7 +1,7 @@
 package com.mymealserver.api.auth.dto.response;
 
-import com.mymealserver.domain.member.Member;
 import com.mymealserver.common.enums.ProviderType;
+import com.mymealserver.domain.member.Member;
 import java.time.LocalDateTime;
 import lombok.Builder;
 

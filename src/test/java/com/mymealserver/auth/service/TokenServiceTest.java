@@ -1,14 +1,20 @@
 package com.mymealserver.auth.service;
 
-import com.mymealserver.external.redis.service.TokenBlacklistService;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
+import com.mymealserver.common.security.JwtTokenProvider;
 import com.mymealserver.common.test.fixtures.MemberFixture;
 import com.mymealserver.common.test.fixtures.TokenFixture;
-import com.mymealserver.common.security.JwtTokenProvider;
-import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.Member;
+import com.mymealserver.domain.member.MemberReader;
+import com.mymealserver.external.redis.TokenBlacklistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -17,12 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("TokenService 단위 테스트")

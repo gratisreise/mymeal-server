@@ -1,11 +1,16 @@
 package com.mymealserver.api.auth.service.factory;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.given;
+
 import com.mymealserver.api.auth.dto.request.OAuthRequest;
 import com.mymealserver.api.auth.service.oauth.OAuthService;
-import com.mymealserver.api.auth.service.oauth.factory.OAuthServiceFactory;
+import com.mymealserver.api.auth.service.oauth.OAuthServiceFactory;
+import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.common.enums.ProviderType;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -13,12 +18,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("OAuthServiceFactory 단위 테스트")

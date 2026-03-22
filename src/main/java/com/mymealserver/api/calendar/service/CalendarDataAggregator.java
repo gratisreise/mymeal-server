@@ -1,16 +1,15 @@
 package com.mymealserver.api.calendar.service;
 
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.common.enums.GradeType;
 import com.mymealserver.common.enums.MealType;
-import org.springframework.stereotype.Component;
-
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.reaction.Reaction;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.springframework.stereotype.Component;
 
 @Component
 public class CalendarDataAggregator {

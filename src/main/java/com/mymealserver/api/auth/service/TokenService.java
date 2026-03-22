@@ -2,12 +2,13 @@ package com.mymealserver.api.auth.service;
 
 import com.mymealserver.api.auth.dto.response.AuthResponse;
 import com.mymealserver.api.auth.dto.response.MemberResponse;
+import com.mymealserver.api.auth.dto.response.RefreshResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.security.JwtTokenProvider;
-import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.Member;
-import com.mymealserver.external.redis.service.TokenBlacklistService;
+import com.mymealserver.domain.member.MemberReader;
+import com.mymealserver.external.redis.TokenBlacklistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class TokenService {
     }
 
 
-    public AuthResponse refreshToken(String refreshToken) {
+    public RefreshResponse refreshToken(String refreshToken) {
         // 1. 리프레시 토큰 블랙리스트 확인
         if (tokenBlacklistService.isBlacklisted(refreshToken)) {
             throw new BusinessException(ErrorCode.REFRESH_TOKEN_INVALID);
@@ -52,10 +53,13 @@ public class TokenService {
         if (!member.isActive()) {
             throw new BusinessException(ErrorCode.MEMBER_DEACTIVATED);
         }
+        String reissueToken = jwtTokenProvider.createRefreshToken(member.getId());
 
         // 5. 새로운 토큰 생성
-        return generateTokens(member);
+        return new RefreshResponse(reissueToken);
     }
+
+
 
 
     public Long validateAccessToken(String token) {
@@ -66,4 +70,5 @@ public class TokenService {
     public Long validateRefreshToken(String token) {
         return jwtTokenProvider.validateRefreshTokenAndGetMemberId(token);
     }
+
 }

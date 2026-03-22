@@ -4,21 +4,20 @@ import com.mymealserver.api.calendar.domain.CalendarReader;
 import com.mymealserver.api.calendar.dto.CalendarDailyResponse;
 import com.mymealserver.api.calendar.dto.CalendarMonthlyResponse;
 import com.mymealserver.api.calendar.dto.DailySummaryResponse;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.reaction.Reaction;
-import com.mymealserver.common.enums.GradeType;
-import com.mymealserver.common.enums.MealType;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.reaction.dto.response.ReactionResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.mymealserver.common.enums.GradeType;
+import com.mymealserver.common.enums.MealType;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.reaction.Reaction;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -30,7 +29,6 @@ public class CalendarService {
     private final CalendarDataAggregator dataAggregator;
 
     public CalendarMonthlyResponse getMonthlyCalendar(Long memberId, Integer year, Integer month) {
-        log.info("Getting monthly calendar for member: {}, year: {}, month: {}", memberId, year, month);
 
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDateTime startOfMonth = yearMonth.atDay(1).atStartOfDay();
