@@ -1,25 +1,37 @@
 package com.mymealserver.meal.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.*;
+
+import com.mymealserver.api.meal.dto.response.MealDetailResponse;
+import com.mymealserver.api.meal.dto.response.MealResponse;
 import com.mymealserver.api.meal.service.MealAnalysisService;
 import com.mymealserver.api.meal.service.MealService;
+import com.mymealserver.common.enums.AnalysisStatus;
+import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.MealAnalysisFixture;
 import com.mymealserver.common.test.fixtures.MealFixture;
 import com.mymealserver.common.test.fixtures.MultipartFileFixture;
 import com.mymealserver.common.test.fixtures.ReactionFixture;
-import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
+import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
-import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.mealanalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
 import com.mymealserver.domain.reaction.Reaction;
-import com.mymealserver.common.enums.AnalysisStatus;
-import com.mymealserver.common.enums.MealType;
-import com.mymealserver.api.meal.dto.response.MealDetailResponse;
-import com.mymealserver.api.meal.dto.response.MealResponse;
 import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.external.s3.service.FileStorageService;
+import com.mymealserver.external.s3.S3Service;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -39,21 +52,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.*;
-
-import org.mockito.ArgumentCaptor;
 
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
@@ -73,7 +71,7 @@ class MealServiceTest {
     private MealAnalysisReader mealAnalysisReader;
 
     @Mock
-    private FileStorageService fileStorageService;
+    private S3Service s3Service;
 
     @Mock
     private MealAnalysisService mealAnalysisService;
@@ -87,11 +85,11 @@ class MealServiceTest {
     @BeforeEach
     void setUp() {
         // FileStorageService 기본 mock 설정 (lenient()로 불필요한 stubbing 경고 방지)
-        lenient().when(fileStorageService.uploadMealPhoto(any(MultipartFile.class), anyLong()))
+        lenient().when(s3Service.uploadMealPhoto(any(MultipartFile.class), anyLong()))
                 .thenReturn("https://s3.amazonaws.com/meals/1/2025/02/test.jpg");
-        lenient().when(fileStorageService.extractPhotoKey(anyString()))
+        lenient().when(s3Service.extractPhotoKey(anyString()))
                 .thenReturn("meals/1/2025/02/test.jpg");
-        lenient().doNothing().when(fileStorageService).deletePhoto(anyString());
+        lenient().doNothing().when(s3Service).deletePhoto(anyString());
 
         // MealWriter 기본 mock 설정
         lenient().when(mealWriter.save(any(Meal.class)))
@@ -135,8 +133,8 @@ class MealServiceTest {
             assertThat(response.photoUrl()).contains("s3.amazonaws.com");
             assertThat(response.hasReaction()).isFalse();
 
-            verify(fileStorageService).uploadMealPhoto(any(), eq(testMemberId));
-            verify(fileStorageService).extractPhotoKey(anyString());
+            verify(s3Service).uploadMealPhoto(any(), eq(testMemberId));
+            verify(s3Service).extractPhotoKey(anyString());
             verify(mealWriter).save(any(Meal.class));
             verify(mealAnalysisService).analyzeMealAsync(eq(1L), any(MealType.class), any(Resource.class));
         }
@@ -589,9 +587,9 @@ class MealServiceTest {
             MultipartFile photo = MultipartFileFixture.createValidJpegPhoto();
 
             when(mealReader.findById(testMealId)).thenReturn(meal);
-            when(fileStorageService.uploadMealPhoto(any(), eq(testMemberId)))
+            when(s3Service.uploadMealPhoto(any(), eq(testMemberId)))
                     .thenReturn("https://s3.amazonaws.com/meals/1/2025/02/new-uuid.jpg");
-            when(fileStorageService.extractPhotoKey(anyString()))
+            when(s3Service.extractPhotoKey(anyString()))
                     .thenReturn("meals/1/2025/02/new-uuid.jpg");
             when(reactionReader.existsByMealId(testMealId)).thenReturn(false);
 
@@ -602,8 +600,8 @@ class MealServiceTest {
             assertThat(response.photoUrl()).contains("new-uuid");
             assertThat(meal.getAnalysisStatus()).isEqualTo(AnalysisStatus.PENDING); // Verify state change
 
-            verify(fileStorageService).uploadMealPhoto(any(), eq(testMemberId));
-            verify(fileStorageService).deletePhoto(anyString());
+            verify(s3Service).uploadMealPhoto(any(), eq(testMemberId));
+            verify(s3Service).deletePhoto(anyString());
             verify(mealWriter).save(meal);
             verify(mealAnalysisService).analyzeMealAsync(eq(testMealId), any(MealType.class), any(Resource.class));
         }
@@ -617,9 +615,9 @@ class MealServiceTest {
 
             when(mealReader.findById(meal.getId())).thenReturn(meal);
             // These methods are called by retakePhoto, so we need to trigger the lenient stubs
-            lenient().when(fileStorageService.uploadMealPhoto(any(), eq(testMemberId)))
+            lenient().when(s3Service.uploadMealPhoto(any(), eq(testMemberId)))
                     .thenReturn("https://s3.amazonaws.com/meals/1/2025/02/new.jpg");
-            lenient().when(fileStorageService.extractPhotoKey(anyString()))
+            lenient().when(s3Service.extractPhotoKey(anyString()))
                     .thenReturn("meals/1/2025/02/new.jpg");
             when(reactionReader.existsByMealId(meal.getId())).thenReturn(true);
 
@@ -646,7 +644,7 @@ class MealServiceTest {
                     .satisfies(e -> assertThat(((BusinessException) e).getCode())
                             .isEqualTo(ErrorCode.MEAL_FORBIDDEN));
 
-            verify(fileStorageService, never()).uploadMealPhoto(any(), any());
+            verify(s3Service, never()).uploadMealPhoto(any(), any());
         }
 
         @Test
@@ -664,7 +662,7 @@ class MealServiceTest {
                     .satisfies(e -> assertThat(((BusinessException) e).getCode())
                             .isEqualTo(ErrorCode.MEAL_NOT_FOUND));
 
-            verify(fileStorageService, never()).uploadMealPhoto(any(), any());
+            verify(s3Service, never()).uploadMealPhoto(any(), any());
         }
 
         @Test
@@ -758,7 +756,7 @@ class MealServiceTest {
                     .satisfies(e -> assertThat(((BusinessException) e).getCode())
                             .isEqualTo(ErrorCode.FILE_UPLOAD_FAILED));
 
-            verify(fileStorageService, never()).uploadMealPhoto(any(), any());
+            verify(s3Service, never()).uploadMealPhoto(any(), any());
         }
     }
 }

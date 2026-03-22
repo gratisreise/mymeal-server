@@ -1,21 +1,20 @@
 package com.mymealserver.api.profile.service;
 
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
-import com.mymealserver.domain.meal.MealRepository;
-import com.mymealserver.domain.reaction.ReactionRepository;
 import com.mymealserver.api.profile.dto.response.StatisticsResponse;
 import com.mymealserver.api.profile.dto.response.TagCountResponse;
 import com.mymealserver.api.profile.dto.response.WeeklyTrendResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.meal.MealRepository;
+import com.mymealserver.domain.reaction.ReactionRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service

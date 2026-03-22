@@ -1,21 +1,28 @@
 package com.mymealserver.api.meal.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mymealserver.api.recommendation.service.AiAnalysisService;
+import com.mymealserver.api.recommendation.service.FoodAnalysisResult;
+import com.mymealserver.common.enums.AnalysisStatus;
+import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.FoodFixture;
 import com.mymealserver.common.test.fixtures.MealFixture;
+import com.mymealserver.domain.food.Food;
 import com.mymealserver.domain.food.FoodReader;
 import com.mymealserver.domain.food.FoodWriter;
-import com.mymealserver.domain.mealanalysis.MealAnalysisWriter;
+import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
-import com.mymealserver.domain.food.Food;
-import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.mealanalysis.MealAnalysis;
-import com.mymealserver.common.enums.AnalysisStatus;
-import com.mymealserver.common.enums.MealType;
-import com.mymealserver.api.recommendation.service.AiAnalysisService;
-import com.mymealserver.api.recommendation.service.FoodAnalysisResult;
+import com.mymealserver.domain.mealanalysis.MealAnalysisWriter;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,14 +34,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("MealAnalysisService 단위 테스트")
