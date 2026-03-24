@@ -2,11 +2,12 @@ package com.mymealserver.api.auth;
 
 
 import com.mymealserver.api.auth.dto.request.LoginRequest;
+import com.mymealserver.api.auth.dto.request.LogoutRequest;
 import com.mymealserver.api.auth.dto.request.OAuthRequest;
-import com.mymealserver.api.auth.dto.request.RefreshTokenRequest;
+import com.mymealserver.api.auth.dto.request.RefreshRequest;
 import com.mymealserver.api.auth.dto.request.RegisterRequest;
 import com.mymealserver.api.auth.dto.request.WithdrawRequest;
-import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.response.LoginResponse;
 import com.mymealserver.api.auth.dto.response.RefreshResponse;
 import com.mymealserver.api.auth.service.AuthService;
 import com.mymealserver.api.auth.service.oauth.OAuthService;
@@ -41,36 +42,33 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<SuccessResponse<AuthResponse>> login(
+    public ResponseEntity<SuccessResponse<LoginResponse>> login(
             @Valid @RequestBody LoginRequest request
     ) {
-        AuthResponse response = authService.login(request);
-        return SuccessResponse.toOk(response);
+        return SuccessResponse.toOk(authService.login(request));
     }
 
     @PostMapping("/oauth")
-    public ResponseEntity<SuccessResponse<AuthResponse>> oauthLogin(
+    public ResponseEntity<SuccessResponse<LoginResponse>> oauthLogin(
             @Valid @RequestBody OAuthRequest request
     ) {
-        OAuthService oAuthService = oAuthServiceFactory.getOAuthService(request);
-        AuthResponse response = oAuthService.authenticate(request);
-        return SuccessResponse.toOk(response);
+        OAuthService oAuthService = oAuthServiceFactory.getOAuthService(request.provider());
+        return SuccessResponse.toOk(oAuthService.authenticate(request));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<SuccessResponse<RefreshResponse>> refresh(
-            @Valid @RequestBody RefreshTokenRequest request
+            @Valid @RequestBody RefreshRequest request
     ) {
-        RefreshResponse response = authService.reissueToken(request);
-        return SuccessResponse.toOk(response);
+        return SuccessResponse.toOk(authService.reissueToken(request));
     }
 
     @PostMapping("/logout")
     public ResponseEntity<SuccessResponse<Void>> logout(
             @CurrentMember Long memberId,
-            @Valid @RequestBody RefreshTokenRequest request
+            @Valid @RequestBody LogoutRequest request
     ) {
-        authService.logout(memberId, request.refreshToken());
+        authService.logout(memberId, request);
         return SuccessResponse.toOk(null);
     }
 

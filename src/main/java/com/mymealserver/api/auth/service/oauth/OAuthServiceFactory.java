@@ -27,12 +27,11 @@ public class OAuthServiceFactory {
         this.services = Collections.unmodifiableMap(tempMap);
     }
 
-    public OAuthService getOAuthService(OAuthRequest request) {
-        ProviderType provider = request.provider();
+    public OAuthService getOAuthService(ProviderType provider) {
         OAuthService service = services.get(provider);
         if (service == null) {
             log.warn("지원되지 않는 플랫폼입니다. : {}", provider);
-            throw new BusinessException(ErrorCode.OAUTH_UNSUPPORTED_PROVIDER);
+            BusinessException.onError(ErrorCode.OAUTH_UNSUPPORTED_PROVIDER);
         }
         return service;
     }

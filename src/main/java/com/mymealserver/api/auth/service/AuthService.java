@@ -1,13 +1,16 @@
 package com.mymealserver.api.auth.service;
 
 import com.mymealserver.api.auth.dto.request.LoginRequest;
-import com.mymealserver.api.auth.dto.request.RefreshTokenRequest;
+import com.mymealserver.api.auth.dto.request.LogoutRequest;
+import com.mymealserver.api.auth.dto.request.RefreshRequest;
 import com.mymealserver.api.auth.dto.request.RegisterRequest;
 import com.mymealserver.api.auth.dto.request.WithdrawRequest;
-import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.response.LoginResponse;
+import com.mymealserver.api.auth.dto.response.MemberResponse;
 import com.mymealserver.api.auth.dto.response.RefreshResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
+import com.mymealserver.common.security.JwtProvider;
 import com.mymealserver.domain.member.Member;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
@@ -15,7 +18,7 @@ import com.mymealserver.domain.membersettings.MemberSettings;
 import com.mymealserver.domain.membersettings.MemberSettingsWriter;
 import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
 import com.mymealserver.domain.memberwithdrawal.MemberWithdrawalRepository;
-import com.mymealserver.external.redis.TokenBlacklistService;
+import com.mymealserver.external.redis.RedisTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -34,12 +37,12 @@ public class AuthService {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
     private final MemberWithdrawalRepository memberWithdrawalRepository;
-    private final TokenBlacklistService tokenBlacklistService;
+    private final RedisTokenService redisTokenService;
+    private final JwtProvider jwtProvider;
 
 
     @Transactional
     public void register(RegisterRequest request) {
-
         // 1. 이메일 중복 체크
         if (memberReader.existsByEmail(request.email())) {
             throw new BusinessException(ErrorCode.MEMBER_EMAIL_ALREADY_EXISTS);
@@ -61,19 +64,18 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthResponse login(LoginRequest request) {
-
+    public LoginResponse login(LoginRequest request) {
         // 1. 이메일로 회원 조회
         Member member = memberReader.findByEmail(request.email());
 
         // 2. 비밀번호 검증
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new BusinessException(ErrorCode.INVALID_CREDENTIALS);
+            throw BusinessException.error(ErrorCode.INVALID_CREDENTIALS);
         }
 
         // 3. 활성 상태 확인
         if (!member.isActive()) {
-            throw new BusinessException(ErrorCode.MEMBER_DEACTIVATED);
+            throw BusinessException.error(ErrorCode.MEMBER_DEACTIVATED);
         }
 
         // 4. 마지막 로그인 시간 업데이트
@@ -86,17 +88,23 @@ public class AuthService {
         }
 
         // 6. 토큰 생성
-        return tokenService.generateTokens(member);
+        return tokenService.generateToken(member);
+    }
+
+    public RefreshResponse reissueToken(RefreshRequest request) {
+        String refreshToken = request.refreshToken();
+        return tokenService.reissueToken(refreshToken);
     }
 
     @Transactional
-    public void logout(Long memberId, String refreshToken) {
+    public void logout(Long memberId, LogoutRequest request) {
+        // 1. 액세스 토큰 블랙
+        String accessToken = request.accessToken();
+        long expiration = jwtProvider.getExpiration(accessToken);
+        redisTokenService.addBlacklist(accessToken, expiration);
 
-        // 리프레시 토큰을 블랙리스트에 추가하여 즉시 무효화
-        if (refreshToken != null) {
-            tokenBlacklistService.addToBlacklist(refreshToken);
-        }
-
+        // 2. 리프레쉬 토큰 캐싱 삭제
+        redisTokenService.deleteRefreshToken(memberId);
     }
 
     @Transactional
@@ -114,7 +122,5 @@ public class AuthService {
         memberWriter.delete(member);
     }
 
-    public RefreshResponse reissueToken(RefreshTokenRequest request) {
-        return tokenService.refreshToken(request.refreshToken());
-    }
+
 }

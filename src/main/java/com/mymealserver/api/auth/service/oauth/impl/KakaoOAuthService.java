@@ -1,7 +1,7 @@
 package com.mymealserver.api.auth.service.oauth.impl;
 
 import com.mymealserver.api.auth.dto.request.OAuthRequest;
-import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.response.LoginResponse;
 import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.api.auth.service.oauth.OAuthService;
 import com.mymealserver.common.enums.ProviderType;
@@ -30,7 +30,7 @@ public class KakaoOAuthService implements OAuthService {
 
     @Override
     @Transactional
-    public AuthResponse authenticate(OAuthRequest request) {
+    public LoginResponse authenticate(OAuthRequest request) {
 
         // 1. 인증 코드를 액세스 토큰으로 교환
         KakaoTokenResponse tokenResponse = apiClient.exchangeCodeForToken(request.code());
