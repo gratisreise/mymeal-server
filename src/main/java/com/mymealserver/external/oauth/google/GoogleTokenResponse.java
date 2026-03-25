@@ -2,9 +2,7 @@ package com.mymealserver.external.oauth.google;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Google OAuth token response
- */
+
 public record GoogleTokenResponse(
 
         @JsonProperty("access_token")

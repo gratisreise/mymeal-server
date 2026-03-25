@@ -1,6 +1,5 @@
-package com.mymealserver.external.fcm.scheduler;
+package com.mymealserver.external.fcm;
 
-import com.mymealserver.external.fcm.FcmNotificationService;
 import com.mymealserver.external.redis.NotificationPayload;
 import com.mymealserver.external.redis.UnifiedNotificationService;
 import java.time.LocalDateTime;
@@ -10,9 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-/**
- * Redis에 예약된 알림을 폴링하여 FCM으로 발송하는 스케줄러
- */
+
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -29,8 +26,6 @@ public class NotificationPollingScheduler {
         if (dueNotifications.isEmpty()) {
             return;
         }
-
-        log.info("Processing {} due notifications", dueNotifications.size());
 
         for (NotificationPayload payload : dueNotifications) {
             try {

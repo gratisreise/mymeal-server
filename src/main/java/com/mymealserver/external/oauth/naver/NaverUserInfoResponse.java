@@ -5,13 +5,23 @@ import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.domain.member.Member;
 import com.mymealserver.external.oauth.OAuth2UserInfo;
 
-/**
- * Naver OAuth 사용자 정보 응답 래퍼
- */
+
 public record NaverUserInfoResponse(
         @JsonProperty("response")
         NaverProfile response
 ) implements OAuth2UserInfo {
+
+    public record NaverProfile(
+        String id,
+
+        String nickname,
+
+        @JsonProperty("profile_image")
+        String profileImage,
+
+        String name
+    ) {
+    }
 
     @Override
     public String id() {

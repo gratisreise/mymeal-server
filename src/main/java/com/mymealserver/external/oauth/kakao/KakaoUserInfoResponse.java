@@ -5,15 +5,22 @@ import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.domain.member.Member;
 import com.mymealserver.external.oauth.OAuth2UserInfo;
 
-/**
- * Kakao OAuth 사용자 정보 응답 래퍼
- */
+
 public record KakaoUserInfoResponse(
         String id,
 
         @JsonProperty("kakao_account")
         KakaoProfile kakaoAccount
 ) implements OAuth2UserInfo {
+
+    public record KakaoProfile(
+        @JsonProperty("profile_nickname")
+        String nickname,
+
+        @JsonProperty("profile_image_url")
+        String profileImageUrl
+    ) {
+    }
 
     @Override
     public String name() {
