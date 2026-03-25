@@ -2,9 +2,7 @@ package com.mymealserver.external.oauth.naver;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * Naver OAuth token response
- */
+
 public record NaverTokenResponse(
 
         @JsonProperty("access_token")

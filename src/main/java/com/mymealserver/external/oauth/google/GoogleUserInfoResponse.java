@@ -5,9 +5,7 @@ import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.domain.member.Member;
 import com.mymealserver.external.oauth.OAuth2UserInfo;
 
-/**
- * Google OAuth 사용자 정보 응답
- */
+
 public record GoogleUserInfoResponse(
         String id,
 
