@@ -8,6 +8,7 @@ import com.mymealserver.common.enums.AnalysisStatus;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
+import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.meal.MealReader;
 import com.mymealserver.domain.meal.MealWriter;
@@ -48,13 +49,7 @@ public class MealService {
         String photoUrl = s3Service.uploadMealPhoto(photo, memberId);
         String photoKey = s3Service.extractPhotoKey(photoUrl);
 
-        Meal meal = Meal.builder()
-                .memberId(memberId)
-                .mealType(mealType)
-                .photoUrl(photoUrl)
-                .photoKey(photoKey)
-                .mealTime(LocalDateTime.now())
-                .build();
+        Meal meal = createNewMeal(memberId, mealType, photoUrl, photoKey);
 
         meal = mealWriter.save(meal);
         mealAnalysisService.analyzeMealAsync(meal.getId(), mealType, imageResource);
@@ -69,19 +64,20 @@ public class MealService {
         return MealResponse.from(meal, false);
     }
 
-    public Page<MealResponse> getMeals(
+    public PageResponse<MealResponse> getMeals(
             Long memberId,
             LocalDate startDate,
             LocalDate endDate,
             MealType mealType,
             Pageable pageable
     ) {
-        Page<Meal> meals = mealReader.findByMemberId(memberId, startDate, endDate, mealType, pageable);
-
-        return meals.map(meal -> {
+        Page<MealResponse> meals = mealReader.findByMemberId(memberId, startDate, endDate, mealType, pageable)
+            .map(meal -> {
             boolean hasReaction = reactionReader.existsByMealId(meal.getId());
             return MealResponse.from(meal, hasReaction);
-        });
+        });;
+
+        return PageResponse.from(meals);
     }
 
     public MealDetailResponse getMealDetail(Long memberId, Long mealId) {
@@ -112,17 +108,6 @@ public class MealService {
     }
 
     @Transactional
-    public void deleteMeal(Long memberId, Long mealId) {
-        Meal meal = mealReader.findById(mealId);
-
-        if (!meal.getMemberId().equals(memberId)) {
-            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
-        }
-
-        mealWriter.delete(meal);
-    }
-
-    @Transactional
     public MealResponse retakePhoto(Long memberId, Long mealId, MultipartFile photo) {
         Meal meal = mealReader.findById(mealId);
 
@@ -145,5 +130,27 @@ public class MealService {
         boolean hasReaction = reactionReader.existsByMealId(meal.getId());
 
         return MealResponse.from(meal, hasReaction);
+    }
+
+    @Transactional
+    public void deleteMeal(Long memberId, Long mealId) {
+        Meal meal = mealReader.findById(mealId);
+
+        if (!meal.getMemberId().equals(memberId)) {
+            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
+        }
+
+        mealWriter.delete(meal);
+    }
+
+    private Meal createNewMeal(Long memberId, MealType mealType, String photoUrl,
+        String photoKey) {
+        return Meal.builder()
+            .memberId(memberId)
+            .mealType(mealType)
+            .photoUrl(photoUrl)
+            .photoKey(photoKey)
+            .mealTime(LocalDateTime.now())
+            .build();
     }
 }

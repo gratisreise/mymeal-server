@@ -1,5 +1,6 @@
 package com.mymealserver.api.meal.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mymealserver.api.recommendation.service.AiAnalysisService;
 import com.mymealserver.api.recommendation.service.FoodAnalysisResult;
@@ -31,8 +32,6 @@ public class MealAnalysisService {
     private final MealReader mealReader;
     private final MealWriter mealWriter;
     private final MealAnalysisWriter mealAnalysisWriter;
-    private final MealLogWriter mealLogWriter;
-    private final ReactionWriter reactionWriter;
     private final FoodReader foodReader;
     private final FoodWriter foodWriter;
     private final ObjectMapper objectMapper;
@@ -51,17 +50,7 @@ public class MealAnalysisService {
             Food food = foodReader.findByName(analysis.mealName())
                     .orElseGet(() -> createNewFood(analysis));
 
-            MealAnalysis mealAnalysis = MealAnalysis.builder()
-                    .mealId(mealId)
-                    .foodId(food.getId())
-                    .mealName(analysis.mealName())
-                    .calories(analysis.calories())
-                    .carbohydrates(analysis.carbohydrates())
-                    .protein(analysis.protein())
-                    .fat(analysis.fat())
-                    .confidence(analysis.confidence())
-                    .rawResponse(objectMapper.writeValueAsString(analysis))
-                    .build();
+            MealAnalysis mealAnalysis = createMealAnalysis(mealId, food, analysis);
 
             mealAnalysisWriter.save(mealAnalysis);
 
@@ -71,6 +60,21 @@ public class MealAnalysisService {
             log.error("AI 분석 실패 - mealId: {}", mealId, e);
             handleAnalysisFailure(mealId, e);
         }
+    }
+
+    private MealAnalysis createMealAnalysis(Long mealId, Food food, FoodAnalysisResult analysis)
+        throws JsonProcessingException {
+        return MealAnalysis.builder()
+            .mealId(mealId)
+            .foodId(food.getId())
+            .mealName(analysis.mealName())
+            .calories(analysis.calories())
+            .carbohydrates(analysis.carbohydrates())
+            .protein(analysis.protein())
+            .fat(analysis.fat())
+            .confidence(analysis.confidence())
+            .rawResponse(objectMapper.writeValueAsString(analysis))
+            .build();
     }
 
     private Food createNewFood(FoodAnalysisResult analysis) {

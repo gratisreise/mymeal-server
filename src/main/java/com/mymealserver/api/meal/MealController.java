@@ -37,8 +37,7 @@ public class MealController {
             @Parameter(required = true)
             @RequestParam MealType mealType
     ) {
-        MealResponse response = mealService.createMeal(memberId, photo, mealType);
-        return SuccessResponse.toCreated(response);
+        return SuccessResponse.toCreated(mealService.createMeal(memberId, photo, mealType));
     }
 
     @GetMapping
@@ -49,8 +48,7 @@ public class MealController {
             @RequestParam(required = false) MealType mealType,
             @PageableDefault(size = 20) Pageable pageable
     ) {
-        Page<MealResponse> meals = mealService.getMeals(memberId, startDate, endDate, mealType, pageable);
-        return SuccessResponse.toOk(PageResponse.from(meals));
+        return SuccessResponse.toOk(mealService.getMeals(memberId, startDate, endDate, mealType, pageable));
     }
 
     @GetMapping("/{id}")
@@ -58,8 +56,7 @@ public class MealController {
             @CurrentMember Long memberId,
             @PathVariable Long id
     ) {
-        MealDetailResponse response = mealService.getMealDetail(memberId, id);
-        return SuccessResponse.toOk(response);
+        return SuccessResponse.toOk(mealService.getMealDetail(memberId, id));
     }
 
     @DeleteMapping("/{id}")
@@ -68,7 +65,7 @@ public class MealController {
             @PathVariable Long id
     ) {
         mealService.deleteMeal(memberId, id);
-        return SuccessResponse.toOk(null);
+        return SuccessResponse.toNoContent(null);
     }
 
     @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -78,7 +75,6 @@ public class MealController {
             @Parameter(required = true)
             @RequestParam MultipartFile photo
     ) {
-        MealResponse response = mealService.retakePhoto(memberId, id, photo);
-        return SuccessResponse.toOk(response);
+        return SuccessResponse.toOk(mealService.retakePhoto(memberId, id, photo));
     }
 }
