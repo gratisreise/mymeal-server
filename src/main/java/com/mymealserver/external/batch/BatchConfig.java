@@ -1,4 +1,4 @@
-package com.mymealserver.external.batch.config;
+package com.mymealserver.external.batch;
 
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.context.annotation.Bean;
