@@ -22,14 +22,17 @@ public class SuccessResponse<T> extends BaseResponse {
         return ResponseEntity.ok(of(data));
     }
 
+    // 생성됨
     public static <T> ResponseEntity<SuccessResponse<T>> toCreated(T data) {
         return ResponseEntity.status(HttpStatus.CREATED).body(of(data));
     }
 
+    //응답 객체 없음
     public static <T> ResponseEntity<SuccessResponse<T>> toNoContent(T data) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(of(data));
     }
 
+    //커스텀 형식
     public static <T> ResponseEntity<SuccessResponse<T>> to(HttpStatus status, T data) {
         return ResponseEntity.status(status).body(of(data));
     }

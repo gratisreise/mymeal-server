@@ -1,7 +1,8 @@
 package com.mymealserver.common.response;
 
-import com.mymealserver.common.response.classes.Pagination;
+
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 
@@ -17,5 +18,26 @@ public class PageResponse<T> {
 
     public static <T> PageResponse<T> from(Page<T> page) {
         return new PageResponse<>(page);
+    }
+
+    @Builder
+    public record Pagination (
+        int currentPage,
+        int pageSize,
+        long totalElements,
+        int totalPages,
+        boolean last,
+        boolean first
+    ) {
+        public static Pagination from(Page<?> page) {
+            return Pagination.builder()
+                .currentPage(page.getNumber() + 1) // 0-based를 1-based로 변환
+                .pageSize(page.getSize())
+                .totalElements(page.getTotalElements())
+                .totalPages(page.getTotalPages())
+                .last(page.isLast())
+                .first(page.isFirst())
+                .build();
+        }
     }
 }
