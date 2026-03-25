@@ -1,4 +1,4 @@
-package com.mymealserver.external.ai;
+package com.mymealserver.external.aitest;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -1,4 +1,4 @@
-package com.mymealserver.external.ai;
+package com.mymealserver.external.aitest;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

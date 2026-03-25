@@ -1,8 +1,6 @@
-package com.mymealserver.external.ai;
+package com.mymealserver.external.aitest;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.embedding.EmbeddingModel;
 import org.springframework.stereotype.Service;
 
 @Service
