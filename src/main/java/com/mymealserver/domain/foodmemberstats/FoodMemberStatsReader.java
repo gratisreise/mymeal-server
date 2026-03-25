@@ -1,5 +1,7 @@
 package com.mymealserver.domain.foodmemberstats;
 
+import com.mymealserver.common.exception.BusinessException;
+import com.mymealserver.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,6 @@ public class FoodMemberStatsReader {
 
     public FoodMemberStats findById(Long id) {
         return foodMemberStatsRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("FoodMemberStats not found"));
+                .orElseThrow(() -> BusinessException.error(ErrorCode.FOOD_MEMBER_STATS_NOT_FOUND));
     }
 }

@@ -1,6 +1,6 @@
 package com.mymealserver.domain.mealanalysis;
 
-import com.mymealserver.domain.base.BaseEntity;
+import com.mymealserver.common.db.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,13 +1,12 @@
 package com.mymealserver.domain.recommendation;
 
 import com.mymealserver.common.enums.MealType;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface RecommendationRepository extends JpaRepository<Recommendation, Long> {
@@ -55,7 +54,6 @@ public interface RecommendationRepository extends JpaRepository<Recommendation, 
             SELECT COUNT(r) > 0 FROM Recommendation r
             WHERE r.memberId = :memberId
             AND r.mealType = :mealType
-            AND DATE(r.scheduledTime) = CURRENT_DATE
             AND r.deletedAt IS NULL
             """)
     boolean existsTodayRecommendation(

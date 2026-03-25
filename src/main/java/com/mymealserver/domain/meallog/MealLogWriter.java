@@ -20,4 +20,8 @@ public class MealLogWriter {
         mealLog.softDelete();
         mealLogRepository.save(mealLog);
     }
+
+    public void saveWithEmbed(String embedding) {
+
+    }
 }

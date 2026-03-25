@@ -1,19 +1,18 @@
 package com.mymealserver.domain.meallog;
 
-import com.mymealserver.domain.mealanalysis.MealAnalysis;
-import com.mymealserver.domain.base.SoftDeletable;
+import com.mymealserver.common.db.SoftDeletable;
 import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 import com.mymealserver.domain.reaction.Reaction;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -41,8 +40,8 @@ public class MealLog extends SoftDeletable {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String combinedSummary;
 
-    @Column(columnDefinition = "vector(1536)")
-    private Float[] embedding;
+    @Column(columnDefinition = "vector(3072)")
+    private String embedding;
 
     @Column
     private LocalDateTime embeddingCreatedAt;
@@ -53,10 +52,7 @@ public class MealLog extends SoftDeletable {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    /**
-     * Meal + MealAnalysis + Reaction 정보로 MealLog 생성
-     * Reaction 생성 시점에 호출됨
-     */
+
     public static MealLog from(Meal meal, MealAnalysis analysis, Reaction reaction) {
         String mealSummary = buildMealSummary(meal, analysis);
         String reactionSummary = buildReactionSummary(reaction);
@@ -74,19 +70,7 @@ public class MealLog extends SoftDeletable {
                 .build();
     }
 
-    /**
-     * 임베딩 벡터 설정
-     */
-    public void setEmbedding(Float[] embedding) {
-        this.embedding = embedding;
-        this.embeddingCreatedAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
 
-    /**
-     * Meal + MealAnalysis 정보로 식사 요약 생성
-     * 예: "김치찌개, 점심, 450kcal, 탄수화물 45g, 단백질 25g, 지방 15g"
-     */
     private static String buildMealSummary(Meal meal, MealAnalysis analysis) {
         return String.format("%s, %s, %dkcal, 탄수화물 %.0fg, 단백질 %.0fg, 지방 %.0fg",
                 analysis.getMealName(),
@@ -97,10 +81,7 @@ public class MealLog extends SoftDeletable {
                 analysis.getFat());
     }
 
-    /**
-     * Reaction 정보로 반응 요약 생성
-     * 예: "소화 상태: 4/5, 포만감: 3/5, 에너지: 5/5. 속쓰림 있음, 가스 없음, 복부 팽만 없음, 두통 없음. 메모: 컨디션 양호"
-     */
+
     private static String buildReactionSummary(Reaction reaction) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("소화 상태: %d/5, 포만감: %d/5, 에너지: %d/5",
