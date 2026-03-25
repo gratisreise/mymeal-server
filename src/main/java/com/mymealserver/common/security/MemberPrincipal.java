@@ -1,16 +1,11 @@
 package com.mymealserver.common.security;
 
+import java.util.Collection;
+import java.util.Collections;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-
-/**
- * Spring Security UserDetails implementation for JWT-based authentication.
- * Encapsulates the authenticated member's ID.
- */
 @Getter
 public class MemberPrincipal implements UserDetails {
 

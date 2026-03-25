@@ -17,7 +17,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtProvider jwtProvider;
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
@@ -31,13 +31,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            Long memberId = jwtTokenProvider.validateAccessTokenAndGetMemberId(token);
-            MemberPrincipal memberPrincipal = new MemberPrincipal(memberId);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(
-                    memberPrincipal,
-                    null,
-                    null
-            );
+            Long memberId = jwtProvider.validateAccessTokenAndGetMemberId(token);
+            CustomUserDetails userDetails = new CustomUserDetails(memberId);
+            UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 

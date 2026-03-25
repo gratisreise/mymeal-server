@@ -23,7 +23,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        
+
         log.warn("인증 실패: {}", authException.getMessage());
 
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -31,7 +31,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         // 공통 응답 규격 생성
         ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.UNAUTHORIZED_USER);
-        
+
         String jsonResponse = objectMapper.writeValueAsString(errorResponse);
         response.getWriter().write(jsonResponse);
     }

@@ -1,6 +1,6 @@
 package com.mymealserver.common.security;
 
-import com.mymealserver.common.annotation.AuthenticatedMember;
+import com.mymealserver.common.annotation.CurrentMember;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -19,31 +19,26 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticatedMember.class);
+        return parameter.hasParameterAnnotation(CurrentMember.class);
     }
 
     @Override
     public Object resolveArgument(
-            MethodParameter parameter,
-            ModelAndViewContainer mavContainer,
-            NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory
+            MethodParameter parameter, ModelAndViewContainer mavContainer,
+            NativeWebRequest webRequest, WebDataBinderFactory binderFactory
     ) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {
-            log.error("Authentication not found in SecurityContext");
             throw new AuthenticationCredentialsNotFoundException("Authentication not found");
         }
 
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof MemberPrincipal memberPrincipal) {
-            log.debug("Extracted memberId: {} from MemberPrincipal", memberPrincipal.getMemberId());
             return memberPrincipal.getMemberId();
         }
 
-        log.error("Principal must be MemberPrincipal, but was: {}", principal.getClass());
         throw new IllegalArgumentException();
     }
 }
