@@ -1,16 +1,15 @@
 package com.mymealserver.domain.reaction;
 
 import com.mymealserver.api.reaction.dto.request.ReactionRequest;
-import com.mymealserver.domain.base.BaseEntity;
+import com.mymealserver.common.db.BaseEntity;
 import com.mymealserver.common.enums.GradeType;
 import jakarta.persistence.*;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Optional;
 
 @Entity
 @Getter

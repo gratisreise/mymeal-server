@@ -1,8 +1,7 @@
 package com.mymealserver.api.reaction.dto.response;
 
-import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.common.enums.GradeType;
-
+import com.mymealserver.domain.reaction.Reaction;
 import java.time.LocalDateTime;
 
 public record ReactionResponse(
@@ -21,7 +20,9 @@ public record ReactionResponse(
         LocalDateTime createdAt
 ) {
     public static ReactionResponse from(Reaction reaction) {
-        if(reaction == null) return null;
+        if (reaction == null) {
+            return null;
+        }
         return new ReactionResponse(
                 reaction.getId(),
                 reaction.getMealId(),

@@ -1,18 +1,21 @@
 package com.mymealserver.api.meal.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mymealserver.domain.food.Food;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.mealanalysis.MealAnalysis;
-import com.mymealserver.common.enums.AnalysisStatus;
-import com.mymealserver.domain.food.FoodReader;
-import com.mymealserver.domain.food.FoodWriter;
-import com.mymealserver.domain.mealanalysis.MealAnalysisWriter;
-import com.mymealserver.domain.meal.MealReader;
-import com.mymealserver.domain.meal.MealWriter;
 import com.mymealserver.api.recommendation.service.AiAnalysisService;
 import com.mymealserver.api.recommendation.service.FoodAnalysisResult;
+import com.mymealserver.common.enums.AnalysisStatus;
 import com.mymealserver.common.enums.MealType;
+import com.mymealserver.domain.food.Food;
+import com.mymealserver.domain.food.FoodReader;
+import com.mymealserver.domain.food.FoodWriter;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.meal.MealReader;
+import com.mymealserver.domain.meal.MealWriter;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysisWriter;
+import com.mymealserver.domain.meallog.MealLogWriter;
+import com.mymealserver.domain.reaction.ReactionWriter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
@@ -33,8 +36,8 @@ public class MealAnalysisService {
     private final FoodWriter foodWriter;
     private final ObjectMapper objectMapper;
 
-    @Async("mealAnalysisExecutor")
     @Transactional
+    @Async("mealAnalysisExecutor")
     public void analyzeMealAsync(Long mealId, MealType mealType, Resource imageResource) {
         try {
             Meal meal = mealReader.findById(mealId);
@@ -47,29 +50,31 @@ public class MealAnalysisService {
             Food food = foodReader.findByName(analysis.mealName())
                     .orElseGet(() -> createNewFood(analysis));
 
-            MealAnalysis mealAnalysis = MealAnalysis.builder()
-                    .mealId(mealId)
-                    .foodId(food.getId())
-                    .mealName(analysis.mealName())
-                    .calories(analysis.calories())
-                    .carbohydrates(analysis.carbohydrates())
-                    .protein(analysis.protein())
-                    .fat(analysis.fat())
-                    .confidence(analysis.confidence())
-                    .rawResponse(objectMapper.writeValueAsString(analysis))
-                    .build();
+            MealAnalysis mealAnalysis = createMealAnalysis(mealId, food, analysis);
 
             mealAnalysisWriter.save(mealAnalysis);
 
             meal.updateAnalysisStatus(AnalysisStatus.COMPLETED);
-            mealWriter.save(meal);
-
-            log.info("AI 분석 완료 - mealId: {}, mealName: {}", mealId, analysis.mealName());
 
         } catch (Exception e) {
             log.error("AI 분석 실패 - mealId: {}", mealId, e);
             handleAnalysisFailure(mealId, e);
         }
+    }
+
+    private MealAnalysis createMealAnalysis(Long mealId, Food food, FoodAnalysisResult analysis)
+        throws JsonProcessingException {
+        return MealAnalysis.builder()
+            .mealId(mealId)
+            .foodId(food.getId())
+            .mealName(analysis.mealName())
+            .calories(analysis.calories())
+            .carbohydrates(analysis.carbohydrates())
+            .protein(analysis.protein())
+            .fat(analysis.fat())
+            .confidence(analysis.confidence())
+            .rawResponse(objectMapper.writeValueAsString(analysis))
+            .build();
     }
 
     private Food createNewFood(FoodAnalysisResult analysis) {

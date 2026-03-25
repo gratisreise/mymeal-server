@@ -1,13 +1,18 @@
 package com.mymealserver.api.ranking.service;
 
-import com.mymealserver.common.response.PageResponse;
-import com.mymealserver.domain.meal.MealReader;
-import com.mymealserver.domain.reaction.ReactionReader;
-import com.mymealserver.domain.meal.Meal;
-import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
 import com.mymealserver.common.enums.GradeType;
 import com.mymealserver.common.enums.MealType;
-import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
+import com.mymealserver.common.response.PageResponse;
+import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.meal.MealReader;
+import com.mymealserver.domain.reaction.Reaction;
+import com.mymealserver.domain.reaction.ReactionReader;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,12 +21,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,7 +37,7 @@ public class RankingService {
             DateRange dateRange,
             Pageable pageable
     ) {
-        log.debug("Getting best ranking for member: {}, mealType: {}, dateRange: {}",
+        log.debug("베스트 랭킹 조회 시작 - 회원ID: {}, 식사유형: {}, 날짜범위: {}",
                 memberId, mealType, dateRange);
 
         LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
@@ -58,6 +57,7 @@ public class RankingService {
 
         List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
 
+        // 점수 내림차순, 같은 점수면 최신 식사 순
         rankingItems.sort((a, b) -> {
             int scoreCompare = Double.compare(b.getScore(), a.getScore());
             if (scoreCompare != 0) {
@@ -69,7 +69,7 @@ public class RankingService {
         assignRanks(rankingItems);
 
         List<RankingItemResponse> responses = rankingItems.stream()
-                .map(this::toResponse)
+                .map(RankingItem::toResponse)
                 .collect(Collectors.toList());
 
         return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
@@ -81,7 +81,7 @@ public class RankingService {
             DateRange dateRange,
             Pageable pageable
     ) {
-        log.debug("Getting worst ranking for member: {}, mealType: {}, dateRange: {}",
+        log.debug("워스트 랭킹 조회 시작 - 회원ID: {}, 식사유형: {}, 날짜범위: {}",
                 memberId, mealType, dateRange);
 
         LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
@@ -101,6 +101,7 @@ public class RankingService {
 
         List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
 
+        // 점수 오름차순, 같은 점수면 최신 식사 순
         rankingItems.sort((a, b) -> {
             int scoreCompare = Double.compare(a.getScore(), b.getScore());
             if (scoreCompare != 0) {
@@ -112,7 +113,7 @@ public class RankingService {
         assignRanks(rankingItems);
 
         List<RankingItemResponse> responses = rankingItems.stream()
-                .map(this::toResponse)
+                .map(RankingItem::toResponse)
                 .collect(Collectors.toList());
 
         return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
@@ -123,7 +124,7 @@ public class RankingService {
                 .filter(meal -> reactionMap.containsKey(meal.getId()))
                 .map(meal -> {
                     Reaction reaction = reactionMap.get(meal.getId());
-                    return new RankingItem(
+                    return RankingItem.of(
                             meal.getId(),
                             meal.getMealType().getDescription(),
                             meal.getPhotoUrl(),
@@ -156,19 +157,6 @@ public class RankingService {
         }
     }
 
-    private RankingItemResponse toResponse(RankingItem item) {
-        return new RankingItemResponse(
-                item.getRank(),
-                item.getMealId(),
-                item.getMealName(),
-                item.getPhotoUrl(),
-                item.getMealTime(),
-                item.getScore(),
-                item.getGrade(),
-                item.getMealType()
-        );
-    }
-
     @Data
     private static class RankingItem {
         private final Long mealId;
@@ -179,5 +167,30 @@ public class RankingService {
         private final Double score;
         private final GradeType grade;
         private Integer rank;
+
+        public static RankingItem of(
+                Long mealId,
+                String mealName,
+                String photoUrl,
+                LocalDateTime mealTime,
+                MealType mealType,
+                Double score,
+                GradeType grade
+        ) {
+            return new RankingItem(mealId, mealName, photoUrl, mealTime, mealType, score, grade);
+        }
+
+        public RankingItemResponse toResponse() {
+            return RankingItemResponse.of(
+                    this.rank,
+                    this.mealId,
+                    this.mealName,
+                    this.photoUrl,
+                    this.mealTime,
+                    this.score,
+                    this.grade,
+                    this.mealType
+            );
+        }
     }
 }

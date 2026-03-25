@@ -1,23 +1,29 @@
 package com.mymealserver.auth.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
 import com.mymealserver.api.auth.dto.request.LoginRequest;
 import com.mymealserver.api.auth.dto.request.RegisterRequest;
 import com.mymealserver.api.auth.dto.request.WithdrawRequest;
 import com.mymealserver.api.auth.dto.response.AuthResponse;
 import com.mymealserver.api.auth.service.AuthService;
-import com.mymealserver.external.redis.service.TokenBlacklistService;
 import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
 import com.mymealserver.common.test.fixtures.MemberFixture;
 import com.mymealserver.common.test.fixtures.TokenFixture;
-import com.mymealserver.domain.member.MemberReader;
-import com.mymealserver.domain.membersettings.MemberSettingsWriter;
-import com.mymealserver.domain.member.MemberWriter;
 import com.mymealserver.domain.member.Member;
+import com.mymealserver.domain.member.MemberReader;
+import com.mymealserver.domain.member.MemberWriter;
 import com.mymealserver.domain.membersettings.MemberSettings;
+import com.mymealserver.domain.membersettings.MemberSettingsWriter;
 import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
 import com.mymealserver.domain.memberwithdrawal.MemberWithdrawalRepository;
+import com.mymealserver.external.redis.TokenBlacklistService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -27,13 +33,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("AuthService 단위 테스트")

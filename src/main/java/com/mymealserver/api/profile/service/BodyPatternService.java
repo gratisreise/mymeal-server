@@ -1,18 +1,17 @@
 package com.mymealserver.api.profile.service;
 
+import com.mymealserver.api.profile.dto.response.BodyPatternResponse;
+import com.mymealserver.api.profile.dto.response.BodyPatternTagResponse;
 import com.mymealserver.domain.foodmemberstats.FoodMemberStats;
 import com.mymealserver.domain.foodmemberstats.FoodMemberStatsRepository;
 import com.mymealserver.domain.reaction.ReactionRepository;
-import com.mymealserver.api.profile.dto.response.BodyPatternResponse;
-import com.mymealserver.api.profile.dto.response.BodyPatternTagResponse;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 
 @Slf4j
 @Service

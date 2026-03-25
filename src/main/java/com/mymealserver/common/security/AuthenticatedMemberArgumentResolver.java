@@ -12,18 +12,14 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-/**
- * Custom {@link HandlerMethodArgumentResolver} to resolve {@link AuthenticatedMember} annotated parameters.
- * Extracts the member ID from {@link MemberPrincipal} in the {@link SecurityContextHolder}.
- */
+
 @Slf4j
 @Component
 public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumentResolver {
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(AuthenticatedMember.class)
-                && parameter.getParameterType().equals(Long.class);
+        return parameter.hasParameterAnnotation(AuthenticatedMember.class);
     }
 
     @Override
@@ -48,8 +44,6 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
         }
 
         log.error("Principal must be MemberPrincipal, but was: {}", principal.getClass());
-        throw new IllegalArgumentException(
-                "Principal must be MemberPrincipal, but was: " + principal.getClass()
-        );
+        throw new IllegalArgumentException();
     }
 }

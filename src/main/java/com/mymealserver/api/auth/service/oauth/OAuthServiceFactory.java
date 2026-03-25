@@ -1,17 +1,15 @@
-package com.mymealserver.api.auth.service.oauth.factory;
+package com.mymealserver.api.auth.service.oauth;
 
 import com.mymealserver.api.auth.dto.request.OAuthRequest;
-import com.mymealserver.api.auth.service.oauth.OAuthService;
+import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.common.enums.ProviderType;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Slf4j
 @Component
@@ -29,13 +27,11 @@ public class OAuthServiceFactory {
         this.services = Collections.unmodifiableMap(tempMap);
     }
 
-    public OAuthService getOAuthService(OAuthRequest request) {
-        // Get provider from request body
-        ProviderType provider = request.provider();
+    public OAuthService getOAuthService(ProviderType provider) {
         OAuthService service = services.get(provider);
         if (service == null) {
             log.warn("지원되지 않는 플랫폼입니다. : {}", provider);
-            throw new BusinessException(ErrorCode.OAUTH_UNSUPPORTED_PROVIDER);
+            BusinessException.onError(ErrorCode.OAUTH_UNSUPPORTED_PROVIDER);
         }
         return service;
     }

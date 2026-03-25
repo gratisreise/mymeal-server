@@ -1,18 +1,18 @@
 package com.mymealserver.api.auth.service;
 
-import com.mymealserver.api.auth.dto.response.AuthResponse;
+
+import com.mymealserver.api.auth.dto.response.LoginResponse;
 import com.mymealserver.api.auth.dto.response.MemberResponse;
+import com.mymealserver.api.auth.dto.response.RefreshResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.common.security.JwtTokenProvider;
-import com.mymealserver.domain.member.MemberReader;
+import com.mymealserver.common.security.JwtProvider;
 import com.mymealserver.domain.member.Member;
-import com.mymealserver.external.redis.service.TokenBlacklistService;
+import com.mymealserver.external.redis.RedisTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 
 @Slf4j
 @Service
@@ -20,50 +20,43 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class TokenService {
 
-    private final JwtTokenProvider jwtTokenProvider;
-    private final MemberReader memberReader;
-    private final TokenBlacklistService tokenBlacklistService;
+    private final JwtProvider jwtProvider;
+    private final RedisTokenService redisTokenService;
 
-    public AuthResponse generateTokens(Member member) {
-        String accessToken = jwtTokenProvider.createAccessToken(member.getId());
-        String refreshToken = jwtTokenProvider.createRefreshToken(member.getId());
 
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .member(MemberResponse.from(member))
-                .build();
+    // 로그인 토큰 생성
+    public LoginResponse generateToken(Member member) {
+        Long memberId = member.getId();
+        String accessToken = jwtProvider.createAccessToken(memberId);
+        String refreshToken = jwtProvider.createRefreshToken(memberId);
+        redisTokenService.saveRefreshToken(memberId, refreshToken);
+        return LoginResponse.of(accessToken, refreshToken, MemberResponse.from(member));
     }
 
+    // 토큰재발급
+    public RefreshResponse reissueToken(String refreshToken) {
+        // 1. 토큰 검증 & id 추출
+        Long memberId = jwtProvider.validateRefreshTokenAndGetMemberId(refreshToken);
 
-    public AuthResponse refreshToken(String refreshToken) {
-        // 1. 리프레시 토큰 블랙리스트 확인
-        if (tokenBlacklistService.isBlacklisted(refreshToken)) {
-            throw new BusinessException(ErrorCode.REFRESH_TOKEN_INVALID);
+        // 2. Redis 대조 (저장된 RT와 일치하는지)
+        String storedRT = redisTokenService.getRefreshToken(memberId);
+
+        if (!refreshToken.equals(storedRT)) {
+            throw BusinessException.error(ErrorCode.TOKEN_INVALID);
         }
 
-        // 2. 리프레시 토큰 유효성 검증 및 memberId 추출
-        Long memberId = jwtTokenProvider.validateRefreshTokenAndGetMemberId(refreshToken);
+        // 4. 기존 RT 삭제 (블랙리스트 대신)
+        redisTokenService.deleteRefreshToken(memberId);
 
-        // 3. 회원 조회
-        Member member = memberReader.findById(memberId);
+        // 5. 새 토큰 발급
+        String newAT = jwtProvider.createAccessToken(memberId);
+        String newRT = jwtProvider.createRefreshToken(memberId);
+        redisTokenService.saveRefreshToken(memberId, newRT);
 
-        // 4. 활성 상태 확인
-        if (!member.isActive()) {
-            throw new BusinessException(ErrorCode.MEMBER_DEACTIVATED);
-        }
-
-        // 5. 새로운 토큰 생성
-        return generateTokens(member);
+        return RefreshResponse.of(newAT, newRT);
     }
 
-
-    public Long validateAccessToken(String token) {
-        return jwtTokenProvider.validateAccessTokenAndGetMemberId(token);
-    }
-
-
-    public Long validateRefreshToken(String token) {
-        return jwtTokenProvider.validateRefreshTokenAndGetMemberId(token);
-    }
+//    public static String extractToken(String token) {
+//        return token.replace(CommonValue.AUTH_PREFIX, "");
+//    }
 }

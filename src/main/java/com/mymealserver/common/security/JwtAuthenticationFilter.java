@@ -31,19 +31,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            try {
-                Long memberId = jwtTokenProvider.validateAccessTokenAndGetMemberId(token);
-                MemberPrincipal memberPrincipal = new MemberPrincipal(memberId);
-                Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        memberPrincipal,
-                        null,
-                        null
-                );
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            } catch (Exception e) {
-                log.error("JWT authentication failed: {}", e.getMessage());
-                SecurityContextHolder.clearContext();
-            }
+            Long memberId = jwtTokenProvider.validateAccessTokenAndGetMemberId(token);
+            MemberPrincipal memberPrincipal = new MemberPrincipal(memberId);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(
+                    memberPrincipal,
+                    null,
+                    null
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
         filterChain.doFilter(request, response);

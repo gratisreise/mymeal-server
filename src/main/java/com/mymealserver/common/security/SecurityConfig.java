@@ -1,5 +1,6 @@
 package com.mymealserver.common.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,35 +19,50 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    // 시니어의 팁: 화이트리스트를 상수로 관리하면 설정 코드가 훨씬 간결해집니다.
+    private static final String[] WHITE_LIST = {
+        "/",
+        "/actuator/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/api-docs/**",
+        "/v3/api-docs/**",
+        "/api/v1/auth/register",
+        "/api/v1/auth/login",
+        "/api/v1/auth/oauth"
+    };
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // 1. CSRF/CORS 설정 (앱 환경이므로 CSRF 비활성화)
             .csrf(AbstractHttpConfigurer::disable)
-            .cors(cors -> cors.configure(http))
+            .cors(AbstractHttpConfigurer::disable) // 필요 시 명시적 CorsConfigurationSource 등록
+
+            // 2. 세션 정책
             .sessionManagement(session -> session
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            // 3. 에러 핸들링
+            .exceptionHandling(exception -> exception
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .accessDeniedHandler(accessDeniedHandler))
+
+            // 4. 권한 설정
             .authorizeHttpRequests(auth -> auth
-                    // Public endpoints
-                    .requestMatchers("/").permitAll()
-                    .requestMatchers("/actuator/**").permitAll()
-                    .requestMatchers("/swagger-ui/**").permitAll()
-                    .requestMatchers("/swagger-ui.html").permitAll()
-                    .requestMatchers("/api-docs/**").permitAll()
-                    .requestMatchers("/v3/api-docs/**").permitAll()
-                    // Auth endpoints
-                    .requestMatchers("/api/v1/auth/register").permitAll()
-                    .requestMatchers("/api/v1/auth/login").permitAll()
-                    .requestMatchers("/api/v1/auth/oauth/**").permitAll()
-                    // Authenticated endpoints
-                    .requestMatchers("/api/v1/auth/refresh").authenticated()
-                    .requestMatchers("/api/v1/auth/logout").authenticated()
-                    .requestMatchers("/api/v1/auth/withdraw").authenticated()
-                    // All other endpoints require authentication
-                    .anyRequest().authenticated()
+                .requestMatchers(WHITE_LIST).permitAll()
+                .anyRequest().authenticated()
             )
+
+            // 5. 필터 추가
             .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
-                    UsernamePasswordAuthenticationFilter.class);
+                UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(new ExceptionHandlerFilter(objectMapper),
+                JwtAuthenticationFilter.class);
 
         return http.build();
     }

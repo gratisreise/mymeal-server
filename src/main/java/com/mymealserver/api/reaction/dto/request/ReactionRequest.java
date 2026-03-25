@@ -5,8 +5,6 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.Optional;
-
 public record ReactionRequest(
 
         @NotNull(message = "{validation.reaction.digestionLevel.notnull}")
@@ -36,10 +34,10 @@ public record ReactionRequest(
                 .digestionLevel(digestionLevel.shortValue())
                 .fullnessLevel(fullnessLevel.shortValue())
                 .energyLevel(energyLevel.shortValue())
-                .hasHeartburn(Optional.ofNullable(hasHeartburn).orElse(false))
-                .hasGas(Optional.ofNullable(hasGas).orElse(false))
-                .hasBloating(Optional.ofNullable(hasBloating).orElse(false))
-                .hasHeadache(Optional.ofNullable(hasHeadache).orElse(false))
+                .hasHeartburn(hasHeartburn)
+                .hasGas(hasGas)
+                .hasBloating(hasBloating)
+                .hasHeadache(hasHeadache)
                 .memo(memo)
                 .build();
     }

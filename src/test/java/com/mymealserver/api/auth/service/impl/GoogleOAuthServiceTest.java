@@ -1,20 +1,28 @@
 package com.mymealserver.api.auth.service.impl;
 
-import com.mymealserver.api.auth.dto.response.MemberResponse;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.*;
+
 import com.mymealserver.api.auth.dto.request.OAuthRequest;
 import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.response.MemberResponse;
 import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.api.auth.service.oauth.impl.GoogleOAuthService;
+import com.mymealserver.common.enums.ProviderType;
+import com.mymealserver.common.test.fixtures.OAuthFixture;
+import com.mymealserver.domain.member.Member;
+import com.mymealserver.domain.member.MemberReader;
+import com.mymealserver.domain.member.MemberWriter;
+import com.mymealserver.domain.membersettings.MemberSettings;
+import com.mymealserver.domain.membersettings.MemberSettingsWriter;
 import com.mymealserver.external.oauth.google.GoogleApiClient;
 import com.mymealserver.external.oauth.google.GoogleTokenResponse;
 import com.mymealserver.external.oauth.google.GoogleUserInfoResponse;
-import com.mymealserver.common.test.fixtures.OAuthFixture;
-import com.mymealserver.domain.member.MemberReader;
-import com.mymealserver.domain.membersettings.MemberSettingsWriter;
-import com.mymealserver.domain.member.MemberWriter;
-import com.mymealserver.domain.member.Member;
-import com.mymealserver.domain.membersettings.MemberSettings;
-import com.mymealserver.common.enums.ProviderType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -23,14 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("GoogleOAuthService 단위 테스트")

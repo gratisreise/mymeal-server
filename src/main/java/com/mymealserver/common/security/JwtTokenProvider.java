@@ -2,11 +2,13 @@ package com.mymealserver.common.security;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.Jwts.SIG;
 import io.jsonwebtoken.security.Keys;
 import java.util.Date;
 import javax.crypto.SecretKey;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
  * JWT 토큰 생성 및 검증 provider
  */
 @Component
+@Slf4j
 public class JwtTokenProvider {
 
     private final SecretKey accessKey;
@@ -34,9 +37,7 @@ public class JwtTokenProvider {
         this.refreshValidity = refreshValidity;
     }
 
-    /**
-     * 액세스 토큰 만료 시간 반환 (밀리초)
-     */
+
     public long getExpiration(String accessToken) {
         Date expiration = Jwts.parser()
             .verifyWith(accessKey)
@@ -50,9 +51,7 @@ public class JwtTokenProvider {
         return (expiration.getTime() - now);
     }
 
-    /**
-     * 액세스 토큰 생성 (subject에 memberId 저장)
-     */
+
     public String createAccessToken(Long memberId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + accessValidity);
@@ -66,9 +65,7 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    /**
-     * 리프레시 토큰 생성 (claim에 memberId 저장)
-     */
+
     public String createRefreshToken(Long memberId) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + refreshValidity);
@@ -81,9 +78,7 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    /**
-     * 리프레시 토큰에서 memberId 추출
-     */
+
     public Long getRefreshMemberId(String token) {
         return Jwts.parser()
             .verifyWith(refreshKey)
@@ -93,9 +88,7 @@ public class JwtTokenProvider {
             .get("memberId", Long.class);
     }
 
-    /**
-     * 액세스 토큰에서 memberId 추출
-     */
+
     public Long getMemberId(String token){
         return Jwts.parser()
             .verifyWith(accessKey)
@@ -105,9 +98,6 @@ public class JwtTokenProvider {
             .get("memberId", Long.class);
     }
 
-    /**
-     * 액세스 토큰 유효성 검증
-     */
     public boolean validateAccessToken(String token) {
         try {
             Jwts.parser()
@@ -120,9 +110,7 @@ public class JwtTokenProvider {
         }
     }
 
-    /**
-     * 액세스 토큰 유효성 검증 및 memberId 추출
-     */
+
     public Long validateAccessTokenAndGetMemberId(String token) {
         try {
             Jwts.parser()
@@ -130,14 +118,15 @@ public class JwtTokenProvider {
                 .build()
                 .parseSignedClaims(token);
             return getMemberId(token);
-        } catch (RuntimeException e) {
+        } catch (ExpiredJwtException e) {
+            throw new BusinessException(ErrorCode.TOKEN_EXPIRED);
+        } catch (Exception e){
+            log.error("유효하지 않은 토큰{}, 이유:{}", token, e.getMessage());
             throw new BusinessException(ErrorCode.TOKEN_INVALID);
         }
     }
 
-    /**
-     * 리프레시 토큰 유효성 검증 및 memberId 추출
-     */
+
     public Long validateRefreshTokenAndGetMemberId(String token) {
         try {
             Jwts.parser()

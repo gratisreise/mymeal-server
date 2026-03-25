@@ -1,17 +1,17 @@
 package com.mymealserver.api.auth.service.oauth.impl;
 
 import com.mymealserver.api.auth.dto.request.OAuthRequest;
-import com.mymealserver.api.auth.dto.response.AuthResponse;
+import com.mymealserver.api.auth.dto.response.LoginResponse;
 import com.mymealserver.api.auth.service.TokenService;
-import com.mymealserver.external.oauth.google.GoogleApiClient;
-import com.mymealserver.external.oauth.google.GoogleTokenResponse;
-import com.mymealserver.external.oauth.google.GoogleUserInfoResponse;
 import com.mymealserver.api.auth.service.oauth.OAuthService;
+import com.mymealserver.common.enums.ProviderType;
+import com.mymealserver.domain.member.Member;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
 import com.mymealserver.domain.membersettings.MemberSettingsWriter;
-import com.mymealserver.domain.member.Member;
-import com.mymealserver.common.enums.ProviderType;
+import com.mymealserver.external.oauth.google.GoogleApiClient;
+import com.mymealserver.external.oauth.google.GoogleTokenResponse;
+import com.mymealserver.external.oauth.google.GoogleUserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,11 +30,9 @@ public class GoogleOAuthService implements OAuthService {
 
     @Override
     @Transactional
-    public AuthResponse authenticate(OAuthRequest request) {
-        log.info("Google OAuth 인증 시도");
+    public LoginResponse authenticate(OAuthRequest request) {
 
         // 1. 인증 코드를 액세스 토큰으로 교환
-        // ApiClient가 내부적으로 @Value로 주입받은 redirectUri 사용
         GoogleTokenResponse tokenResponse = apiClient.exchangeCodeForToken(request.code());
 
         // 2. 제공업체에서 사용자 정보 조회
@@ -51,8 +49,6 @@ public class GoogleOAuthService implements OAuthService {
         if (request.fcmToken() != null) {
             memberSettingsWriter.updateFcmToken(member.getId(), request.fcmToken());
         }
-
-        log.info("Google OAuth 인증 성공 - 회원 ID: {}", member.getId());
 
         // 6. JWT 토큰 생성
         return tokenService.generateTokens(member);
@@ -71,26 +67,17 @@ public class GoogleOAuthService implements OAuthService {
         );
 
         if (existingMember != null) {
-            log.info("기존 회원 찾음 (GOOGLE): {}", existingMember.getId());
             return existingMember;
         }
 
-        // 신규 회원 생성 (email은 providerId@provider.com 형태)
-        Member newMember = Member.builder()
-                .email(userInfo.id() + "@google.com")
-                .name(userInfo.name() != null ? userInfo.name() : "User")
-                .profileImage(userInfo.profileImage())
-                .provider(ProviderType.GOOGLE)
-                .providerId(userInfo.id())
-                .isActive(true)
-                .build();
+        // 신규 회원 생성
+        Member newMember = userInfo.toEntity();
 
         newMember = memberWriter.save(newMember);
 
         // 기본 설정 생성
         memberSettingsWriter.createDefault(newMember);
 
-        log.info("신규 회원 생성 (GOOGLE): {}", newMember.getId());
         return newMember;
     }
 }
