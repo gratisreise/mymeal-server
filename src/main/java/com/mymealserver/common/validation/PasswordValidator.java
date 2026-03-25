@@ -1,21 +1,10 @@
 package com.mymealserver.common.validation;
 
+import com.mymealserver.common.annotation.Password;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import java.util.regex.Pattern;
 
-/**
- * 비밀번호 유효성 검증 validator
- *
- * <p>검증 규칙:
- * <ul>
- *   <li>길이: 8자 이상, 20자 이하</li>
- *   <li>영문자: 최소 하나 포함</li>
- *   <li>숫자: 최소 하나 포함</li>
- *   <li>특수문자: @$!%*#?& 중 최소 하나 포함</li>
- * </ul>
- */
 public class PasswordValidator implements ConstraintValidator<Password, String> {
 
     private static final Pattern PASSWORD_PATTERN = Pattern.compile(

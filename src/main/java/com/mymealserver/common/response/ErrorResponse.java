@@ -1,16 +1,18 @@
 package com.mymealserver.common.response;
 
 
-import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.common.response.classes.ErrorDetail;
 import java.time.LocalDateTime;
 import lombok.Getter;
-import org.springframework.http.HttpStatus;
 
 @Getter
 public class ErrorResponse extends BaseResponse {
     private final ErrorDetail error;
+
+    public record ErrorDetail (
+        String code,
+        String message
+    ){ }
 
     private ErrorResponse(String code, String message) {
         super(false, LocalDateTime.now());
@@ -25,10 +27,10 @@ public class ErrorResponse extends BaseResponse {
         return new ErrorResponse(code, message);
     }
 
-
-    public static ErrorResponse unknown(RuntimeException ex) {
+    public static ErrorResponse unknown(Exception ex) {
         ErrorCode code = ErrorCode.UNKNOWN_ERROR;
         return new ErrorResponse(code.getCode(), ex.getMessage());
     }
+
 
 }

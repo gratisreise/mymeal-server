@@ -4,11 +4,8 @@ import com.mymealserver.common.response.ErrorResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -67,8 +64,8 @@ public class GlobalExceptionHandler {
     }
 
     // 처리되지 않은 오류
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorResponse> missingExceptionHandler(RuntimeException ex) {
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> missingExceptionHandler(Exception ex) {
         return ResponseEntity
                 .status(ErrorCode.UNKNOWN_ERROR.getStatus())
                 .body(ErrorResponse.unknown(ex));

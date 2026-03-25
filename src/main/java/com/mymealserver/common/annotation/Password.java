@@ -1,8 +1,9 @@
-package com.mymealserver.common.validation;
+package com.mymealserver.common.annotation;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import com.mymealserver.common.validation.PasswordValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 import java.lang.annotation.Documented;

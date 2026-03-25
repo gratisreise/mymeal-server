@@ -1,8 +1,10 @@
 package com.mymealserver.common.enums;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum WithdrawalReason {
     SERVICE_NOT_USEFUL("서비스가 도움이 되지 않음"),
     APP_ISSUES("앱 사용 불편"),
@@ -11,10 +13,6 @@ public enum WithdrawalReason {
     OTHER("기타");
 
     private final String description;
-
-    WithdrawalReason(String description) {
-        this.description = description;
-    }
 
     public static WithdrawalReason fromString(String text) {
         if (text == null) {

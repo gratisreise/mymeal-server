@@ -12,4 +12,13 @@ public class BusinessException extends RuntimeException {
         this.code = code;
     }
 
+
+    public static BusinessException error(ErrorCode code){
+        return new BusinessException(code);
+    }
+
+    public static void onError(ErrorCode code){
+        throw new BusinessException(code);
+    }
+
 }
