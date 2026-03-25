@@ -39,7 +39,7 @@ public class RankingController {
             @RequestParam(required = false, defaultValue = "10") @Min(1) @Max(100) Integer size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("mealTime").descending());
-        DateRange dateRange = (startDate != null && endDate != null) ? new DateRange(startDate, endDate) : null;
+        DateRange dateRange = (startDate != null && endDate != null) ? DateRange.of(startDate, endDate) : null;
         PageResponse<RankingItemResponse> response = rankingService.getBestRanking(memberId, mealType, dateRange, pageable);
         return SuccessResponse.toOk(response);
     }
@@ -54,7 +54,7 @@ public class RankingController {
             @RequestParam(defaultValue = "10") @Min(1) @Max(100) Integer size
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("mealTime").descending());
-        DateRange dateRange = (startDate != null && endDate != null) ? new DateRange(startDate, endDate) : null;
+        DateRange dateRange = (startDate != null && endDate != null) ? DateRange.of(startDate, endDate) : null;
         PageResponse<RankingItemResponse> response = rankingService.getWorstRanking(memberId, mealType, dateRange, pageable);
         return SuccessResponse.toOk(response);
     }
