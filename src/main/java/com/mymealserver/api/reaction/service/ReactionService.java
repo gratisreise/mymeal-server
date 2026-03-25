@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -32,14 +33,14 @@ public class ReactionService {
         Meal meal = mealReader.findById(mealId);
 
         if (!meal.getMemberId().equals(memberId)) {
-            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
+            throw BusinessException.error(ErrorCode.MEAL_FORBIDDEN);
         }
 
         // 반응이 이미 존재하는지 확인
         Reaction existingReaction = reactionReader.findByMealId(mealId);
         if (existingReaction != null) {
             log.warn("식사 ID {}에 대한 반응이 이미 존재합니다", mealId);
-            throw new BusinessException(ErrorCode.REACTION_ALREADY_EXISTS);
+            throw BusinessException.error(ErrorCode.REACTION_ALREADY_EXISTS);
         }
 
         // 요청에서 반응 엔티티 생성
@@ -63,7 +64,7 @@ public class ReactionService {
 
         if (!meal.getMemberId().equals(memberId)) {
             log.warn("회원 {}이 소유하지 않은 식사 {}에 접근 시도", memberId, mealId);
-            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
+            throw BusinessException.error(ErrorCode.MEAL_FORBIDDEN);
         }
 
         // 반응 조회
@@ -82,14 +83,14 @@ public class ReactionService {
 
         if (!meal.getMemberId().equals(memberId)) {
             log.warn("회원 {}이 소유하지 않은 식사 {}에 접근 시도", memberId, mealId);
-            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
+            throw BusinessException.error(ErrorCode.MEAL_FORBIDDEN);
         }
 
         // 기존 반응 조회
         Reaction reaction = reactionReader.findByMealId(mealId);
         if (reaction == null) {
             log.warn("식사 ID {}에 대한 반응을 찾을 수 없습니다", mealId);
-            throw new BusinessException(ErrorCode.REACTION_NOT_FOUND);
+            throw BusinessException.error(ErrorCode.REACTION_NOT_FOUND);
         }
 
         // 반응 필드 업데이트
