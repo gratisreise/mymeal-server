@@ -2,11 +2,10 @@ package com.mymealserver.domain.meallog;
 
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +33,9 @@ public class MealLogReader {
 
     public long countByMemberIdWithEmbedding(Long memberId) {
         return mealLogRepository.countByMemberIdAndEmbeddingIsNotNull(memberId);
+    }
+
+    public List<MealLog> findSimilarMealsByVector(Long memberId, String queryVector, int limit) {
+        return mealLogRepository.findSimilarMealsByVector(memberId, queryVector, limit);
     }
 }

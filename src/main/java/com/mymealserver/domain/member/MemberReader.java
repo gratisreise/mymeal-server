@@ -1,8 +1,8 @@
 package com.mymealserver.domain.member;
 
+import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.common.enums.ProviderType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

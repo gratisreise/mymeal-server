@@ -1,14 +1,13 @@
 package com.mymealserver.domain.membersettings;
 
-import com.mymealserver.domain.base.BaseEntity;
+import com.mymealserver.common.db.BaseEntity;
 import com.mymealserver.domain.member.Member;
 import jakarta.persistence.*;
+import java.time.LocalTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalTime;
 
 @Entity
 @Getter

@@ -1,13 +1,12 @@
 package com.mymealserver.domain.meal;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Repository
 public interface MealRepository extends JpaRepository<Meal, Long>, JpaSpecificationExecutor<Meal> {
@@ -25,24 +24,16 @@ public interface MealRepository extends JpaRepository<Meal, Long>, JpaSpecificat
             LocalDateTime endOfMonth
     );
 
-    /**
-     * Count total meals for a member (excluding deleted)
-     */
-    long countByMemberIdAndDeletedAtIsNull(Long memberId);
 
-    /**
-     * Find meals by member and date range (excluding deleted)
-     */
+
     List<Meal> findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
-            Long memberId,
-            LocalDateTime startDate,
-            LocalDateTime endDate
+        Long memberId,
+        LocalDateTime startDate,
+        LocalDateTime endDate
     );
 
-    /**
-     * Get weekly trend - average reaction scores per day for the last 7 days
-     * This query joins Meal with Reaction to get daily average scores
-     */
+    long countByMemberIdAndDeletedAtIsNull(Long memberId);
+
     @Query("""
         SELECT DATE(m.mealTime) as date,
                COALESCE(AVG(r.overallScore), 0.0) as averageScore

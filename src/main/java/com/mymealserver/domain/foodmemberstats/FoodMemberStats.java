@@ -1,13 +1,12 @@
 package com.mymealserver.domain.foodmemberstats;
 
-import com.mymealserver.domain.base.BaseEntity;
+import com.mymealserver.common.db.BaseEntity;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

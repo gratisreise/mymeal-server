@@ -2,12 +2,11 @@ package com.mymealserver.domain.notification;
 
 import com.mymealserver.common.enums.NotificationType;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -51,6 +50,9 @@ public class Notification {
 
     @Column(nullable = false)
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private LocalDateTime deletedAt;
 
     @PrePersist
     protected void onCreate() {

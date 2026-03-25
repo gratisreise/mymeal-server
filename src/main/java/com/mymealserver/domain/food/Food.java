@@ -1,14 +1,13 @@
 package com.mymealserver.domain.food;
 
-import com.mymealserver.domain.base.BaseEntity;
+import com.mymealserver.common.db.BaseEntity;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Getter

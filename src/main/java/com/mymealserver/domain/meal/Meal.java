@@ -1,15 +1,14 @@
 package com.mymealserver.domain.meal;
 
-import com.mymealserver.domain.base.SoftDeletable;
-import com.mymealserver.common.enums.MealType;
+import com.mymealserver.common.db.SoftDeletable;
 import com.mymealserver.common.enums.AnalysisStatus;
+import com.mymealserver.common.enums.MealType;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Getter

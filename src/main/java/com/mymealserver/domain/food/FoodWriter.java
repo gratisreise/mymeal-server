@@ -9,9 +9,6 @@ public class FoodWriter {
 
     private final FoodRepository foodRepository;
 
-    /**
-     * Food 저장
-     */
     public Food save(Food food) {
         return foodRepository.save(food);
     }
