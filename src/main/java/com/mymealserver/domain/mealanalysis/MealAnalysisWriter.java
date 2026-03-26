@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MealAnalysisWriter {
 
-    private final MealAnalysisRepository mealAnalysisRepository;
+  private final MealAnalysisRepository mealAnalysisRepository;
 
-    public MealAnalysis save(MealAnalysis mealAnalysis) {
-        return mealAnalysisRepository.save(mealAnalysis);
-    }
+  public MealAnalysis save(MealAnalysis mealAnalysis) {
+    return mealAnalysisRepository.save(mealAnalysis);
+  }
 }

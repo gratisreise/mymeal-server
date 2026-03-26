@@ -11,10 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FoodMemberStatsReader {
 
-    private final FoodMemberStatsRepository foodMemberStatsRepository;
+  private final FoodMemberStatsRepository foodMemberStatsRepository;
 
-    public FoodMemberStats findById(Long id) {
-        return foodMemberStatsRepository.findById(id)
-                .orElseThrow(() -> BusinessException.error(ErrorCode.FOOD_MEMBER_STATS_NOT_FOUND));
-    }
+  public FoodMemberStats findById(Long id) {
+    return foodMemberStatsRepository
+        .findById(id)
+        .orElseThrow(() -> BusinessException.error(ErrorCode.FOOD_MEMBER_STATS_NOT_FOUND));
+  }
 }

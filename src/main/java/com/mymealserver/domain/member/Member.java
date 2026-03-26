@@ -16,57 +16,56 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Member extends SoftDeletable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, unique = true, length = 255)
-    private String email;
+  @Column(nullable = false, unique = true, length = 255)
+  private String email;
 
-    @Column(length = 255)
-    private String password;
+  @Column(length = 255)
+  private String password;
 
-    @Column(nullable = false, length = 50)
-    private String name;
+  @Column(nullable = false, length = 50)
+  private String name;
 
-    @Column(length = 500)
-    private String profileImage;
+  @Column(length = 500)
+  private String profileImage;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private ProviderType provider;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private ProviderType provider;
 
-    @Column(length = 255)
-    private String providerId;
+  @Column(length = 255)
+  private String providerId;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isActive = true;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean isActive = true;
 
-    @Column
-    private LocalDateTime lastLoginAt;
+  @Column private LocalDateTime lastLoginAt;
 
-    public void updateLastLoginAt() {
-        this.lastLoginAt = LocalDateTime.now();
+  public void updateLastLoginAt() {
+    this.lastLoginAt = LocalDateTime.now();
+  }
+
+  public void updateName(String name) {
+    if (name != null && !name.isBlank()) {
+      this.name = name;
     }
+  }
 
-    public void updateName(String name) {
-        if (name != null && !name.isBlank()) {
-            this.name = name;
-        }
+  public void updateProfileImage(String profileImage) {
+    if (profileImage != null) {
+      this.profileImage = profileImage.isBlank() ? null : profileImage;
     }
+  }
 
-    public void updateProfileImage(String profileImage) {
-        if (profileImage != null) {
-            this.profileImage = profileImage.isBlank() ? null : profileImage;
-        }
-    }
+  public void deactivate() {
+    this.isActive = false;
+  }
 
-    public void deactivate() {
-        this.isActive = false;
-    }
-
-    public boolean isActive() {
-        return isActive != null && isActive;
-    }
+  public boolean isActive() {
+    return isActive != null && isActive;
+  }
 }

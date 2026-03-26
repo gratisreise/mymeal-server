@@ -10,30 +10,32 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ReactionRepository extends JpaRepository<Reaction, Long> {
-    boolean existsByMealId(Long mealId);
-    Optional<Reaction> findByMealId(Long mealId);
-    List<Reaction> findAllByMealIdIn(List<Long> mealIds);
+  boolean existsByMealId(Long mealId);
 
-    long countByMealIdIn(List<Long> mealIds);
+  Optional<Reaction> findByMealId(Long mealId);
 
+  List<Reaction> findAllByMealIdIn(List<Long> mealIds);
 
-    @Query("SELECT r FROM Reaction r JOIN Meal m ON r.mealId = m.id " +
-           "WHERE m.memberId = :memberId AND m.deletedAt IS NULL")
-    List<Reaction> findByMemberId(@Param("memberId") Long memberId);
+  long countByMealIdIn(List<Long> mealIds);
 
-    @Query("SELECT r FROM Reaction r JOIN Meal m ON r.mealId = m.id " +
-           "WHERE m.memberId = :memberId " +
-           "AND m.mealTime BETWEEN :startDate AND :endDate " +
-           "AND m.deletedAt IS NULL")
-    List<Reaction> findByMemberIdAndDateRange(
-        @Param("memberId") Long memberId,
-        @Param("startDate") LocalDateTime startDate,
-        @Param("endDate") LocalDateTime endDate
-    );
+  @Query(
+      "SELECT r FROM Reaction r JOIN Meal m ON r.mealId = m.id "
+          + "WHERE m.memberId = :memberId AND m.deletedAt IS NULL")
+  List<Reaction> findByMemberId(@Param("memberId") Long memberId);
 
+  @Query(
+      "SELECT r FROM Reaction r JOIN Meal m ON r.mealId = m.id "
+          + "WHERE m.memberId = :memberId "
+          + "AND m.mealTime BETWEEN :startDate AND :endDate "
+          + "AND m.deletedAt IS NULL")
+  List<Reaction> findByMemberIdAndDateRange(
+      @Param("memberId") Long memberId,
+      @Param("startDate") LocalDateTime startDate,
+      @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT AVG(r.overallScore) FROM Reaction r " +
-           "JOIN Meal m ON r.mealId = m.id " +
-           "WHERE m.memberId = :memberId AND m.deletedAt IS NULL")
-    Double calculateAverageScoreByMemberId(@Param("memberId") Long memberId);
+  @Query(
+      "SELECT AVG(r.overallScore) FROM Reaction r "
+          + "JOIN Meal m ON r.mealId = m.id "
+          + "WHERE m.memberId = :memberId AND m.deletedAt IS NULL")
+  Double calculateAverageScoreByMemberId(@Param("memberId") Long memberId);
 }

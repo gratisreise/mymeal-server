@@ -4,11 +4,11 @@ import com.mymealserver.domain.member.Member;
 
 public interface OAuth2UserInfo {
 
-    String id();
+  String id();
 
-    String name();
+  String name();
 
-    String profileImage();
+  String profileImage();
 
-    Member toEntity();
+  Member toEntity();
 }

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberSettingsRepository extends JpaRepository<MemberSettings, Long> {
 
-    Optional<MemberSettings> findByMemberId(Long memberId);
+  Optional<MemberSettings> findByMemberId(Long memberId);
 }

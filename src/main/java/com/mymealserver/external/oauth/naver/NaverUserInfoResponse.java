@@ -5,48 +5,39 @@ import com.mymealserver.common.enums.ProviderType;
 import com.mymealserver.domain.member.Member;
 import com.mymealserver.external.oauth.OAuth2UserInfo;
 
+public record NaverUserInfoResponse(@JsonProperty("response") NaverProfile response)
+    implements OAuth2UserInfo {
 
-public record NaverUserInfoResponse(
-        @JsonProperty("response")
-        NaverProfile response
-) implements OAuth2UserInfo {
+  public record NaverProfile(
+      String id,
+      String nickname,
+      @JsonProperty("profile_image") String profileImage,
+      String name) {}
 
-    public record NaverProfile(
-        String id,
+  @Override
+  public String id() {
+    return response != null ? response.id() : null;
+  }
 
-        String nickname,
+  @Override
+  public String name() {
+    return response != null ? response.nickname() : null;
+  }
 
-        @JsonProperty("profile_image")
-        String profileImage,
+  @Override
+  public String profileImage() {
+    return response != null ? response.profileImage() : null;
+  }
 
-        String name
-    ) {
-    }
-
-    @Override
-    public String id() {
-        return response != null ? response.id() : null;
-    }
-
-    @Override
-    public String name() {
-        return response != null ? response.nickname() : null;
-    }
-
-    @Override
-    public String profileImage() {
-        return response != null ? response.profileImage() : null;
-    }
-
-    @Override
-    public Member toEntity() {
-        return Member.builder()
-            .email(this.id() + "@naver.com")
-            .name(this.name() != null ? this.name() : "User")
-            .profileImage(this.profileImage())
-            .provider(ProviderType.NAVER)
-            .providerId(this.id())
-            .isActive(true)
-            .build();
-    }
+  @Override
+  public Member toEntity() {
+    return Member.builder()
+        .email(this.id() + "@naver.com")
+        .name(this.name() != null ? this.name() : "User")
+        .profileImage(this.profileImage())
+        .provider(ProviderType.NAVER)
+        .providerId(this.id())
+        .isActive(true)
+        .build();
+  }
 }

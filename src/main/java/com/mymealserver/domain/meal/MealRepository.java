@@ -10,31 +10,21 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MealRepository extends JpaRepository<Meal, Long>, JpaSpecificationExecutor<Meal> {
-    boolean existsByMemberId(Long memberId);
+  boolean existsByMemberId(Long memberId);
 
-    List<Meal> findAllByMemberIdAndMealTimeBetween(
-            Long memberId,
-            LocalDateTime startOfDay,
-            LocalDateTime endOfDay
-    );
+  List<Meal> findAllByMemberIdAndMealTimeBetween(
+      Long memberId, LocalDateTime startOfDay, LocalDateTime endOfDay);
 
-    List<Meal> findAllByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
-            Long memberId,
-            LocalDateTime startOfMonth,
-            LocalDateTime endOfMonth
-    );
+  List<Meal> findAllByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
+      Long memberId, LocalDateTime startOfMonth, LocalDateTime endOfMonth);
 
+  List<Meal> findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
+      Long memberId, LocalDateTime startDate, LocalDateTime endDate);
 
+  long countByMemberIdAndDeletedAtIsNull(Long memberId);
 
-    List<Meal> findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
-        Long memberId,
-        LocalDateTime startDate,
-        LocalDateTime endDate
-    );
-
-    long countByMemberIdAndDeletedAtIsNull(Long memberId);
-
-    @Query("""
+  @Query(
+      """
         SELECT DATE(m.mealTime) as date,
                COALESCE(AVG(r.overallScore), 0.0) as averageScore
         FROM Meal m
@@ -45,6 +35,6 @@ public interface MealRepository extends JpaRepository<Meal, Long>, JpaSpecificat
         GROUP BY DATE(m.mealTime)
         ORDER BY DATE(m.mealTime)
     """)
-    List<Object[]> findWeeklyTrend(@Param("memberId") Long memberId,
-                                   @Param("startDate") LocalDateTime startDate);
+  List<Object[]> findWeeklyTrend(
+      @Param("memberId") Long memberId, @Param("startDate") LocalDateTime startDate);
 }

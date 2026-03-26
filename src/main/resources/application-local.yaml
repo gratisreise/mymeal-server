@@ -1,110 +1,25 @@
-spring:
-  profiles:
-    group:
-      local: local
+# Local Development
 
-  # DataSource (PostgreSQL 15+)
-  datasource:
+spring:
+
+  flyway:
+    enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  datasource: # 데이터베이스
     url: jdbc:postgresql://localhost:5432/mymeal
     username: postgres
     password: postgres
-    driver-class-name: org.postgresql.Driver
-    hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      connection-timeout: 30000
-      idle-timeout: 600000
-      max-lifetime: 1800000
 
-  # JPA (local: SQL LOGGING enabled)
-  jpa:
-    properties:
-      hibernate:
-        show_sql: true
-
-  # Redis (7+)
   data:
     redis:
       host: localhost
       port: 6379
       password: myredispassword
-      timeout: 2000ms
-      lettuce:
-        pool:
-          max-active: 8
-          max-idle: 8
-          min-idle: 2
-          max-wait: -1ms
-
-  ai:
-
-
-# AWS Configuration (local: default values)
-aws:
-  region: ap-northeast-2
-  s3:
-    bucket: mymeal-bucket
-    endpoint: https://s3.ap-northeast-2.amazonaws.com
-  credentials:
-    access-key: ${AWS_ACCESS_KEY}
-    secret-key: ${AWS_SECRET_KEY}
-  secrets-manager:
-    enabled: false
-
-# Firebase FCM (local: classpath resource)
-firebase:
-  service-account-key: classpath:firebase-service-account.json
-
-# JWT (local: default values)
-jwt:
-  access_secret: local_secret
-  refresh_secret: refresh_secret
-  access-token-expiry: 3600  # 1 hour
-  refresh-token-expiry: 1209600  # 14 days
-
-# Actuator (local: all endpoints enabled)
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-      base-path: /actuator
-  endpoint:
-    health:
-      show-details: always
-
-# Logging (local: DEBUG level)
-logging:
-  level:
-    root: INFO
-    com.mymealserver: DEBUG
-    org.springframework.web: INFO
-    org.springframework.security: INFO
-    org.springframework.batch: DEBUG
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-
-# Server (local: default port)
-server:
-  port: 8080
-
-# OAuth 2.0 Configuration (local: environment variables or defaults)
-oauth:
-  google:
-    client-id: ${GOOGLE_CLIENT_ID:dummy-google-client-id}
-    client-secret: ${GOOGLE_CLIENT_SECRET:dummy-google-client-secret}
-    token-url: https://oauth2.googleapis.com/token
-    user-info-url: https://www.googleapis.com/oauth2/v2/userinfo
-    redirect-uri: http://localhost:3000/oauth/callback
-  naver:
-    client-id: ${NAVER_CLIENT_ID:dummy-naver-client-id}
-    client-secret: ${NAVER_CLIENT_SECRET:dummy-naver-client-secret}
-    token-url: https://nid.naver.com/oauth2.0/token
-    user-info-url: https://openapi.naver.com/v1/nid/me
-    redirect-uri: http://localhost:3000/oauth/callback
-  kakao:
-    client-id: ${KAKAO_CLIENT_ID:dummy-kakao-client-id}
-    client-secret: ${KAKAO_CLIENT_SECRET:dummy-kakao-client-secret}
-    token-url: https://kauth.kakao.com/oauth/token
-    user-info-url: https://kapi.kakao.com/v2/user/me
-    redirect-uri: http://localhost:3000/oauth/callback

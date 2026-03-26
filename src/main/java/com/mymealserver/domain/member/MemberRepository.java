@@ -11,13 +11,15 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
-    Optional<Member> findByEmailAndDeletedAtIsNull(String email);
+  Optional<Member> findByEmailAndDeletedAtIsNull(String email);
 
-    boolean existsByEmailAndDeletedAtIsNull(String email);
+  boolean existsByEmailAndDeletedAtIsNull(String email);
 
-    Optional<Member> findByProviderAndProviderIdAndDeletedAtIsNull(ProviderType provider, String providerId);
+  Optional<Member> findByProviderAndProviderIdAndDeletedAtIsNull(
+      ProviderType provider, String providerId);
 
-    @Query("""
+  @Query(
+      """
         SELECT m FROM Member m
         JOIN MemberSettings ms ON ms.memberId = m.id
         WHERE ms.recommendationEnabled = true
@@ -25,5 +27,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
         AND m.isActive = true
         ORDER BY m.id ASC
         """)
-    Page<Member> findMembersWithRecommendationEnabled(Pageable pageable);
+  Page<Member> findMembersWithRecommendationEnabled(Pageable pageable);
 }

@@ -7,9 +7,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FoodWriter {
 
-    private final FoodRepository foodRepository;
+  private final FoodRepository foodRepository;
 
-    public Food save(Food food) {
-        return foodRepository.save(food);
-    }
+  public Food save(Food food) {
+    return foodRepository.save(food);
+  }
 }

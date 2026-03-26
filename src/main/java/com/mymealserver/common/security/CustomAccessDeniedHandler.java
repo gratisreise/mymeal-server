@@ -16,17 +16,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
-    private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-    @Override
-    public void handle(HttpServletRequest request, HttpServletResponse response,
-                       AccessDeniedException accessDeniedException) throws IOException {
+  @Override
+  public void handle(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AccessDeniedException accessDeniedException)
+      throws IOException {
 
-        response.setStatus(HttpStatus.FORBIDDEN.value());
-        response.setContentType("application/json; charset=UTF-8");
+    response.setStatus(HttpStatus.FORBIDDEN.value());
+    response.setContentType("application/json; charset=UTF-8");
 
-        ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.ACCESS_DENIED);
+    ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.ACCESS_DENIED);
 
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-    }
+    response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+  }
 }

@@ -1,0 +1,49 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea
+*.iml
+.vscode
+
+# Build outputs
+build/
+.gradle/
+out/
+
+# Documentation
+*.md
+.docs/
+
+# CI/CD
+.github/
+
+# Kubernetes
+k8s/
+
+# Test files
+src/test/
+
+# Local configuration
+application-local.yaml
+
+# Secrets (never include these)
+*.pem
+*.key
+.env
+.env.*
+
+# Logs
+logs/
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~

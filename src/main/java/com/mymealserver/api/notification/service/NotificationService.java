@@ -20,34 +20,33 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class NotificationService {
 
-    private final NotificationReader notificationReader;
-    private final NotificationWriter notificationWriter;
+  private final NotificationReader notificationReader;
+  private final NotificationWriter notificationWriter;
 
-    public NotificationListResponse getNotifications(Long memberId, Boolean unreadOnly, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Notification> notifications = notificationReader.findByMemberId(memberId, unreadOnly, pageable);
-        Page<NotificationResponse> notificationPage = notifications.map(NotificationResponse::from);
-        long unreadCount = notificationReader.countUnread(memberId);
+  public NotificationListResponse getNotifications(
+      Long memberId, Boolean unreadOnly, int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    Page<Notification> notifications =
+        notificationReader.findByMemberId(memberId, unreadOnly, pageable);
+    Page<NotificationResponse> notificationPage = notifications.map(NotificationResponse::from);
+    long unreadCount = notificationReader.countUnread(memberId);
 
-        return NotificationListResponse.of(
-                notificationPage.getContent(),
-                Pagination.from(notificationPage),
-                unreadCount
-        );
-    }
+    return NotificationListResponse.of(
+        notificationPage.getContent(), Pagination.from(notificationPage), unreadCount);
+  }
 
-    @Transactional
-    public void markAsRead(Long memberId, Long notificationId) {
-        Notification notification = notificationReader.findByIdAndMemberId(notificationId, memberId);
-        notificationWriter.markAsRead(notification);
-    }
+  @Transactional
+  public void markAsRead(Long memberId, Long notificationId) {
+    Notification notification = notificationReader.findByIdAndMemberId(notificationId, memberId);
+    notificationWriter.markAsRead(notification);
+  }
 
-    @Transactional
-    public void markAllAsRead(Long memberId) {
-        notificationWriter.markAllAsRead(memberId);
-    }
+  @Transactional
+  public void markAllAsRead(Long memberId) {
+    notificationWriter.markAllAsRead(memberId);
+  }
 
-    public long getUnreadCount(Long memberId) {
-        return notificationReader.countUnread(memberId);
-    }
+  public long getUnreadCount(Long memberId) {
+    return notificationReader.countUnread(memberId);
+  }
 }

@@ -9,35 +9,34 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RecommendationWriter {
 
-    private final RecommendationRepository recommendationRepository;
+  private final RecommendationRepository recommendationRepository;
 
-    @Transactional
-    public Recommendation save(Recommendation recommendation) {
-        return recommendationRepository.save(recommendation);
-    }
+  @Transactional
+  public Recommendation save(Recommendation recommendation) {
+    return recommendationRepository.save(recommendation);
+  }
 
-    @Transactional
-    public List<Recommendation> saveAll(List<Recommendation> recommendations) {
-        return recommendationRepository.saveAll(recommendations);
-    }
+  @Transactional
+  public List<Recommendation> saveAll(List<Recommendation> recommendations) {
+    return recommendationRepository.saveAll(recommendations);
+  }
 
-    @Transactional
-    public void delete(Recommendation recommendation) {
-        recommendation.softDelete();
-        recommendationRepository.save(recommendation);
-    }
+  @Transactional
+  public void delete(Recommendation recommendation) {
+    recommendation.softDelete();
+    recommendationRepository.save(recommendation);
+  }
 
-    @Transactional
-    public void deleteById(Long id) {
-        Recommendation recommendation = recommendationRepository.findById(id)
-                .orElseThrow();
-        recommendation.softDelete();
-        recommendationRepository.save(recommendation);
-    }
+  @Transactional
+  public void deleteById(Long id) {
+    Recommendation recommendation = recommendationRepository.findById(id).orElseThrow();
+    recommendation.softDelete();
+    recommendationRepository.save(recommendation);
+  }
 
-    @Transactional
-    public void markAsSent(Recommendation recommendation) {
-        recommendation.markAsSent();
-        recommendationRepository.save(recommendation);
-    }
+  @Transactional
+  public void markAsSent(Recommendation recommendation) {
+    recommendation.markAsSent();
+    recommendationRepository.save(recommendation);
+  }
 }

@@ -17,64 +17,49 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MealReader {
 
-    private final MealRepository mealRepository;
+  private final MealRepository mealRepository;
 
-    public Meal findById(Long id) {
-        return mealRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.MEAL_NOT_FOUND));
+  public Meal findById(Long id) {
+    return mealRepository
+        .findById(id)
+        .orElseThrow(() -> new BusinessException(ErrorCode.MEAL_NOT_FOUND));
+  }
+
+  public Optional<Meal> findByIdOptional(Long id) {
+    return mealRepository.findById(id);
+  }
+
+  public Page<Meal> findByMemberId(
+      Long memberId, LocalDate startDate, LocalDate endDate, MealType mealType, Pageable pageable) {
+    Specification<Meal> spec =
+        Specification.where((root, query, cb) -> cb.equal(root.get("memberId"), memberId));
+
+    if (startDate != null) {
+      LocalDateTime startDateTime = startDate.atStartOfDay();
+      spec =
+          spec.and(
+              (root, query, cb) -> cb.greaterThanOrEqualTo(root.get("mealTime"), startDateTime));
     }
 
-    public Optional<Meal> findByIdOptional(Long id) {
-        return mealRepository.findById(id);
+    if (endDate != null) {
+      LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+      spec = spec.and((root, query, cb) -> cb.lessThan(root.get("mealTime"), endDateTime));
     }
 
-    public Page<Meal> findByMemberId(
-            Long memberId,
-            LocalDate startDate,
-            LocalDate endDate,
-            MealType mealType,
-            Pageable pageable
-    ) {
-        Specification<Meal> spec = Specification.where((root, query, cb) ->
-                cb.equal(root.get("memberId"), memberId)
-        );
-
-        if (startDate != null) {
-            LocalDateTime startDateTime = startDate.atStartOfDay();
-            spec = spec.and((root, query, cb) ->
-                    cb.greaterThanOrEqualTo(root.get("mealTime"), startDateTime)
-            );
-        }
-
-        if (endDate != null) {
-            LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
-            spec = spec.and((root, query, cb) ->
-                    cb.lessThan(root.get("mealTime"), endDateTime)
-            );
-        }
-
-        if (mealType != null) {
-            spec = spec.and((root, query, cb) ->
-                    cb.equal(root.get("mealType"), mealType)
-            );
-        }
-
-        return mealRepository.findAll(spec, pageable);
+    if (mealType != null) {
+      spec = spec.and((root, query, cb) -> cb.equal(root.get("mealType"), mealType));
     }
 
-    public boolean existsByMemberId(Long memberId) {
-        return mealRepository.existsByMemberId(memberId);
-    }
+    return mealRepository.findAll(spec, pageable);
+  }
 
-    public List<Meal> findByMemberIdAndDateRange(
-            Long memberId,
-            LocalDateTime startDateTime,
-            LocalDateTime endDateTime
-    ) {
-        return mealRepository.findAllByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
-                memberId,
-                startDateTime,
-                endDateTime
-        );
-    }
+  public boolean existsByMemberId(Long memberId) {
+    return mealRepository.existsByMemberId(memberId);
+  }
+
+  public List<Meal> findByMemberIdAndDateRange(
+      Long memberId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    return mealRepository.findAllByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
+        memberId, startDateTime, endDateTime);
+  }
 }

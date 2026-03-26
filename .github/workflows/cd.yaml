@@ -1,0 +1,107 @@
+name: CD
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'prod'
+        type: choice
+        options:
+          - prod
+          - staging
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build JAR
+        run: ./gradlew build -x test --no-daemon
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/amd64
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig \
+            --name ${{ secrets.EKS_CLUSTER_NAME }} \
+            --region ${{ env.AWS_REGION }}
+
+      - name: Deploy to EKS
+        run: |
+          IMAGE_TAG="${{ github.sha }}"
+          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          DEPLOYMENT="${{ secrets.K8S_DEPLOYMENT_NAME }}"
+          CONTAINER="${{ secrets.K8S_CONTAINER_NAME }}"
+          REPOSITORY="${{ secrets.ECR_REPOSITORY }}"
+          REGISTRY="${{ steps.login-ecr.outputs.registry }}"
+
+          kubectl set image deployment/${DEPLOYMENT} \
+            ${CONTAINER}=${REGISTRY}/${REPOSITORY}:${IMAGE_TAG} \
+            -n ${NAMESPACE}
+
+          kubectl rollout status deployment/${DEPLOYMENT} \
+            -n ${NAMESPACE} \
+            --timeout=300s
+
+      - name: Verify deployment
+        run: |
+          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          DEPLOYMENT="${{ secrets.K8S_DEPLOYMENT_NAME }}"
+
+          kubectl get pods -n ${NAMESPACE} -l app=${DEPLOYMENT}
+          kubectl describe deployment ${DEPLOYMENT} -n ${NAMESPACE}

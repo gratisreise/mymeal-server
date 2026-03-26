@@ -11,27 +11,27 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableAsync
 public class AsyncConfig {
 
-    @Bean(name = "mealAnalysisExecutor")
-    public Executor mealAnalysisExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(8);
-        executor.setMaxPoolSize(16);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("meal-analysis-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.initialize();
-        return executor;
-    }
+  @Bean(name = "mealAnalysisExecutor")
+  public Executor mealAnalysisExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(8);
+    executor.setMaxPoolSize(16);
+    executor.setQueueCapacity(100);
+    executor.setThreadNamePrefix("meal-analysis-");
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    executor.initialize();
+    return executor;
+  }
 
-    @Bean(name = "mealLogExecutor")
-    public Executor mealLogExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(2);
-        executor.setMaxPoolSize(4);
-        executor.setQueueCapacity(100);
-        executor.setThreadNamePrefix("meallog-embedding-");
-        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        executor.initialize();
-        return executor;
-    }
+  @Bean(name = "mealLogExecutor")
+  public Executor mealLogExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(2);
+    executor.setMaxPoolSize(4);
+    executor.setQueueCapacity(100);
+    executor.setThreadNamePrefix("meallog-embedding-");
+    executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+    executor.initialize();
+    return executor;
+  }
 }

@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface CurrentMember {
 
-    String expression() default "";
+  String expression() default "";
 
-    String value() default "";
+  String value() default "";
 }

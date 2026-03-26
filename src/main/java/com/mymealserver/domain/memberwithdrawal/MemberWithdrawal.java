@@ -15,25 +15,25 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MemberWithdrawal {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+  @Column(nullable = false)
+  private Long memberId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 30)
-    private WithdrawalReason reason;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 30)
+  private WithdrawalReason reason;
 
-    @Column(columnDefinition = "TEXT")
-    private String reasonDetail;
+  @Column(columnDefinition = "TEXT")
+  private String reasonDetail;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+  @Column(nullable = false, updatable = false)
+  private LocalDateTime createdAt;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-    }
+  @PrePersist
+  protected void onCreate() {
+    createdAt = LocalDateTime.now();
+  }
 }

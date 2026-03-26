@@ -1,5 +1,7 @@
 package com.mymealserver.api.recommendation.service;
 
+import com.mymealserver.api.recommendation.service.dto.FoodAnalysisResult;
+import com.mymealserver.api.recommendation.service.dto.RecommendationResult;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
@@ -10,56 +12,55 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
 
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AiAnalysisService {
 
-    private final ChatClient chatClient;
+  private final ChatClient chatClient;
 
-    public FoodAnalysisResult analyzeFoodImage(Resource imageResource, MealType mealType) {
-        try {
-            log.info("음식 이미지 분석 시작 - 식사 유형: {}", mealType.getDescription());
+  public FoodAnalysisResult analyzeFoodImage(Resource imageResource, MealType mealType) {
+    try {
+      log.info("음식 이미지 분석 시작 - 식사 유형: {}", mealType.getDescription());
 
-            // Gemini 프롬프트 생성 (한국어)
-            String prompt = buildPrompt(mealType);
+      // Gemini 프롬프트 생성 (한국어)
+      String prompt = buildPrompt(mealType);
 
-            // Spring AI ChatClient 호출 (Resource + MIME 타입 직접 전달)
-            FoodAnalysisResult result = chatClient.prompt()
-                    .user(userSpec -> userSpec
-                            .text(prompt)
-                            .media(MimeTypeUtils.IMAGE_JPEG, imageResource))
-                    .call()
-                    .entity(FoodAnalysisResult.class);
+      // Spring AI ChatClient 호출 (Resource + MIME 타입 직접 전달)
+      FoodAnalysisResult result =
+          chatClient
+              .prompt()
+              .user(
+                  userSpec -> userSpec.text(prompt).media(MimeTypeUtils.IMAGE_JPEG, imageResource))
+              .call()
+              .entity(FoodAnalysisResult.class);
 
-            log.info("음식 이미지 분석 완료 - 음식명: {}", result.mealName());
-            return result;
-        } catch (Exception e) {
-            log.error("음식 이미지 분석 실패 - 식사 유형: {}, 오류: {}", mealType.getDescription(), e.getMessage());
-            throw BusinessException.error(ErrorCode.AI_ANALYSIS_ERROR);
-        }
+      log.info("음식 이미지 분석 완료 - 음식명: {}", result.mealName());
+      return result;
+    } catch (Exception e) {
+      log.error("음식 이미지 분석 실패 - 식사 유형: {}, 오류: {}", mealType.getDescription(), e.getMessage());
+      throw BusinessException.error(ErrorCode.AI_ANALYSIS_ERROR);
     }
+  }
 
-    public RecommendationResult generateRecommendations(String ragPrompt) {
-        try {
-            log.info("식단 추천 생성 시작");
+  public RecommendationResult generateRecommendations(String ragPrompt) {
+    try {
+      log.info("식단 추천 생성 시작");
 
-            RecommendationResult result = chatClient.prompt()
-                    .user(ragPrompt)
-                    .call()
-                    .entity(RecommendationResult.class);
+      RecommendationResult result =
+          chatClient.prompt().user(ragPrompt).call().entity(RecommendationResult.class);
 
-            log.info("식단 추천 생성 완료");
-            return result;
-        } catch (Exception e) {
-            log.error("식단 추천 생성 실패 - 오류: {}", e.getMessage());
-            throw BusinessException.error(ErrorCode.AI_ANALYSIS_ERROR);
-        }
+      log.info("식단 추천 생성 완료");
+      return result;
+    } catch (Exception e) {
+      log.error("식단 추천 생성 실패 - 오류: {}", e.getMessage());
+      throw BusinessException.error(ErrorCode.AI_ANALYSIS_ERROR);
     }
+  }
 
-    private String buildPrompt(MealType mealType) {
-        return String.format("""
+  private String buildPrompt(MealType mealType) {
+    return String.format(
+        """
             당신은 한국 음식 영양 분석 전문가입니다.
             주어진 음식 사진을 보고 아래 지침에 따라 영양 정보를 분석하세요.
 
@@ -87,6 +88,6 @@ public class AiAnalysisService {
             - calories: kcal
             - carbohydrates, protein, fat: g (그램)
             """,
-            mealType.getDescription());
-    }
+        mealType.getDescription());
+  }
 }

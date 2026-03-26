@@ -1,6 +1,5 @@
 package com.mymealserver.api.auth;
 
-
 import com.mymealserver.api.auth.dto.request.LoginRequest;
 import com.mymealserver.api.auth.dto.request.LogoutRequest;
 import com.mymealserver.api.auth.dto.request.OAuthRequest;
@@ -30,54 +29,46 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
-    private final OAuthServiceFactory oAuthServiceFactory;
+  private final AuthService authService;
+  private final OAuthServiceFactory oAuthServiceFactory;
 
-    @PostMapping("/register")
-    public ResponseEntity<SuccessResponse<Void>> register(
-            @Valid @RequestBody RegisterRequest request
-    ) {
-        authService.register(request);
-        return SuccessResponse.toCreated(null);
-    }
+  @PostMapping("/register")
+  public ResponseEntity<SuccessResponse<Void>> register(
+      @Valid @RequestBody RegisterRequest request) {
+    authService.register(request);
+    return SuccessResponse.toCreated(null);
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<SuccessResponse<LoginResponse>> login(
-            @Valid @RequestBody LoginRequest request
-    ) {
-        return SuccessResponse.toOk(authService.login(request));
-    }
+  @PostMapping("/login")
+  public ResponseEntity<SuccessResponse<LoginResponse>> login(
+      @Valid @RequestBody LoginRequest request) {
+    return SuccessResponse.toOk(authService.login(request));
+  }
 
-    @PostMapping("/oauth")
-    public ResponseEntity<SuccessResponse<LoginResponse>> oauthLogin(
-            @Valid @RequestBody OAuthRequest request
-    ) {
-        OAuthService oAuthService = oAuthServiceFactory.getOAuthService(request.provider());
-        return SuccessResponse.toOk(oAuthService.authenticate(request));
-    }
+  @PostMapping("/oauth")
+  public ResponseEntity<SuccessResponse<LoginResponse>> oauthLogin(
+      @Valid @RequestBody OAuthRequest request) {
+    OAuthService oAuthService = oAuthServiceFactory.getOAuthService(request.provider());
+    return SuccessResponse.toOk(oAuthService.authenticate(request));
+  }
 
-    @PostMapping("/refresh")
-    public ResponseEntity<SuccessResponse<RefreshResponse>> refresh(
-            @Valid @RequestBody RefreshRequest request
-    ) {
-        return SuccessResponse.toOk(authService.reissueToken(request));
-    }
+  @PostMapping("/refresh")
+  public ResponseEntity<SuccessResponse<RefreshResponse>> refresh(
+      @Valid @RequestBody RefreshRequest request) {
+    return SuccessResponse.toOk(authService.reissueToken(request));
+  }
 
-    @PostMapping("/logout")
-    public ResponseEntity<SuccessResponse<Void>> logout(
-            @CurrentMember Long memberId,
-            @Valid @RequestBody LogoutRequest request
-    ) {
-        authService.logout(memberId, request);
-        return SuccessResponse.toOk(null);
-    }
+  @PostMapping("/logout")
+  public ResponseEntity<SuccessResponse<Void>> logout(
+      @CurrentMember Long memberId, @Valid @RequestBody LogoutRequest request) {
+    authService.logout(memberId, request);
+    return SuccessResponse.toOk(null);
+  }
 
-    @DeleteMapping("/withdraw")
-    public ResponseEntity<SuccessResponse<Void>> withdraw(
-            @CurrentMember Long memberId,
-            @Valid @RequestBody WithdrawRequest request
-    ) {
-        authService.withdraw(memberId, request);
-        return SuccessResponse.toOk(null);
-    }
+  @DeleteMapping("/withdraw")
+  public ResponseEntity<SuccessResponse<Void>> withdraw(
+      @CurrentMember Long memberId, @Valid @RequestBody WithdrawRequest request) {
+    authService.withdraw(memberId, request);
+    return SuccessResponse.toOk(null);
+  }
 }

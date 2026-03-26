@@ -13,47 +13,46 @@ import org.springframework.web.client.RestClient;
 @RequiredArgsConstructor
 public class NaverApiClient {
 
-    private final RestClient restClient;
+  private final RestClient restClient;
 
-    @Value("${oauth.naver.client-id}")
-    private String clientId;
+  @Value("${oauth.naver.client-id}")
+  private String clientId;
 
-    @Value("${oauth.naver.client-secret}")
-    private String clientSecret;
+  @Value("${oauth.naver.client-secret}")
+  private String clientSecret;
 
-    @Value("${oauth.naver.token-url}")
-    private String tokenUrl;
+  @Value("${oauth.naver.token-url}")
+  private String tokenUrl;
 
-    @Value("${oauth.naver.user-info-url}")
-    private String userInfoUrl;
+  @Value("${oauth.naver.user-info-url}")
+  private String userInfoUrl;
 
-    @Value("${oauth.naver.redirect-uri}")
-    private String redirectUri;
+  @Value("${oauth.naver.redirect-uri}")
+  private String redirectUri;
 
-    public NaverTokenResponse exchangeCodeForToken(String code) {
-        log.info("Exchanging authorization code for access token with Naver");
-        log.debug("Using redirect URI: {}", redirectUri);
+  public NaverTokenResponse exchangeCodeForToken(String code) {
 
-        return restClient.post()
-                .uri(tokenUrl)
-                .body(Map.of(
-                        "code", code,
-                        "client_id", clientId,
-                        "client_secret", clientSecret,
-                        "redirect_uri", redirectUri,
-                        "grant_type", "authorization_code"
-                ))
-                .retrieve()
-                .body(NaverTokenResponse.class);
-    }
+    return restClient
+        .post()
+        .uri(tokenUrl)
+        .body(
+            Map.of(
+                "code", code,
+                "client_id", clientId,
+                "client_secret", clientSecret,
+                "redirect_uri", redirectUri,
+                "grant_type", "authorization_code"))
+        .retrieve()
+        .body(NaverTokenResponse.class);
+  }
 
-    public NaverUserInfoResponse getUserInfo(String accessToken) {
-        log.info("Fetching user info from Naver");
+  public NaverUserInfoResponse getUserInfo(String accessToken) {
 
-        return restClient.get()
-                .uri(userInfoUrl)
-                .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
-                .retrieve()
-                .body(NaverUserInfoResponse.class);
-    }
+    return restClient
+        .get()
+        .uri(userInfoUrl)
+        .header(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken)
+        .retrieve()
+        .body(NaverUserInfoResponse.class);
+  }
 }

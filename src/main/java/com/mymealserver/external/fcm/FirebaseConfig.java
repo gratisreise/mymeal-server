@@ -17,31 +17,33 @@ import org.springframework.core.io.ResourceLoader;
 @RequiredArgsConstructor
 public class FirebaseConfig {
 
-    private final ResourceLoader resourceLoader;
+  private final ResourceLoader resourceLoader;
 
-    @Value("${fcm.key-path}")
-    private String keyPath;
+  @Value("${fcm.key-path}")
+  private String keyPath;
 
-    @Bean
-    public FirebaseMessaging firebaseMessaging() throws IOException {
+  @Bean
+  public FirebaseMessaging firebaseMessaging() throws IOException {
 
-        Resource resource = resourceLoader.getResource(keyPath);
+    Resource resource = resourceLoader.getResource(keyPath);
 
-        //리소스 존재 여부 확인 (방어 코드)
-        if (!resource.exists()) {
-            throw new IOException("FCM 키 파일을 찾을 수 없습니다: " + keyPath);
-        }
-
-        try (InputStream serviceAccount = resource.getInputStream()) {
-            FirebaseOptions options = FirebaseOptions.builder()
-                .setCredentials(GoogleCredentials.fromStream(serviceAccount))
-                .build();
-
-            FirebaseApp firebaseApp = FirebaseApp.getApps().isEmpty()
-                ? FirebaseApp.initializeApp(options)
-                : FirebaseApp.getInstance();
-
-            return FirebaseMessaging.getInstance(firebaseApp);
-        }
+    // 리소스 존재 여부 확인 (방어 코드)
+    if (!resource.exists()) {
+      throw new IOException("FCM 키 파일을 찾을 수 없습니다: " + keyPath);
     }
+
+    try (InputStream serviceAccount = resource.getInputStream()) {
+      FirebaseOptions options =
+          FirebaseOptions.builder()
+              .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+              .build();
+
+      FirebaseApp firebaseApp =
+          FirebaseApp.getApps().isEmpty()
+              ? FirebaseApp.initializeApp(options)
+              : FirebaseApp.getInstance();
+
+      return FirebaseMessaging.getInstance(firebaseApp);
+    }
+  }
 }

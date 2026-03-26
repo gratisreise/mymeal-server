@@ -36,3 +36,5 @@ out/
 ### VS Code ###
 .vscode/
 .docs/
+.env
+src/main/resources/mymeal-fcm-key.json

@@ -28,169 +28,155 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class RankingService {
 
-    private final MealReader mealReader;
-    private final ReactionReader reactionReader;
+  private final MealReader mealReader;
+  private final ReactionReader reactionReader;
 
-    public PageResponse<RankingItemResponse> getBestRanking(
-            Long memberId,
-            MealType mealType,
-            DateRange dateRange,
-            Pageable pageable
-    ) {
-        log.debug("베스트 랭킹 조회 시작 - 회원ID: {}, 식사유형: {}, 날짜범위: {}",
-                memberId, mealType, dateRange);
+  public PageResponse<RankingItemResponse> getBestRanking(
+      Long memberId, MealType mealType, DateRange dateRange, Pageable pageable) {
+    log.debug("베스트 랭킹 조회 시작 - 회원ID: {}, 식사유형: {}, 날짜범위: {}", memberId, mealType, dateRange);
 
-        LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
-        LocalDate endDate = dateRange != null ? dateRange.getEndDate() : null;
+    LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
+    LocalDate endDate = dateRange != null ? dateRange.getEndDate() : null;
 
-        Page<Meal> mealPage = mealReader.findByMemberId(memberId, startDate, endDate, mealType, pageable);
+    Page<Meal> mealPage =
+        mealReader.findByMemberId(memberId, startDate, endDate, mealType, pageable);
 
-        if (mealPage.isEmpty()) {
-            return PageResponse.from(new PageImpl<>(List.of(), pageable, 0));
-        }
+    if (mealPage.isEmpty()) {
+      return PageResponse.from(new PageImpl<>(List.of(), pageable, 0));
+    }
 
-        List<Long> mealIds = mealPage.getContent().stream()
-                .map(Meal::getId)
-                .toList();
+    List<Long> mealIds = mealPage.getContent().stream().map(Meal::getId).toList();
 
-        Map<Long, Reaction> reactionMap = reactionReader.findByMealIdsAsMap(mealIds);
+    Map<Long, Reaction> reactionMap = reactionReader.findByMealIdsAsMap(mealIds);
 
-        List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
+    List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
 
-        // 점수 내림차순, 같은 점수면 최신 식사 순
-        rankingItems.sort((a, b) -> {
-            int scoreCompare = Double.compare(b.getScore(), a.getScore());
-            if (scoreCompare != 0) {
-                return scoreCompare;
-            }
-            return b.getMealTime().compareTo(a.getMealTime());
+    // 점수 내림차순, 같은 점수면 최신 식사 순
+    rankingItems.sort(
+        (a, b) -> {
+          int scoreCompare = Double.compare(b.getScore(), a.getScore());
+          if (scoreCompare != 0) {
+            return scoreCompare;
+          }
+          return b.getMealTime().compareTo(a.getMealTime());
         });
 
-        assignRanks(rankingItems);
+    assignRanks(rankingItems);
 
-        List<RankingItemResponse> responses = rankingItems.stream()
-                .map(RankingItem::toResponse)
-                .collect(Collectors.toList());
+    List<RankingItemResponse> responses =
+        rankingItems.stream().map(RankingItem::toResponse).collect(Collectors.toList());
 
-        return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
+    return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
+  }
+
+  public PageResponse<RankingItemResponse> getWorstRanking(
+      Long memberId, MealType mealType, DateRange dateRange, Pageable pageable) {
+    log.debug("워스트 랭킹 조회 시작 - 회원ID: {}, 식사유형: {}, 날짜범위: {}", memberId, mealType, dateRange);
+
+    LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
+    LocalDate endDate = dateRange != null ? dateRange.getEndDate() : null;
+
+    Page<Meal> mealPage =
+        mealReader.findByMemberId(memberId, startDate, endDate, mealType, pageable);
+
+    if (mealPage.isEmpty()) {
+      return PageResponse.from(new PageImpl<>(List.of(), pageable, 0));
     }
 
-    public PageResponse<RankingItemResponse> getWorstRanking(
-            Long memberId,
-            MealType mealType,
-            DateRange dateRange,
-            Pageable pageable
-    ) {
-        log.debug("워스트 랭킹 조회 시작 - 회원ID: {}, 식사유형: {}, 날짜범위: {}",
-                memberId, mealType, dateRange);
+    List<Long> mealIds = mealPage.getContent().stream().map(Meal::getId).toList();
 
-        LocalDate startDate = dateRange != null ? dateRange.getStartDate() : null;
-        LocalDate endDate = dateRange != null ? dateRange.getEndDate() : null;
+    Map<Long, Reaction> reactionMap = reactionReader.findByMealIdsAsMap(mealIds);
 
-        Page<Meal> mealPage = mealReader.findByMemberId(memberId, startDate, endDate, mealType, pageable);
+    List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
 
-        if (mealPage.isEmpty()) {
-            return PageResponse.from(new PageImpl<>(List.of(), pageable, 0));
-        }
-
-        List<Long> mealIds = mealPage.getContent().stream()
-                .map(Meal::getId)
-                .toList();
-
-        Map<Long, Reaction> reactionMap = reactionReader.findByMealIdsAsMap(mealIds);
-
-        List<RankingItem> rankingItems = buildRankingItems(mealPage.getContent(), reactionMap);
-
-        // 점수 오름차순, 같은 점수면 최신 식사 순
-        rankingItems.sort((a, b) -> {
-            int scoreCompare = Double.compare(a.getScore(), b.getScore());
-            if (scoreCompare != 0) {
-                return scoreCompare;
-            }
-            return b.getMealTime().compareTo(a.getMealTime());
+    // 점수 오름차순, 같은 점수면 최신 식사 순
+    rankingItems.sort(
+        (a, b) -> {
+          int scoreCompare = Double.compare(a.getScore(), b.getScore());
+          if (scoreCompare != 0) {
+            return scoreCompare;
+          }
+          return b.getMealTime().compareTo(a.getMealTime());
         });
 
-        assignRanks(rankingItems);
+    assignRanks(rankingItems);
 
-        List<RankingItemResponse> responses = rankingItems.stream()
-                .map(RankingItem::toResponse)
-                .collect(Collectors.toList());
+    List<RankingItemResponse> responses =
+        rankingItems.stream().map(RankingItem::toResponse).collect(Collectors.toList());
 
-        return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
+    return PageResponse.from(new PageImpl<>(responses, pageable, mealPage.getTotalElements()));
+  }
+
+  private List<RankingItem> buildRankingItems(List<Meal> meals, Map<Long, Reaction> reactionMap) {
+    return meals.stream()
+        .filter(meal -> reactionMap.containsKey(meal.getId()))
+        .map(
+            meal -> {
+              Reaction reaction = reactionMap.get(meal.getId());
+              return RankingItem.of(
+                  meal.getId(),
+                  meal.getMealType().getDescription(),
+                  meal.getPhotoUrl(),
+                  meal.getMealTime(),
+                  meal.getMealType(),
+                  reaction.getOverallScore(),
+                  reaction.getGrade());
+            })
+        .collect(Collectors.toList());
+  }
+
+  private void assignRanks(List<RankingItem> items) {
+    if (items.isEmpty()) {
+      return;
     }
 
-    private List<RankingItem> buildRankingItems(List<Meal> meals, Map<Long, Reaction> reactionMap) {
-        return meals.stream()
-                .filter(meal -> reactionMap.containsKey(meal.getId()))
-                .map(meal -> {
-                    Reaction reaction = reactionMap.get(meal.getId());
-                    return RankingItem.of(
-                            meal.getId(),
-                            meal.getMealType().getDescription(),
-                            meal.getPhotoUrl(),
-                            meal.getMealTime(),
-                            meal.getMealType(),
-                            reaction.getOverallScore(),
-                            reaction.getGrade()
-                    );
-                })
-                .collect(Collectors.toList());
+    int rank = 1;
+    items.get(0).setRank(rank);
+
+    for (int i = 1; i < items.size(); i++) {
+      RankingItem current = items.get(i);
+      RankingItem previous = items.get(i - 1);
+
+      if (Double.compare(current.getScore(), previous.getScore()) == 0) {
+        current.setRank(previous.getRank());
+      } else {
+        current.setRank(i + 1);
+      }
+    }
+  }
+
+  @Data
+  private static class RankingItem {
+    private final Long mealId;
+    private final String mealName;
+    private final String photoUrl;
+    private final LocalDateTime mealTime;
+    private final MealType mealType;
+    private final Double score;
+    private final GradeType grade;
+    private Integer rank;
+
+    public static RankingItem of(
+        Long mealId,
+        String mealName,
+        String photoUrl,
+        LocalDateTime mealTime,
+        MealType mealType,
+        Double score,
+        GradeType grade) {
+      return new RankingItem(mealId, mealName, photoUrl, mealTime, mealType, score, grade);
     }
 
-    private void assignRanks(List<RankingItem> items) {
-        if (items.isEmpty()) {
-            return;
-        }
-
-        int rank = 1;
-        items.get(0).setRank(rank);
-
-        for (int i = 1; i < items.size(); i++) {
-            RankingItem current = items.get(i);
-            RankingItem previous = items.get(i - 1);
-
-            if (Double.compare(current.getScore(), previous.getScore()) == 0) {
-                current.setRank(previous.getRank());
-            } else {
-                current.setRank(i + 1);
-            }
-        }
+    public RankingItemResponse toResponse() {
+      return RankingItemResponse.of(
+          this.rank,
+          this.mealId,
+          this.mealName,
+          this.photoUrl,
+          this.mealTime,
+          this.score,
+          this.grade,
+          this.mealType);
     }
-
-    @Data
-    private static class RankingItem {
-        private final Long mealId;
-        private final String mealName;
-        private final String photoUrl;
-        private final LocalDateTime mealTime;
-        private final MealType mealType;
-        private final Double score;
-        private final GradeType grade;
-        private Integer rank;
-
-        public static RankingItem of(
-                Long mealId,
-                String mealName,
-                String photoUrl,
-                LocalDateTime mealTime,
-                MealType mealType,
-                Double score,
-                GradeType grade
-        ) {
-            return new RankingItem(mealId, mealName, photoUrl, mealTime, mealType, score, grade);
-        }
-
-        public RankingItemResponse toResponse() {
-            return RankingItemResponse.of(
-                    this.rank,
-                    this.mealId,
-                    this.mealName,
-                    this.photoUrl,
-                    this.mealTime,
-                    this.score,
-                    this.grade,
-                    this.mealType
-            );
-        }
-    }
+  }
 }

@@ -29,7 +29,16 @@
       "Bash(date:*)",
       "Bash(sleep:*)",
       "Bash(echo:*)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "WebSearch",
+      "mcp__web-search-prime__webSearchPrime",
+      "mcp__sequential-thinking__sequentialthinking"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(**/mymeal-fcm-key.json)",
+      "Read(./src/main/resources/firebase/)"
     ]
   }
 }

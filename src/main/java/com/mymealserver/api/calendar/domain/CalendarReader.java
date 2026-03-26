@@ -16,24 +16,22 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CalendarReader {
 
-    private final MealReader mealReader;
-    private final ReactionReader reactionReader;
+  private final MealReader mealReader;
+  private final ReactionReader reactionReader;
 
-    public List<Meal> findMealsByDateRange(Long memberId, LocalDateTime start, LocalDateTime end) {
-        return mealReader.findByMemberIdAndDateRange(memberId, start, end);
-    }
+  public List<Meal> findMealsByDateRange(Long memberId, LocalDateTime start, LocalDateTime end) {
+    return mealReader.findByMemberIdAndDateRange(memberId, start, end);
+  }
 
-    public Map<Long, Reaction> findReactionsByMealIds(List<Long> mealIds) {
-        if (mealIds.isEmpty()) {
-            return Map.of();
-        }
-        List<Reaction> reactions = reactionReader.findAllByMealIds(mealIds);
-        return reactions.stream()
-                .collect(Collectors.toMap(Reaction::getMealId, r -> r));
+  public Map<Long, Reaction> findReactionsByMealIds(List<Long> mealIds) {
+    if (mealIds.isEmpty()) {
+      return Map.of();
     }
+    List<Reaction> reactions = reactionReader.findAllByMealIds(mealIds);
+    return reactions.stream().collect(Collectors.toMap(Reaction::getMealId, r -> r));
+  }
 
-    public Map<LocalDate, List<Meal>> groupMealsByDate(List<Meal> meals) {
-        return meals.stream()
-                .collect(Collectors.groupingBy(meal -> meal.getMealTime().toLocalDate()));
-    }
+  public Map<LocalDate, List<Meal>> groupMealsByDate(List<Meal> meals) {
+    return meals.stream().collect(Collectors.groupingBy(meal -> meal.getMealTime().toLocalDate()));
+  }
 }

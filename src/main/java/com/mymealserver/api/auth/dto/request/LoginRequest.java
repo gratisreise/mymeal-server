@@ -6,15 +6,8 @@ import lombok.Builder;
 
 @Builder
 public record LoginRequest(
-
-        @NotBlank(message = "{validation.email.notblank}")
+    @NotBlank(message = "{validation.email.notblank}")
         @Email(message = "{validation.email.invalid}")
         String email,
-
-        @NotBlank(message = "{validation.password.notblank}")
-        String password,
-
-        String fcmToken
-
-) {
-}
+    @NotBlank(message = "{validation.password.notblank}") String password,
+    String fcmToken) {}

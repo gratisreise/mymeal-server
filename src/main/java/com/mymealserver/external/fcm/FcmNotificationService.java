@@ -17,36 +17,35 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FcmNotificationService {
 
-    private final MemberSettingsReader memberSettingsReader;
-    private final NotificationWriter notificationWriter;
-    private final FirebaseMessaging firebaseMessaging;
+  private final MemberSettingsReader memberSettingsReader;
+  private final NotificationWriter notificationWriter;
+  private final FirebaseMessaging firebaseMessaging;
 
-    @Async("fcmNotificationExecutor")
-    public void send(NotificationPayload payload) throws FirebaseMessagingException {
-        MemberSettings memberSettings = memberSettingsReader.findByMemberIdOrNull(payload.memberId());
+  @Async("fcmNotificationExecutor")
+  public void send(NotificationPayload payload) throws FirebaseMessagingException {
+    MemberSettings memberSettings = memberSettingsReader.findByMemberIdOrNull(payload.memberId());
 
-        if (memberSettings == null || !isNotificationEnabled(memberSettings, payload.type())) return;
+    if (memberSettings == null || !isNotificationEnabled(memberSettings, payload.type())) return;
 
-        String fcmToken = memberSettings.getFcmToken();
-        if (fcmToken == null || fcmToken.isBlank()) return;
+    String fcmToken = memberSettings.getFcmToken();
+    if (fcmToken == null || fcmToken.isBlank()) return;
 
-        Message message = Message.builder()
-                .setToken(fcmToken)
-                .setNotification(Notification.builder()
-                        .setTitle(payload.title())
-                        .setBody(payload.body())
-                        .build())
-                .putAllData(payload.data())
-                .build();
-        firebaseMessaging.send(message);
-        notificationWriter.saveFromPayload(payload);
-    }
+    Message message =
+        Message.builder()
+            .setToken(fcmToken)
+            .setNotification(
+                Notification.builder().setTitle(payload.title()).setBody(payload.body()).build())
+            .putAllData(payload.data())
+            .build();
+    firebaseMessaging.send(message);
+    notificationWriter.saveFromPayload(payload);
+  }
 
-    private boolean isNotificationEnabled(MemberSettings settings, NotificationType type) {
-        return switch (type) {
-            case RECOMMENDATION -> settings.getRecommendationEnabled();
-            case REACTION_REMINDER -> settings.getReactionReminderEnabled();
-            case MEAL_REMINDER -> settings.getMealReminderEnabled();
-        };
-    }
+  private boolean isNotificationEnabled(MemberSettings settings, NotificationType type) {
+    return switch (type) {
+      case RECOMMENDATION -> settings.getRecommendationEnabled();
+      case REACTION_REMINDER -> settings.getReactionReminderEnabled();
+      case MEAL_REMINDER -> settings.getMealReminderEnabled();
+    };
+  }
 }

@@ -10,14 +10,15 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class FoodReader {
 
-    private final FoodRepository foodRepository;
+  private final FoodRepository foodRepository;
 
-    public Optional<Food> findByName(String name) {
-        return foodRepository.findByName(name);
-    }
+  public Optional<Food> findByName(String name) {
+    return foodRepository.findByName(name);
+  }
 
-    public Food findById(Long id) {
-        return foodRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.FOOD_NOT_FOUND));
-    }
+  public Food findById(Long id) {
+    return foodRepository
+        .findById(id)
+        .orElseThrow(() -> new BusinessException(ErrorCode.FOOD_NOT_FOUND));
+  }
 }

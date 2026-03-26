@@ -1,7 +1,8 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.10'
-    id 'io.spring.dependency-management' version '1.1.7'
+    id 'org.springframework.boot' version "${springBootVersion}"
+    id 'io.spring.dependency-management' version "${dependencyManagementVersion}"
+    id 'com.diffplug.spotless' version "${spotlessVersion}"
 }
 
 group = 'com.mymealserver'
@@ -14,18 +15,11 @@ java {
     }
 }
 
-ext {
-    set('springAiVersion', "1.1.2")
-}
-
 dependencyManagement {
     imports {
         mavenBom "org.springframework.ai:spring-ai-bom:${springAiVersion}"
     }
 }
-
-
-
 
 repositories {
     mavenCentral()
@@ -41,41 +35,27 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    // JWT (JJWT 0.12.3)
-    implementation 'io.jsonwebtoken:jjwt-api:0.13.0'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
-
-    // Database Migration
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-database-postgresql'
+    // JWT
+    implementation "io.jsonwebtoken:jjwt-api:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-impl:${jjwtVersion}"
+    runtimeOnly "io.jsonwebtoken:jjwt-jackson:${jjwtVersion}"
 
     // PostgreSQL Driver
     runtimeOnly 'org.postgresql:postgresql'
 
-    // AWS SDK v2 (2.21.0)
-    implementation platform('software.amazon.awssdk:bom:2.31.0')
-    implementation 'software.amazon.awssdk:s3'
+    // AWS S3
+    implementation "io.awspring.cloud:spring-cloud-aws-starter-s3:${springCloudAwsVersion}"
 
-    // Firebase Admin SDK (9.2.0)
-    implementation 'com.google.firebase:firebase-admin:9.7.0'
-
-    // pgvector (0.1.4)
-    implementation 'com.pgvector:pgvector:0.1.4'
+    // Firebase Admin SDK
+    implementation "com.google.firebase:firebase-admin:${firebaseAdminVersion}"
 
     // Spring ai
-    implementation 'org.springframework.ai:spring-ai-advisors-vector-store'
     implementation 'org.springframework.ai:spring-ai-starter-model-google-genai'
-    implementation 'org.springframework.ai:spring-ai-starter-model-openai'
-    implementation 'org.springframework.ai:spring-ai-starter-vector-store-pgvector'
-
+    implementation 'org.springframework.ai:spring-ai-starter-model-google-genai-embedding'
 
     // Utilities
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    // API Documentation (SpringDoc OpenAPI 2.x)
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'
 
     // Monitoring (Prometheus)
     implementation 'io.micrometer:micrometer-registry-prometheus'
@@ -88,14 +68,23 @@ dependencies {
     testImplementation 'org.testcontainers:postgresql'
     testImplementation 'org.testcontainers:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
 
+tasks.named('build') {
+    dependsOn 'spotlessApply'
+}
+
+spotless {
+    java {
+        target 'src/**/*.java'
+        googleJavaFormat("${googleJavaFormatVersion}")
+        importOrder()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+    }
 }
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-
-// Spring Boot Docker Image Build
-tasks.named('bootBuildImage') {
-    imageName = "mymeal-server:${version}"
 }

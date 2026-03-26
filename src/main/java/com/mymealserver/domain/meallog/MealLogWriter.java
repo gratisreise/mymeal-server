@@ -8,20 +8,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MealLogWriter {
 
-    private final MealLogRepository mealLogRepository;
+  private final MealLogRepository mealLogRepository;
 
-    @Transactional
-    public MealLog save(MealLog mealLog) {
-        return mealLogRepository.save(mealLog);
-    }
+  @Transactional
+  public MealLog save(MealLog mealLog) {
+    return mealLogRepository.save(mealLog);
+  }
 
-    @Transactional
-    public void delete(MealLog mealLog) {
-        mealLog.softDelete();
-        mealLogRepository.save(mealLog);
-    }
+  @Transactional
+  public void delete(MealLog mealLog) {
+    mealLog.softDelete();
+    mealLogRepository.save(mealLog);
+  }
 
-    public void saveWithEmbed(String embedding) {
-
-    }
+  public void saveWithEmbed(String embedding) {}
 }

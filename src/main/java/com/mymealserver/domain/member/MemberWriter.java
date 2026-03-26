@@ -8,16 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MemberWriter {
 
-    private final MemberRepository memberRepository;
+  private final MemberRepository memberRepository;
 
-    @Transactional
-    public Member save(Member member) {
-        return memberRepository.save(member);
-    }
+  @Transactional
+  public Member save(Member member) {
+    return memberRepository.save(member);
+  }
 
-    @Transactional
-    public void delete(Member member) {
-        member.softDelete();
-        memberRepository.save(member);
-    }
+  @Transactional
+  public void delete(Member member) {
+    member.softDelete();
+    memberRepository.save(member);
+  }
 }

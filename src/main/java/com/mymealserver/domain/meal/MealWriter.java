@@ -8,16 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class MealWriter {
 
-    private final MealRepository mealRepository;
+  private final MealRepository mealRepository;
 
-    @Transactional
-    public Meal save(Meal meal) {
-        return mealRepository.save(meal);
-    }
+  @Transactional
+  public Meal save(Meal meal) {
+    return mealRepository.save(meal);
+  }
 
-    @Transactional
-    public void delete(Meal meal) {
-        meal.softDelete();
-        mealRepository.save(meal);
-    }
+  @Transactional
+  public void delete(Meal meal) {
+    meal.softDelete();
+    mealRepository.save(meal);
+  }
 }

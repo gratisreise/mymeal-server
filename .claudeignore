@@ -1,0 +1,18 @@
+# 환경 변수 파일
+.env
+.env.local
+.env.*.local
+
+# AWS/AWS 관련 자격 증명
+.aws/
+credentials
+*.pem
+*.key
+
+# 비밀 정보
+secrets/
+config/secrets.yaml
+
+# 개인 키
+private/
+keys/

@@ -1,0 +1,265 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: mymeal
+---
+# ClusterSecretStore - AWS Secrets Manager 연결 설정
+apiVersion: external-secrets.io/v1beta1
+kind: ClusterSecretStore
+metadata:
+  name: aws-secrets-manager
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: ap-northeast-2
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: external-secrets-sa
+            namespace: external-secrets
+---
+# DB Credentials - AWS Secrets Manager에서 동기화
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: mymeal-db-credentials
+  namespace: mymeal
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  target:
+    name: mymeal-db-credentials
+    creationPolicy: Owner
+  data:
+    - secretKey: SPRING_DATASOURCE_USERNAME
+      remoteRef:
+        key: mymeal/db-credentials
+        property: username
+    - secretKey: SPRING_DATASOURCE_PASSWORD
+      remoteRef:
+        key: mymeal/db-credentials
+        property: password
+---
+# Redis Credentials - AWS Secrets Manager에서 동기화
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: mymeal-redis-credentials
+  namespace: mymeal
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  target:
+    name: mymeal-redis-credentials
+    creationPolicy: Owner
+  data:
+    - secretKey: SPRING_DATA_REDIS_PASSWORD
+      remoteRef:
+        key: mymeal/redis-credentials
+        property: password
+---
+# JWT Secret - AWS Secrets Manager에서 동기화
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: mymeal-jwt-secret
+  namespace: mymeal
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  target:
+    name: mymeal-jwt-secret
+    creationPolicy: Owner
+  data:
+    - secretKey: JWT_SECRET
+      remoteRef:
+        key: mymeal/jwt-secret
+        property: secret
+---
+# Endpoints - AWS Secrets Manager에서 동기화
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: mymeal-endpoints
+  namespace: mymeal
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-secrets-manager
+    kind: ClusterSecretStore
+  target:
+    name: mymeal-endpoints
+    creationPolicy: Owner
+  data:
+    - secretKey: SPRING_DATASOURCE_URL
+      remoteRef:
+        key: mymeal/db-endpoint
+        property: url
+    - secretKey: SPRING_DATA_REDIS_HOST
+      remoteRef:
+        key: mymeal/redis-endpoint
+        property: host
+    - secretKey: SPRING_DATA_REDIS_PORT
+      remoteRef:
+        key: mymeal/redis-endpoint
+        property: port
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mymeal-config
+  namespace: mymeal
+data:
+  SPRING_PROFILES_ACTIVE: "prod"
+  JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mymeal-server
+  namespace: mymeal
+  labels:
+    app: mymeal-server
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mymeal-server
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: mymeal-server
+    spec:
+      serviceAccountName: mymeal-server
+      containers:
+        - name: mymeal-server
+          image: /mymeal-server:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: mymeal-config
+            - secretRef:
+                name: mymeal-db-credentials
+            - secretRef:
+                name: mymeal-redis-credentials
+            - secretRef:
+                name: mymeal-jwt-secret
+            - secretRef:
+                name: mymeal-endpoints
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "2000m"
+              memory: "2Gi"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          volumeMounts:
+            - name: firebase-credentials
+              mountPath: /app/config/firebase
+              readOnly: true
+      volumes:
+        - name: firebase-credentials
+          secret:
+            secretName: firebase-credentials
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: mymeal-server
+                topologyKey: kubernetes.io/hostname
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mymeal-server
+  namespace: mymeal
+spec:
+  type: ClusterIP
+  selector:
+    app: mymeal-server
+  ports:
+    - port: 80
+      targetPort: 8080
+      protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mymeal-server
+  namespace: mymeal
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: mymeal-server
+                port:
+                  number: 80
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: mymeal-server
+  namespace: mymeal
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: mymeal-server
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80

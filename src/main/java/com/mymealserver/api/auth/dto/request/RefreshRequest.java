@@ -5,7 +5,4 @@ import lombok.Builder;
 
 @Builder
 public record RefreshRequest(
-
-        @NotBlank(message = "{validation.refreshtoken.notblank}")
-        String refreshToken
-) { }
+    @NotBlank(message = "{validation.refreshtoken.notblank}") String refreshToken) {}

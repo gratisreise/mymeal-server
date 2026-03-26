@@ -6,15 +6,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.web.client.RestClient;
 
-
 @Slf4j
 @Configuration
 public class RestClientConfig {
 
-    @Bean
-    public RestClient oauthRestClient(RestClient.Builder builder) {
-        return builder
-                .requestFactory(new JdkClientHttpRequestFactory())
-                .build();
-    }
+  @Bean
+  public RestClient oauthRestClient(RestClient.Builder builder) {
+    return builder.requestFactory(new JdkClientHttpRequestFactory()).build();
+  }
 }

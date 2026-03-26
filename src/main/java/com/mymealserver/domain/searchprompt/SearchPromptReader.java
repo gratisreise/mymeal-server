@@ -11,13 +11,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SearchPromptReader {
 
-    private final SearchPromptRepository searchPromptRepository;
+  private final SearchPromptRepository searchPromptRepository;
 
-    public Optional<SearchPrompt> findActiveByType(PromptType promptType) {
-        return searchPromptRepository.findByPromptTypeAndIsActiveTrue(promptType);
-    }
+  public Optional<SearchPrompt> findActiveByType(PromptType promptType) {
+    return searchPromptRepository.findByPromptTypeAndIsActiveTrue(promptType);
+  }
 
-    public Optional<SearchPrompt> findByType(PromptType promptType) {
-        return searchPromptRepository.findByPromptType(promptType);
-    }
+  public Optional<SearchPrompt> findByType(PromptType promptType) {
+    return searchPromptRepository.findByPromptType(promptType);
+  }
 }

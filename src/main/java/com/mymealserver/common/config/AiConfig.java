@@ -8,9 +8,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AiConfig {
 
-    @Bean
-    public ChatClient googleChatClient(GoogleGenAiChatModel googleGenAiChatModel){
-        return ChatClient.create(googleGenAiChatModel);
-    }
-
+  @Bean
+  public ChatClient googleChatClient(GoogleGenAiChatModel googleGenAiChatModel) {
+    return ChatClient.create(googleGenAiChatModel);
+  }
 }

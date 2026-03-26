@@ -21,96 +21,93 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MealLog extends SoftDeletable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, unique = true)
-    private Long mealId;
+  @Column(nullable = false, unique = true)
+  private Long mealId;
 
-    @Column(nullable = false)
-    private Long memberId;
+  @Column(nullable = false)
+  private Long memberId;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String mealSummary;
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String mealSummary;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String reactionSummary;
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String reactionSummary;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String combinedSummary;
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String combinedSummary;
 
-    @Column(columnDefinition = "vector(3072)")
-    private String embedding;
+  @Column(columnDefinition = "vector(3072)")
+  private String embedding;
 
-    @Column
-    private LocalDateTime embeddingCreatedAt;
+  @Column private LocalDateTime embeddingCreatedAt;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
+  @Column(nullable = false)
+  private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
+  @Column(nullable = false)
+  private LocalDateTime updatedAt;
 
+  public static MealLog from(Meal meal, MealAnalysis analysis, Reaction reaction) {
+    String mealSummary = buildMealSummary(meal, analysis);
+    String reactionSummary = buildReactionSummary(reaction);
+    String combinedSummary = mealSummary + "\n" + reactionSummary;
 
-    public static MealLog from(Meal meal, MealAnalysis analysis, Reaction reaction) {
-        String mealSummary = buildMealSummary(meal, analysis);
-        String reactionSummary = buildReactionSummary(reaction);
-        String combinedSummary = mealSummary + "\n" + reactionSummary;
+    return MealLog.builder()
+        .mealId(meal.getId())
+        .memberId(meal.getMemberId())
+        .mealSummary(mealSummary)
+        .reactionSummary(reactionSummary)
+        .combinedSummary(combinedSummary)
+        .embedding(null)
+        .createdAt(LocalDateTime.now())
+        .updatedAt(LocalDateTime.now())
+        .build();
+  }
 
-        return MealLog.builder()
-                .mealId(meal.getId())
-                .memberId(meal.getMemberId())
-                .mealSummary(mealSummary)
-                .reactionSummary(reactionSummary)
-                .combinedSummary(combinedSummary)
-                .embedding(null)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
-    }
+  private static String buildMealSummary(Meal meal, MealAnalysis analysis) {
+    return String.format(
+        "%s, %s, %dkcal, 탄수화물 %.0fg, 단백질 %.0fg, 지방 %.0fg",
+        analysis.getMealName(),
+        meal.getMealType().getDescription(),
+        Math.round(analysis.getCalories()),
+        analysis.getCarbohydrates(),
+        analysis.getProtein(),
+        analysis.getFat());
+  }
 
+  private static String buildReactionSummary(Reaction reaction) {
+    StringBuilder sb = new StringBuilder();
+    sb.append(
+        String.format(
+            "소화 상태: %d/5, 포만감: %d/5, 에너지: %d/5",
+            reaction.getDigestionLevel(), reaction.getFullnessLevel(), reaction.getEnergyLevel()));
 
-    private static String buildMealSummary(Meal meal, MealAnalysis analysis) {
-        return String.format("%s, %s, %dkcal, 탄수화물 %.0fg, 단백질 %.0fg, 지방 %.0fg",
-                analysis.getMealName(),
-                meal.getMealType().getDescription(),
-                Math.round(analysis.getCalories()),
-                analysis.getCarbohydrates(),
-                analysis.getProtein(),
-                analysis.getFat());
-    }
+    List<String> symptoms = new ArrayList<>();
+    if (reaction.getHasHeartburn()) symptoms.add("속쓰림");
+    if (reaction.getHasGas()) symptoms.add("가스");
+    if (reaction.getHasBloating()) symptoms.add("복부 팽만");
+    if (reaction.getHasHeadache()) symptoms.add("두통");
 
-
-    private static String buildReactionSummary(Reaction reaction) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(String.format("소화 상태: %d/5, 포만감: %d/5, 에너지: %d/5",
-                reaction.getDigestionLevel(),
-                reaction.getFullnessLevel(),
-                reaction.getEnergyLevel()));
-
-        List<String> symptoms = new ArrayList<>();
-        if (reaction.getHasHeartburn()) symptoms.add("속쓰림");
-        if (reaction.getHasGas()) symptoms.add("가스");
-        if (reaction.getHasBloating()) symptoms.add("복부 팽만");
-        if (reaction.getHasHeadache()) symptoms.add("두통");
-
-        if (!symptoms.isEmpty()) {
-            sb.append(". ");
-            for (int i = 0; i < symptoms.size(); i++) {
-                sb.append(symptoms.get(i));
-                if (i < symptoms.size() - 1) {
-                    sb.append(" 있음, ");
-                } else {
-                    sb.append(" 있음.");
-                }
-            }
+    if (!symptoms.isEmpty()) {
+      sb.append(". ");
+      for (int i = 0; i < symptoms.size(); i++) {
+        sb.append(symptoms.get(i));
+        if (i < symptoms.size() - 1) {
+          sb.append(" 있음, ");
+        } else {
+          sb.append(" 있음.");
         }
-
-        if (reaction.getMemo() != null && !reaction.getMemo().isBlank()) {
-            sb.append(" 메모: ").append(reaction.getMemo());
-        }
-
-        return sb.toString();
+      }
     }
+
+    if (reaction.getMemo() != null && !reaction.getMemo().isBlank()) {
+      sb.append(" 메모: ").append(reaction.getMemo());
+    }
+
+    return sb.toString();
+  }
 }

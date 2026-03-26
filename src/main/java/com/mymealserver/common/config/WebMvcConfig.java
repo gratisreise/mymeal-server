@@ -11,10 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
+  private final AuthenticatedMemberArgumentResolver authenticatedMemberArgumentResolver;
 
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(authenticatedMemberArgumentResolver);
-    }
+  @Override
+  public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+    resolvers.add(authenticatedMemberArgumentResolver);
+  }
 }
