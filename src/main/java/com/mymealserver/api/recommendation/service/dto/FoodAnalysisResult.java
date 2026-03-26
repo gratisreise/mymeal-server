@@ -1,17 +1,20 @@
-package com.mymealserver.api.recommendation.service;
-
+package com.mymealserver.api.recommendation.service.dto;
 
 public record FoodAnalysisResult(
-        String mealName,
-        Double calories,
-        Double carbohydrates,
-        Double protein,
-        Double fat,
-        Double confidence
-) {
+    String mealName,
+    Double calories,
+    Double carbohydrates,
+    Double protein,
+    Double fat,
+    Double confidence) {
 
-    public static FoodAnalysisResult of(String mealName, Double calories, Double carbohydrates,
-                                         Double protein, Double fat, Double confidence) {
-        return new FoodAnalysisResult(mealName, calories, carbohydrates, protein, fat, confidence);
-    }
+  public static FoodAnalysisResult of(
+      String mealName,
+      Double calories,
+      Double carbohydrates,
+      Double protein,
+      Double fat,
+      Double confidence) {
+    return new FoodAnalysisResult(mealName, calories, carbohydrates, protein, fat, confidence);
+  }
 }

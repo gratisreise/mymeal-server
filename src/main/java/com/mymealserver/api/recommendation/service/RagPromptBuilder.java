@@ -7,8 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RagPromptBuilder {
 
-    // 추천 프롬프트 템플릿
-    private static final String RECOMMENDATION_PROMPT_TEMPLATE = """
+  // 추천 프롬프트 템플릿
+  private static final String RECOMMENDATION_PROMPT_TEMPLATE =
+      """
         당신은 한국인의 식습관에 정통한 영양사입니다.
         사용자의 과거 긍정적인 식사 경험을 분석하여 오늘의 아침, 점심, 저녁 식사를 추천하세요.
 
@@ -47,20 +48,19 @@ public class RagPromptBuilder {
         }
         """;
 
-    // 유틸리티 클래스 - 인스턴스화 방지
-    private RagPromptBuilder() {
-    }
+  // 유틸리티 클래스 - 인스턴스화 방지
+  private RagPromptBuilder() {}
 
-    public static String buildRecommendationPrompt(List<MealLog> goodMeals) {
-        String goodMealsSection = buildGoodMealsSection(goodMeals);
-        return RECOMMENDATION_PROMPT_TEMPLATE.formatted(goodMealsSection);
-    }
+  public static String buildRecommendationPrompt(List<MealLog> goodMeals) {
+    String goodMealsSection = buildGoodMealsSection(goodMeals);
+    return RECOMMENDATION_PROMPT_TEMPLATE.formatted(goodMealsSection);
+  }
 
-    private static String buildGoodMealsSection(List<MealLog> goodMeals) {
-        StringBuilder section = new StringBuilder();
-        for (MealLog mealLog : goodMeals) {
-            section.append("- %s\n".formatted(mealLog.getCombinedSummary()));
-        }
-        return section.toString().trim();
+  private static String buildGoodMealsSection(List<MealLog> goodMeals) {
+    StringBuilder section = new StringBuilder();
+    for (MealLog mealLog : goodMeals) {
+      section.append("- %s\n".formatted(mealLog.getCombinedSummary()));
     }
+    return section.toString().trim();
+  }
 }

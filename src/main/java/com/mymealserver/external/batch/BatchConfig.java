@@ -10,16 +10,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @EnableBatchProcessing
 public class BatchConfig {
 
-    @Bean
-    public TaskExecutor batchTaskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(5);
-        executor.setMaxPoolSize(10);
-        executor.setQueueCapacity(25);
-        executor.setThreadNamePrefix("batch-executor-");
-        executor.setWaitForTasksToCompleteOnShutdown(true);
-        executor.setAwaitTerminationSeconds(60);
-        executor.initialize();
-        return executor;
-    }
+  @Bean
+  public TaskExecutor batchTaskExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(5);
+    executor.setMaxPoolSize(10);
+    executor.setQueueCapacity(25);
+    executor.setThreadNamePrefix("batch-executor-");
+    executor.setWaitForTasksToCompleteOnShutdown(true);
+    executor.setAwaitTerminationSeconds(60);
+    executor.initialize();
+    return executor;
+  }
 }

@@ -11,17 +11,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface MealLogRepository extends JpaRepository<MealLog, Long> {
 
-    MealLog findByMealId(Long mealId);
-    List<MealLog> findByMemberIdOrderByCreatedAtDesc(Long memberId);
+  MealLog findByMealId(Long mealId);
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE meal_log SET embedding = CAST(:embedding AS vector), "
-        + "embedding_created_at = NOW() "
-        + "WHERE id = :id", nativeQuery = true)
-    void updateEmbedding(Long id, String embedding);
+  List<MealLog> findByMemberIdOrderByCreatedAtDesc(Long memberId);
 
-    @Query(value = """
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE meal_log SET embedding = CAST(:embedding AS vector), "
+              + "embedding_created_at = NOW() "
+              + "WHERE id = :id",
+      nativeQuery = true)
+  void updateEmbedding(Long id, String embedding);
+
+  @Query(
+      value =
+          """
         SELECT id, meal_id, member_id, meal_summary, reaction_summary, combined_summary,
                embedding, embedding_created_at, created_at, updated_at, deleted_at,
                1 - (embedding <=> CAST(:queryVector AS vector)) AS similarity
@@ -31,16 +37,18 @@ public interface MealLogRepository extends JpaRepository<MealLog, Long> {
           AND member_id = :memberId
         ORDER BY embedding <=> CAST(:queryVector AS vector)
         LIMIT :limit
-    """, nativeQuery = true)
-    List<Object[]> findSimilarByEmbedding(
-            @Param("queryVector") String queryVector,
-            @Param("memberId") Long memberId,
-            @Param("limit") int limit
-    );
+    """,
+      nativeQuery = true)
+  List<Object[]> findSimilarByEmbedding(
+      @Param("queryVector") String queryVector,
+      @Param("memberId") Long memberId,
+      @Param("limit") int limit);
 
-    long countByMemberIdAndEmbeddingIsNotNull(Long memberId);
+  long countByMemberIdAndEmbeddingIsNotNull(Long memberId);
 
-    @Query(value = """
+  @Query(
+      value =
+          """
             SELECT ml.*
             FROM meal_logs ml
             WHERE ml.member_id = :memberId
@@ -48,10 +56,10 @@ public interface MealLogRepository extends JpaRepository<MealLog, Long> {
               AND ml.deleted_at IS NULL
             ORDER BY ml.embedding <=> CAST(:queryVector AS vector)
             LIMIT :limit
-            """, nativeQuery = true)
-    List<MealLog> findSimilarMealsByVector(
-            @Param("memberId") Long memberId,
-            @Param("queryVector") String queryVector,
-            @Param("limit") int limit
-    );
+            """,
+      nativeQuery = true)
+  List<MealLog> findSimilarMealsByVector(
+      @Param("memberId") Long memberId,
+      @Param("queryVector") String queryVector,
+      @Param("limit") int limit);
 }

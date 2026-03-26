@@ -16,30 +16,31 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
-    private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-        throws IOException, ServletException {
-        try {
-            filterChain.doFilter(request, response);
-        } catch (BusinessException e) {
-            setErrorResponse(HttpStatus.UNAUTHORIZED, response, e.getCode());
-        }
+  @Override
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws IOException, ServletException {
+    try {
+      filterChain.doFilter(request, response);
+    } catch (BusinessException e) {
+      setErrorResponse(HttpStatus.UNAUTHORIZED, response, e.getCode());
     }
+  }
 
-    private void setErrorResponse(HttpStatus status, HttpServletResponse response, ErrorCode errorCode)
-        throws IOException {
-        response.setStatus(status.value());
-        response.setContentType("application/json; charset=UTF-8");
-        ErrorResponse errorResponse = ErrorResponse.from(errorCode);
+  private void setErrorResponse(
+      HttpStatus status, HttpServletResponse response, ErrorCode errorCode) throws IOException {
+    response.setStatus(status.value());
+    response.setContentType("application/json; charset=UTF-8");
+    ErrorResponse errorResponse = ErrorResponse.from(errorCode);
 
-        generateBody(response, errorResponse);
-    }
+    generateBody(response, errorResponse);
+  }
 
-    private void generateBody(HttpServletResponse response, ErrorResponse errorResponse)
-        throws IOException {
-        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
-        response.getWriter().write(jsonResponse);
-    }
+  private void generateBody(HttpServletResponse response, ErrorResponse errorResponse)
+      throws IOException {
+    String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+    response.getWriter().write(jsonResponse);
+  }
 }

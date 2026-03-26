@@ -13,51 +13,54 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class NotificationWriter {
 
-    private final NotificationRepository notificationRepository;
-    private final ObjectMapper objectMapper;
+  private final NotificationRepository notificationRepository;
+  private final ObjectMapper objectMapper;
 
-    @Transactional
-    public Notification save(Notification notification) {
-        return notificationRepository.save(notification);
+  @Transactional
+  public Notification save(Notification notification) {
+    return notificationRepository.save(notification);
+  }
+
+  @Transactional
+  public Notification saveFromPayload(NotificationPayload payload) {
+    String dataJson = toJson(payload.data());
+
+    Notification notification =
+        Notification.builder()
+            .memberId(payload.memberId())
+            .type(payload.type())
+            .title(payload.title())
+            .body(payload.body())
+            .data(dataJson)
+            .sentAt(LocalDateTime.now())
+            .build();
+
+    return notificationRepository.save(notification);
+  }
+
+  private String toJson(Map<String, String> data) {
+    try {
+      return objectMapper.writeValueAsString(data);
+    } catch (Exception e) {
+      return "{}";
     }
+  }
 
-    @Transactional
-    public Notification saveFromPayload(NotificationPayload payload) {
-        String dataJson = toJson(payload.data());
+  @Transactional
+  public void markAsRead(Notification notification) {
+    notification.markAsRead();
+    notificationRepository.save(notification);
+  }
 
-        Notification notification = Notification.builder()
-                .memberId(payload.memberId())
-                .type(payload.type())
-                .title(payload.title())
-                .body(payload.body())
-                .data(dataJson)
-                .sentAt(LocalDateTime.now())
-                .build();
+  @Transactional
+  public void markAllAsRead(Long memberId) {
+    List<Notification> unreadNotifications =
+        notificationRepository
+            .findByMemberIdAndIsReadAndDeletedAtIsNull(
+                memberId, false, org.springframework.data.domain.Pageable.unpaged())
+            .getContent();
 
-        return notificationRepository.save(notification);
-    }
-
-    private String toJson(Map<String, String> data) {
-        try {
-            return objectMapper.writeValueAsString(data);
-        } catch (Exception e) {
-            return "{}";
-        }
-    }
-
-    @Transactional
-    public void markAsRead(Notification notification) {
-        notification.markAsRead();
-        notificationRepository.save(notification);
-    }
-
-    @Transactional
-    public void markAllAsRead(Long memberId) {
-        List<Notification> unreadNotifications = notificationRepository
-                .findByMemberIdAndIsReadAndDeletedAtIsNull(memberId, false, org.springframework.data.domain.Pageable.unpaged())
-                .getContent();
-
-        unreadNotifications.forEach(Notification::markAsRead);
-        notificationRepository.saveAll(unreadNotifications);
-    }
+    unreadNotifications.forEach(Notification::markAsRead);
+    notificationRepository.saveAll(unreadNotifications);
+  }
 }

@@ -14,37 +14,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MealAnalysis extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false, unique = true)
-    private Long mealId;
+  @Column(nullable = false, unique = true)
+  private Long mealId;
 
-    @Column
-    private Long foodId;
+  @Column private Long foodId;
 
-    @Column(length = 100)
-    private String mealName;
+  @Column(length = 100)
+  private String mealName;
 
-    @Column
-    private Double calories;
+  @Column private Double calories;
 
-    @Column
-    private Double carbohydrates;
+  @Column private Double carbohydrates;
 
-    @Column
-    private Double protein;
+  @Column private Double protein;
 
-    @Column
-    private Double fat;
+  @Column private Double fat;
 
-    @Column
-    private Double confidence;
+  @Column private Double confidence;
 
-    @Column(columnDefinition = "jsonb")
-    private String rawResponse;
+  @Column(columnDefinition = "jsonb")
+  private String rawResponse;
 
-    @Transient
-    private Double score;
+  @Transient private Double score;
 }

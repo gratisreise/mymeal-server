@@ -11,14 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 public interface SearchPromptRepository extends JpaRepository<SearchPrompt, Long> {
 
-    Optional<SearchPrompt> findByPromptTypeAndIsActiveTrue(PromptType promptType);
+  Optional<SearchPrompt> findByPromptTypeAndIsActiveTrue(PromptType promptType);
 
-    Optional<SearchPrompt> findByPromptType(PromptType promptType);
+  Optional<SearchPrompt> findByPromptType(PromptType promptType);
 
-    @Transactional
-    @Modifying
-    @Query(value = "UPDATE search_prompt SET embedding = CAST(:embedding AS vector), "
-        + "embedding_created_at = NOW() "
-        + "WHERE id = :id", nativeQuery = true)
-    void updateEmbedding(Long id, String embedding);
+  @Transactional
+  @Modifying
+  @Query(
+      value =
+          "UPDATE search_prompt SET embedding = CAST(:embedding AS vector), "
+              + "embedding_created_at = NOW() "
+              + "WHERE id = :id",
+      nativeQuery = true)
+  void updateEmbedding(Long id, String embedding);
 }

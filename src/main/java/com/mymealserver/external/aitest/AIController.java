@@ -1,6 +1,5 @@
 package com.mymealserver.external.aitest;
 
-
 import com.mymealserver.domain.meallog.MealLogReader;
 import com.mymealserver.domain.meallog.MealLogRepository;
 import com.mymealserver.domain.searchprompt.SearchPrompt;
@@ -20,31 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @Slf4j
 public class AIController {
-    private final ChatClient chatClient;
-    private final EmbeddingModel embeddingModel;
-    private final MealLogRepository mealLogRepository;
-    private final MealLogReader mealLogReader;
-    private final SearchPromptRepository searchPromptRepository;
+  private final ChatClient chatClient;
+  private final EmbeddingModel embeddingModel;
+  private final MealLogRepository mealLogRepository;
+  private final MealLogReader mealLogReader;
+  private final SearchPromptRepository searchPromptRepository;
 
-    @GetMapping("/chat")
-    public String testChat(@RequestParam String text){
-        return chatClient
-            .prompt()
-            .user(text)
-            .call()
-            .content();
-    }
+  @GetMapping("/chat")
+  public String testChat(@RequestParam String text) {
+    return chatClient.prompt().user(text).call().content();
+  }
 
-    @GetMapping("/embed")
-    public void testEmbed(){
-        Long id = 1L;
-        SearchPrompt searchPrompt = searchPromptRepository.findById(id)
-            .orElseGet(null);
-        if(searchPrompt == null) log.info("컷!!!!");
-        float[] embedded = embeddingModel.embed(searchPrompt.getPromptText());
-        searchPromptRepository.updateEmbedding(id, Arrays.toString(embedded));
-    }
-
-
-
+  @GetMapping("/embed")
+  public void testEmbed() {
+    Long id = 1L;
+    SearchPrompt searchPrompt = searchPromptRepository.findById(id).orElseGet(null);
+    if (searchPrompt == null) log.info("컷!!!!");
+    float[] embedded = embeddingModel.embed(searchPrompt.getPromptText());
+    searchPromptRepository.updateEmbedding(id, Arrays.toString(embedded));
+  }
 }

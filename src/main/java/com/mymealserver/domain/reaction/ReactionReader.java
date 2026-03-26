@@ -9,28 +9,28 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReactionReader {
 
-    private final ReactionRepository reactionRepository;
+  private final ReactionRepository reactionRepository;
 
-    public Reaction findByMealId(Long mealId) {
-        return reactionRepository.findByMealId(mealId).orElse(null);
-    }
+  public Reaction findByMealId(Long mealId) {
+    return reactionRepository.findByMealId(mealId).orElse(null);
+  }
 
-    public List<Reaction> findAllByMealIds(List<Long> mealIds) {
-        return reactionRepository.findAllByMealIdIn(mealIds);
-    }
+  public List<Reaction> findAllByMealIds(List<Long> mealIds) {
+    return reactionRepository.findAllByMealIdIn(mealIds);
+  }
 
-    public Map<Long, Reaction> findByMealIdsAsMap(List<Long> mealIds) {
-        List<Reaction> reactions = findAllByMealIds(mealIds);
-        return reactions.stream()
-                .collect(java.util.stream.Collectors.toMap(
-                        Reaction::getMealId,
-                        reaction -> reaction,
-                        (existing, replacement) -> existing // Keep first if duplicate mealId
+  public Map<Long, Reaction> findByMealIdsAsMap(List<Long> mealIds) {
+    List<Reaction> reactions = findAllByMealIds(mealIds);
+    return reactions.stream()
+        .collect(
+            java.util.stream.Collectors.toMap(
+                Reaction::getMealId,
+                reaction -> reaction,
+                (existing, replacement) -> existing // Keep first if duplicate mealId
                 ));
-    }
+  }
 
-    public boolean existsByMealId(Long mealId) {
-        return reactionRepository.existsByMealId(mealId);
-    }
-
+  public boolean existsByMealId(Long mealId) {
+    return reactionRepository.existsByMealId(mealId);
+  }
 }

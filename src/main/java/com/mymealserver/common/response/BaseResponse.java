@@ -8,6 +8,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class BaseResponse {
-    private final boolean success;
-    private final LocalDateTime timestamp;
+  private final boolean success;
+  private final LocalDateTime timestamp;
 }

@@ -1,39 +1,24 @@
 spring:
   application:
     name: mymeal-server
+  profiles:
+    active: local
 
-  # MessageSource for validation messages
+  # MessageSource
   messages:
     basename: messages
     encoding: UTF-8
     fallback-to-system-locale: false
 
-  # JPA + Spring Data JPA
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        default_batch_fetch_size: 100
-    open-in-view: false
-
-  # Flyway
-  flyway:
-    enabled: true
-    baseline-on-migrate: true
-    locations: classpath:db/migration
-
-  # Spring Batch
+  # Batch
   batch:
     job:
-      enabled: false  # Set to true to enable batch job execution
+      enabled: false
       name: recommendationGenerationJob
     jdbc:
       initialize-schema: always
 
-  # Task Scheduling (Virtual Thread Executor)
+  # Task Execution
   task:
     scheduling:
       pool:
@@ -45,46 +30,68 @@ spring:
         queue-capacity: 100
       thread-name-prefix: async-task-
 
-  # Spring Security (JWT-based)
-  security:
-    filter:
-      order: 10
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      s3:
+        bucket-name: mymeal-bucket
+
+
+  # File Upload
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # Spring AI
   ai:
-    openai:
-      api-key: ${OPENAI_API_KEY}
-      embedding:
-        options:
-          model: text-embedding-3-small
     google:
       genai:
-        api-key: ${GEMINI_API_KEY}
+        project-id: ${GOOGLE_PROJECT_ID}
+        api-key: ${GOOGLE_GENAI_API_KEY}
         chat:
           options:
             model: gemini-2.5-flash
+        embedding:
+          project-id: ${GOOGLE_PROJECT_ID}
+          api-key: ${GOOGLE_GENAI_API_KEY}
+          text:
+            options:
+              model: gemini-embedding-001
 
-# SpringDoc OpenAPI 2.x
-springdoc:
-  api-docs:
-    enabled: true
-    path: /api-docs
-  swagger-ui:
-    enabled: true
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-  packages-to-scan: com.mymealserver
-  default-consumes-media-type: application/json
-  default-produces-media-type: application/json
-
-# File Upload (Meal Photos, Profile Images)
-spring.servlet.multipart:
-  enabled: true
-  max-file-size: 10MB
-  max-request-size: 10MB
-
-# OAuth 2.0 Configuration
+# OAuth2
 oauth:
-  redirect-uris:
-    - http://localhost:3000/oauth/callback
-    - http://localhost:8080/oauth/callback
-    - https://mymeal.app/oauth/callback
+  google:
+    client-id: ${GOOGLE_CLIENT_ID:dummy}
+    client-secret: ${GOOGLE_CLIENT_SECRET:dummy}
+    token-url: https://oauth2.googleapis.com/token
+    user-info-url: https://www.googleapis.com/oauth2/v2/userinfo
+    redirect-uri: ${OAUTH_REDIRECT_URI}
+  naver:
+    client-id: ${NAVER_CLIENT_ID:dummy}
+    client-secret: ${NAVER_CLIENT_SECRET:dummy}
+    token-url: https://nid.naver.com/oauth2.0/token
+    user-info-url: https://openapi.naver.com/v1/nid/me
+    redirect-uri: ${OAUTH_REDIRECT_URI}
+  kakao:
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    token-url: https://kauth.kakao.com/oauth/token
+    user-info-url: https://kapi.kakao.com/v2/user/me
+    redirect-uri: ${OAUTH_REDIRECT_URI}
+
+# Firebase
+fcm:
+  key-path: classpath:mymeal-fcm-key.json
+
+# JWT
+jwt:
+  access-secret: ${JWT_ACCESS_SECRET}
+  refresh-secret: ${JWT_REFRESH_SECRET}
+  access_expiration: 3600000
+  refresh-expiration: 604800000

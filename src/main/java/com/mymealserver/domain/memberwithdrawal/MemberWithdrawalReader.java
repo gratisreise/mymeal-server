@@ -9,10 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class MemberWithdrawalReader {
 
-    private final MemberWithdrawalRepository memberWithdrawalRepository;
+  private final MemberWithdrawalRepository memberWithdrawalRepository;
 
-    public MemberWithdrawal findById(Long id) {
-        return memberWithdrawalRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("MemberWithdrawal not found"));
-    }
+  public MemberWithdrawal findById(Long id) {
+    return memberWithdrawalRepository
+        .findById(id)
+        .orElseThrow(() -> new IllegalArgumentException("MemberWithdrawal not found"));
+  }
 }

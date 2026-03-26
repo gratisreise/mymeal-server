@@ -9,10 +9,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FoodMemberStatsRepository extends JpaRepository<FoodMemberStats, Long> {
 
+  List<FoodMemberStats> findByMemberId(Long memberId);
 
-    List<FoodMemberStats> findByMemberId(Long memberId);
-
-    @Query("""
+  @Query(
+      """
         SELECT fms.memberId as memberId,
                f.name as tagName,
                fms.averageScore as averageScore,
@@ -22,5 +22,5 @@ public interface FoodMemberStatsRepository extends JpaRepository<FoodMemberStats
         WHERE fms.memberId = :memberId
         ORDER BY fms.mealCount DESC
     """)
-    List<Object[]> findTagStatistics(@Param("memberId") Long memberId);
+  List<Object[]> findTagStatistics(@Param("memberId") Long memberId);
 }

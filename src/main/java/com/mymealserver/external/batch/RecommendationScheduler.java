@@ -13,26 +13,28 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecommendationScheduler {
 
-    private final Job recommendationGenerationJob;
-    private final JobLauncher jobLauncher;
+  private final Job recommendationGenerationJob;
+  private final JobLauncher jobLauncher;
 
-    @Scheduled(cron = "0 0 16 * * ?")
-    public void generateDailyRecommendations() throws Exception {
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addLocalDate("runDate", LocalDate.now())
-                .addLong("timestamp", System.currentTimeMillis())
-                .toJobParameters();
+  @Scheduled(cron = "0 0 16 * * ?")
+  public void generateDailyRecommendations() throws Exception {
+    JobParameters jobParameters =
+        new JobParametersBuilder()
+            .addLocalDate("runDate", LocalDate.now())
+            .addLong("timestamp", System.currentTimeMillis())
+            .toJobParameters();
 
-        jobLauncher.run(recommendationGenerationJob, jobParameters);
-    }
+    jobLauncher.run(recommendationGenerationJob, jobParameters);
+  }
 
-    public void triggerRecommendationGeneration() throws Exception {
-        JobParameters jobParameters = new JobParametersBuilder()
-                .addLocalDate("runDate", LocalDate.now())
-                .addLong("timestamp", System.currentTimeMillis())
-                .addString("trigger", "manual")
-                .toJobParameters();
+  public void triggerRecommendationGeneration() throws Exception {
+    JobParameters jobParameters =
+        new JobParametersBuilder()
+            .addLocalDate("runDate", LocalDate.now())
+            .addLong("timestamp", System.currentTimeMillis())
+            .addString("trigger", "manual")
+            .toJobParameters();
 
-        jobLauncher.run(recommendationGenerationJob, jobParameters);
-    }
+    jobLauncher.run(recommendationGenerationJob, jobParameters);
+  }
 }

@@ -16,15 +16,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Document {
 
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Column(columnDefinition = "TEXT")
+  private String content;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    // pgvector-java 라이브러리의 Vector 타입 사용
-    @Column(columnDefinition = "vector(3072)")
-    private String embedding;
-
+  // pgvector-java 라이브러리의 Vector 타입 사용
+  @Column(columnDefinition = "vector(3072)")
+  private String embedding;
 }

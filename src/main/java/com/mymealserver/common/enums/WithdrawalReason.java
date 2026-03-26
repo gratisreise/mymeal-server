@@ -6,22 +6,22 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum WithdrawalReason {
-    SERVICE_NOT_USEFUL("서비스가 도움이 되지 않음"),
-    APP_ISSUES("앱 사용 불편"),
-    PRIVACY_CONCERNS("개인정보 우려"),
-    FOUND_ALTERNATIVE("다른 서비스 이용"),
-    OTHER("기타");
+  SERVICE_NOT_USEFUL("서비스가 도움이 되지 않음"),
+  APP_ISSUES("앱 사용 불편"),
+  PRIVACY_CONCERNS("개인정보 우려"),
+  FOUND_ALTERNATIVE("다른 서비스 이용"),
+  OTHER("기타");
 
-    private final String description;
+  private final String description;
 
-    public static WithdrawalReason fromString(String text) {
-        if (text == null) {
-            return OTHER;
-        }
-        try {
-            return WithdrawalReason.valueOf(text.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            return OTHER;
-        }
+  public static WithdrawalReason fromString(String text) {
+    if (text == null) {
+      return OTHER;
     }
+    try {
+      return WithdrawalReason.valueOf(text.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      return OTHER;
+    }
+  }
 }

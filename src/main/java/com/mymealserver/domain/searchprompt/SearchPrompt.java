@@ -17,33 +17,31 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class SearchPrompt extends SoftDeletable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, unique = true)
-    private PromptType promptType;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, unique = true)
+  private PromptType promptType;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String promptText;
+  @Column(nullable = false, columnDefinition = "TEXT")
+  private String promptText;
 
-    @Column(columnDefinition = "vector(3072)")
-    private String embedding;
+  @Column(columnDefinition = "vector(3072)")
+  private String embedding;
 
-    @Column
-    private LocalDateTime embeddingCreatedAt;
+  @Column private LocalDateTime embeddingCreatedAt;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isActive = true;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean isActive = true;
 
+  public void deactivate() {
+    this.isActive = false;
+  }
 
-    public void deactivate() {
-        this.isActive = false;
-    }
-
-    public void activate() {
-        this.isActive = true;
-    }
+  public void activate() {
+    this.isActive = true;
+  }
 }

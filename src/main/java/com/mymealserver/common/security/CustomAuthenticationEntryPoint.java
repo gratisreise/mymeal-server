@@ -18,21 +18,24 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final ObjectMapper objectMapper;
+  private final ObjectMapper objectMapper;
 
-    @Override
-    public void commence(HttpServletRequest request, HttpServletResponse response,
-                         AuthenticationException authException) throws IOException {
+  @Override
+  public void commence(
+      HttpServletRequest request,
+      HttpServletResponse response,
+      AuthenticationException authException)
+      throws IOException {
 
-        log.warn("인증 실패: {}", authException.getMessage());
+    log.warn("인증 실패: {}", authException.getMessage());
 
-        response.setStatus(HttpStatus.UNAUTHORIZED.value());
-        response.setContentType("application/json; charset=UTF-8");
+    response.setStatus(HttpStatus.UNAUTHORIZED.value());
+    response.setContentType("application/json; charset=UTF-8");
 
-        // 공통 응답 규격 생성
-        ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.UNAUTHORIZED_USER);
+    // 공통 응답 규격 생성
+    ErrorResponse errorResponse = ErrorResponse.from(ErrorCode.UNAUTHORIZED_USER);
 
-        String jsonResponse = objectMapper.writeValueAsString(errorResponse);
-        response.getWriter().write(jsonResponse);
-    }
+    String jsonResponse = objectMapper.writeValueAsString(errorResponse);
+    response.getWriter().write(jsonResponse);
+  }
 }

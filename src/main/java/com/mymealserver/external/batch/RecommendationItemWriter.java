@@ -15,34 +15,32 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RecommendationItemWriter implements ItemWriter<List<Recommendation>> {
 
-    private static final int NOTIFICATION_ADVANCE_MINUTES = 30;
+  private static final int NOTIFICATION_ADVANCE_MINUTES = 30;
 
-    private final RecommendationWriter recommendationWriter;
-    private final UnifiedNotificationService unifiedNotificationService;
+  private final RecommendationWriter recommendationWriter;
+  private final UnifiedNotificationService unifiedNotificationService;
 
-    @Override
-    public void write(Chunk<? extends List<Recommendation>> chunk) {
-        for (List<Recommendation> recommendations : chunk) {
-            if (recommendations != null && !recommendations.isEmpty()) {
-                List<Recommendation> saved = recommendationWriter.saveAll(recommendations);
+  @Override
+  public void write(Chunk<? extends List<Recommendation>> chunk) {
+    for (List<Recommendation> recommendations : chunk) {
+      if (recommendations != null && !recommendations.isEmpty()) {
+        List<Recommendation> saved = recommendationWriter.saveAll(recommendations);
 
-                for (Recommendation recommendation : saved) {
-                    scheduleRecommendationNotification(recommendation);
-                }
-            }
+        for (Recommendation recommendation : saved) {
+          scheduleRecommendationNotification(recommendation);
         }
+      }
     }
+  }
 
-    private void scheduleRecommendationNotification(Recommendation recommendation) {
-        LocalDateTime notificationTime = recommendation.getScheduledTime()
-                .minusMinutes(NOTIFICATION_ADVANCE_MINUTES);
+  private void scheduleRecommendationNotification(Recommendation recommendation) {
+    LocalDateTime notificationTime =
+        recommendation.getScheduledTime().minusMinutes(NOTIFICATION_ADVANCE_MINUTES);
 
-        NotificationPayload payload = NotificationPayload.forRecommendation(
-                recommendation.getMemberId(),
-                recommendation.getId(),
-                recommendation.getPushMessage()
-        );
+    NotificationPayload payload =
+        NotificationPayload.forRecommendation(
+            recommendation.getMemberId(), recommendation.getId(), recommendation.getPushMessage());
 
-        unifiedNotificationService.schedule(payload, notificationTime);
-    }
+    unifiedNotificationService.schedule(payload, notificationTime);
+  }
 }

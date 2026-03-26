@@ -4,23 +4,23 @@ import lombok.Getter;
 
 @Getter
 public enum ProviderType {
-    EMAIL("email"),
-    GOOGLE("google"),
-    NAVER("naver"),
-    KAKAO("kakao");
+  EMAIL("email"),
+  GOOGLE("google"),
+  NAVER("naver"),
+  KAKAO("kakao");
 
-    private final String value;
+  private final String value;
 
-    ProviderType(String value) {
-        this.value = value;
+  ProviderType(String value) {
+    this.value = value;
+  }
+
+  public static ProviderType from(String value) {
+    for (ProviderType type : values()) {
+      if (type.value.equalsIgnoreCase(value)) {
+        return type;
+      }
     }
-
-    public static ProviderType from(String value) {
-        for (ProviderType type : values()) {
-            if (type.value.equalsIgnoreCase(value)) {
-                return type;
-            }
-        }
-        throw new IllegalArgumentException("Unknown provider type: " + value);
-    }
+    throw new IllegalArgumentException("Unknown provider type: " + value);
+  }
 }

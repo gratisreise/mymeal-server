@@ -17,32 +17,28 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "Notifications", description = "알림")
 public class NotificationController {
 
-    private final NotificationService notificationService;
+  private final NotificationService notificationService;
 
-    @GetMapping
-    public ResponseEntity<SuccessResponse<NotificationListResponse>> getNotifications(
-            @CurrentMember Long memberId,
-            @RequestParam(defaultValue = "false") Boolean unreadOnly,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
-    ) {
-        return SuccessResponse.toOk(notificationService.getNotifications(memberId, unreadOnly, page, size));
-    }
+  @GetMapping
+  public ResponseEntity<SuccessResponse<NotificationListResponse>> getNotifications(
+      @CurrentMember Long memberId,
+      @RequestParam(defaultValue = "false") Boolean unreadOnly,
+      @RequestParam(defaultValue = "0") int page,
+      @RequestParam(defaultValue = "20") int size) {
+    return SuccessResponse.toOk(
+        notificationService.getNotifications(memberId, unreadOnly, page, size));
+  }
 
-    @PutMapping("/{id}/read")
-    public ResponseEntity<SuccessResponse<Void>> markAsRead(
-            @CurrentMember Long memberId,
-            @PathVariable Long id
-    ) {
-        notificationService.markAsRead(memberId, id);
-        return SuccessResponse.toNoContent(null);
-    }
+  @PutMapping("/{id}/read")
+  public ResponseEntity<SuccessResponse<Void>> markAsRead(
+      @CurrentMember Long memberId, @PathVariable Long id) {
+    notificationService.markAsRead(memberId, id);
+    return SuccessResponse.toNoContent(null);
+  }
 
-    @PutMapping("/read-all")
-    public ResponseEntity<SuccessResponse<Void>> markAllAsRead(
-            @CurrentMember Long memberId
-    ) {
-        notificationService.markAllAsRead(memberId);
-        return SuccessResponse.toNoContent(null);
-    }
+  @PutMapping("/read-all")
+  public ResponseEntity<SuccessResponse<Void>> markAllAsRead(@CurrentMember Long memberId) {
+    notificationService.markAllAsRead(memberId);
+    return SuccessResponse.toNoContent(null);
+  }
 }

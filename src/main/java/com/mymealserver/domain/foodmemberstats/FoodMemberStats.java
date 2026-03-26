@@ -15,34 +15,33 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FoodMemberStats extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+  @Column(nullable = false)
+  private Long memberId;
 
-    @Column(nullable = false)
-    private Long foodId;
+  @Column(nullable = false)
+  private Long foodId;
 
-    @Column(nullable = false)
-    private Double averageScore;
+  @Column(nullable = false)
+  private Double averageScore;
 
-    @Column(nullable = false)
-    private Integer mealCount;
+  @Column(nullable = false)
+  private Integer mealCount;
 
-    @Column
-    private LocalDateTime lastMealAt;
+  @Column private LocalDateTime lastMealAt;
 
-    public void updateStats(double newScore) {
-        this.mealCount++;
-        this.lastMealAt = LocalDateTime.now();
+  public void updateStats(double newScore) {
+    this.mealCount++;
+    this.lastMealAt = LocalDateTime.now();
 
-        if (this.averageScore == null) {
-            this.averageScore = newScore;
-        } else {
-            double currentSum = this.averageScore * (this.mealCount - 1);
-            this.averageScore = (currentSum + newScore) / this.mealCount;
-        }
+    if (this.averageScore == null) {
+      this.averageScore = newScore;
+    } else {
+      double currentSum = this.averageScore * (this.mealCount - 1);
+      this.averageScore = (currentSum + newScore) / this.mealCount;
     }
+  }
 }

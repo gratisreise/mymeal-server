@@ -16,53 +16,34 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ProfileService {
 
-    private final MemberReader memberReader;
-    private final MemberWriter memberWriter;
+  private final MemberReader memberReader;
+  private final MemberWriter memberWriter;
 
-    /**
-     * Get profile for authenticated member
-     */
-    public ProfileResponse getProfile(Long memberId) {
-        log.debug("Getting profile for member: {}", memberId);
-        Member member = memberReader.findById(memberId);
+  public ProfileResponse getProfile(Long memberId) {
+    log.debug("회원 프로필 조회: memberId={}", memberId);
+    Member member = memberReader.findById(memberId);
 
-        return new ProfileResponse(
-                member.getId(),
-                member.getEmail(),
-                member.getName(),
-                member.getProfileImage(),
-                member.getCreatedAt()
-        );
+    return ProfileResponse.from(member);
+  }
+
+  @Transactional
+  public ProfileResponse updateProfile(Long memberId, UpdateProfileRequest request) {
+    log.debug("회원 프로필 수정: memberId={}", memberId);
+
+    Member member = memberReader.findById(memberId);
+
+    // 이름 업데이트 (null 및 빈 문자열 체크)
+    if (request.name() != null && !request.name().isBlank()) {
+      member.updateName(request.name());
     }
 
-    /**
-     * Update profile for authenticated member
-     * Only updates non-null fields
-     */
-    @Transactional
-    public ProfileResponse updateProfile(Long memberId, UpdateProfileRequest request) {
-        log.debug("Updating profile for member: {}", memberId);
-
-        Member member = memberReader.findById(memberId);
-
-        // Null-safe field updates
-        if (request.name() != null && !request.name().isBlank()) {
-            member.updateName(request.name());
-        }
-
-        // Allow clearing profile image by passing empty string
-        if (request.profileImage() != null) {
-            member.updateProfileImage(request.profileImage());
-        }
-
-        Member updatedMember = memberWriter.save(member);
-
-        return new ProfileResponse(
-                updatedMember.getId(),
-                updatedMember.getEmail(),
-                updatedMember.getName(),
-                updatedMember.getProfileImage(),
-                updatedMember.getCreatedAt()
-        );
+    // 프로필 이미지 업데이트 (null이 아닐 때만)
+    if (request.profileImage() != null) {
+      member.updateProfileImage(request.profileImage());
     }
+
+    Member updatedMember = memberWriter.save(member);
+
+    return ProfileResponse.from(updatedMember);
+  }
 }

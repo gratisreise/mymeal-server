@@ -3,15 +3,9 @@ package com.mymealserver.api.profile.dto.request;
 import java.time.LocalTime;
 
 public record UpdateNotificationRequest(
-        Boolean recommendationEnabled,
-        Boolean reactionReminderEnabled,
-        Boolean mealReminderEnabled,
-        MealTimesData mealTimes
-) {
-    public record MealTimesData(
-                LocalTime breakfast,
-                LocalTime lunch,
-                LocalTime dinner
-        ) {
-        }
+    Boolean recommendationEnabled,
+    Boolean reactionReminderEnabled,
+    Boolean mealReminderEnabled,
+    MealTimesData mealTimes) {
+  public record MealTimesData(LocalTime breakfast, LocalTime lunch, LocalTime dinner) {}
 }

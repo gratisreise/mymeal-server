@@ -8,5 +8,5 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class CalendarWriter {
-    // 향후 캘린더 설정, 선호도 업데이트 등의 기능 확장을 위해 준비된 클래스
+  // 향후 캘린더 설정, 선호도 업데이트 등의 기능 확장을 위해 준비된 클래스
 }

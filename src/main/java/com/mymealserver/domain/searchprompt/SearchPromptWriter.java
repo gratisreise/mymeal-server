@@ -8,16 +8,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SearchPromptWriter {
 
-    private final SearchPromptRepository searchPromptRepository;
+  private final SearchPromptRepository searchPromptRepository;
 
-    @Transactional
-    public SearchPrompt save(SearchPrompt searchPrompt) {
-        return searchPromptRepository.save(searchPrompt);
-    }
+  @Transactional
+  public SearchPrompt save(SearchPrompt searchPrompt) {
+    return searchPromptRepository.save(searchPrompt);
+  }
 
-    @Transactional
-    public void delete(SearchPrompt searchPrompt) {
-        searchPrompt.softDelete();
-        searchPromptRepository.save(searchPrompt);
-    }
+  @Transactional
+  public void delete(SearchPrompt searchPrompt) {
+    searchPrompt.softDelete();
+    searchPromptRepository.save(searchPrompt);
+  }
 }

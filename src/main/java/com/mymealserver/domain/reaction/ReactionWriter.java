@@ -8,12 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ReactionWriter {
 
-    private final ReactionRepository reactionRepository;
+  private final ReactionRepository reactionRepository;
 
-    @Transactional
-    public Reaction save(Reaction reaction) {
-        return reactionRepository.save(reaction);
-    }
-
-
+  @Transactional
+  public Reaction save(Reaction reaction) {
+    return reactionRepository.save(reaction);
+  }
 }

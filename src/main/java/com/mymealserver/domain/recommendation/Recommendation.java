@@ -16,47 +16,46 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Recommendation extends SoftDeletable {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Column(nullable = false)
-    private Long memberId;
+  @Column(nullable = false)
+  private Long memberId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private MealType mealType;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false, length = 20)
+  private MealType mealType;
 
-    @Column(nullable = false)
-    private LocalDateTime scheduledTime;
+  @Column(nullable = false)
+  private LocalDateTime scheduledTime;
 
-    @Column(length = 1000)
-    private String menuDetails;
+  @Column(length = 1000)
+  private String menuDetails;
 
-    @Column(length = 500)
-    private String pushMessage;
+  @Column(length = 500)
+  private String pushMessage;
 
-    @Column(nullable = false)
-    @Builder.Default
-    private Boolean isSent = false;
+  @Column(nullable = false)
+  @Builder.Default
+  private Boolean isSent = false;
 
-    @Column
-    private LocalDateTime sentAt;
+  @Column private LocalDateTime sentAt;
 
-    public void markAsSent() {
-        this.isSent = true;
-        this.sentAt = LocalDateTime.now();
-    }
+  public void markAsSent() {
+    this.isSent = true;
+    this.sentAt = LocalDateTime.now();
+  }
 
-    public boolean isNotificationSent() {
-        return isSent;
-    }
+  public boolean isNotificationSent() {
+    return isSent;
+  }
 
-    public void softDelete() {
-        this.deletedAt = LocalDateTime.now();
-    }
+  public void softDelete() {
+    this.deletedAt = LocalDateTime.now();
+  }
 
-    public boolean isDeleted() {
-        return deletedAt != null;
-    }
+  public boolean isDeleted() {
+    return deletedAt != null;
+  }
 }

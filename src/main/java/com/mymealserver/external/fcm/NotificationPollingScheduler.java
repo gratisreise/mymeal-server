@@ -9,32 +9,31 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class NotificationPollingScheduler {
 
-    private final UnifiedNotificationService unifiedNotificationService;
-    private final FcmNotificationService fcmNotificationService;
+  private final UnifiedNotificationService unifiedNotificationService;
+  private final FcmNotificationService fcmNotificationService;
 
-    @Scheduled(fixedRate = 60000)
-    public void pollAndSendNotifications() {
-        Set<NotificationPayload> dueNotifications = unifiedNotificationService
-                .fetchDueNotifications(LocalDateTime.now());
+  @Scheduled(fixedRate = 60000)
+  public void pollAndSendNotifications() {
+    Set<NotificationPayload> dueNotifications =
+        unifiedNotificationService.fetchDueNotifications(LocalDateTime.now());
 
-        if (dueNotifications.isEmpty()) {
-            return;
-        }
-
-        for (NotificationPayload payload : dueNotifications) {
-            try {
-                fcmNotificationService.send(payload);
-            } catch (Exception e) {
-                log.error("Failed to send notification for memberId: {}", payload.memberId(), e);
-            } finally {
-                unifiedNotificationService.remove(payload);
-            }
-        }
+    if (dueNotifications.isEmpty()) {
+      return;
     }
+
+    for (NotificationPayload payload : dueNotifications) {
+      try {
+        fcmNotificationService.send(payload);
+      } catch (Exception e) {
+        log.error("Failed to send notification for memberId: {}", payload.memberId(), e);
+      } finally {
+        unifiedNotificationService.remove(payload);
+      }
+    }
+  }
 }

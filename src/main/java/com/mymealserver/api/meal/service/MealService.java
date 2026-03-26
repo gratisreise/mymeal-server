@@ -35,122 +35,111 @@ import org.springframework.web.multipart.MultipartFile;
 @Transactional(readOnly = true)
 public class MealService {
 
-    private final MealReader mealReader;
-    private final MealWriter mealWriter;
-    private final ReactionReader reactionReader;
-    private final MealAnalysisReader mealAnalysisReader;
-    private final S3Service s3Service;
-    private final MealAnalysisService mealAnalysisService;
-    private final UnifiedNotificationService unifiedNotificationService;
+  private final MealReader mealReader;
+  private final MealWriter mealWriter;
+  private final ReactionReader reactionReader;
+  private final MealAnalysisReader mealAnalysisReader;
+  private final S3Service s3Service;
+  private final MealAnalysisService mealAnalysisService;
+  private final UnifiedNotificationService unifiedNotificationService;
 
-    @Transactional
-    public MealResponse createMeal(Long memberId, MultipartFile photo, MealType mealType) {
-        Resource imageResource = photo.getResource();
-        String photoUrl = s3Service.uploadMealPhoto(photo, memberId);
-        String photoKey = s3Service.extractPhotoKey(photoUrl);
+  @Transactional
+  public MealResponse createMeal(Long memberId, MultipartFile photo, MealType mealType) {
+    Resource imageResource = photo.getResource();
+    String photoUrl = s3Service.uploadMealPhoto(photo, memberId);
+    String photoKey = s3Service.extractPhotoKey(photoUrl);
 
-        Meal meal = createNewMeal(memberId, mealType, photoUrl, photoKey);
+    Meal meal = createNewMeal(memberId, mealType, photoUrl, photoKey);
 
-        meal = mealWriter.save(meal);
-        mealAnalysisService.analyzeMealAsync(meal.getId(), mealType, imageResource);
+    meal = mealWriter.save(meal);
+    mealAnalysisService.analyzeMealAsync(meal.getId(), mealType, imageResource);
 
-        // 알림 예약 (식후 60분 후 반응 알림)
-        NotificationPayload payload = NotificationPayload.forReactionReminder(
-                memberId,
-                meal.getId()
-        );
-        unifiedNotificationService.schedule(payload, meal.getMealTime().plusMinutes(60));
+    // 알림 예약 (식후 60분 후 반응 알림)
+    NotificationPayload payload = NotificationPayload.forReactionReminder(memberId, meal.getId());
+    unifiedNotificationService.schedule(payload, meal.getMealTime().plusMinutes(60));
 
-        return MealResponse.from(meal, false);
+    return MealResponse.from(meal, false);
+  }
+
+  public PageResponse<MealResponse> getMeals(
+      Long memberId, LocalDate startDate, LocalDate endDate, MealType mealType, Pageable pageable) {
+    Page<MealResponse> meals =
+        mealReader
+            .findByMemberId(memberId, startDate, endDate, mealType, pageable)
+            .map(
+                meal -> {
+                  boolean hasReaction = reactionReader.existsByMealId(meal.getId());
+                  return MealResponse.from(meal, hasReaction);
+                });
+    ;
+
+    return PageResponse.from(meals);
+  }
+
+  public MealDetailResponse getMealDetail(Long memberId, Long mealId) {
+    Meal meal = mealReader.findById(mealId);
+
+    if (!meal.getMemberId().equals(memberId)) {
+      throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
     }
 
-    public PageResponse<MealResponse> getMeals(
-            Long memberId,
-            LocalDate startDate,
-            LocalDate endDate,
-            MealType mealType,
-            Pageable pageable
-    ) {
-        Page<MealResponse> meals = mealReader.findByMemberId(memberId, startDate, endDate, mealType, pageable)
-            .map(meal -> {
-            boolean hasReaction = reactionReader.existsByMealId(meal.getId());
-            return MealResponse.from(meal, hasReaction);
-        });;
-
-        return PageResponse.from(meals);
+    AIAnalysisResponse aiAnalysis = null;
+    if (meal.isAnalysisCompleted()) {
+      aiAnalysis =
+          mealAnalysisReader.findByMealId(mealId).map(AIAnalysisResponse::from).orElse(null);
     }
 
-    public MealDetailResponse getMealDetail(Long memberId, Long mealId) {
-        Meal meal = mealReader.findById(mealId);
+    Reaction reaction = reactionReader.findByMealId(mealId);
+    ReactionResponse reactionResponse = ReactionResponse.from(reaction);
 
-        if (!meal.getMemberId().equals(memberId)) {
-            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
-        }
+    boolean hasReaction = reaction != null;
 
-        AIAnalysisResponse aiAnalysis = null;
-        if (meal.isAnalysisCompleted()) {
-            aiAnalysis = mealAnalysisReader.findByMealId(mealId)
-                    .map(AIAnalysisResponse::from)
-                    .orElse(null);
-        }
+    return MealDetailResponse.from(meal, aiAnalysis, reactionResponse, hasReaction);
+  }
 
-        Reaction reaction  = reactionReader.findByMealId(mealId);
-        ReactionResponse reactionResponse = ReactionResponse.from(reaction);
+  @Transactional
+  public MealResponse retakePhoto(Long memberId, Long mealId, MultipartFile photo) {
+    Meal meal = mealReader.findById(mealId);
 
-        boolean hasReaction = reaction != null;
-
-        return MealDetailResponse.from(
-                meal,
-                aiAnalysis,
-                reactionResponse,
-                hasReaction
-        );
+    if (!meal.getMemberId().equals(memberId)) {
+      throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
     }
 
-    @Transactional
-    public MealResponse retakePhoto(Long memberId, Long mealId, MultipartFile photo) {
-        Meal meal = mealReader.findById(mealId);
+    Resource imageResource = photo.getResource();
+    String newPhotoUrl = s3Service.uploadMealPhoto(photo, memberId);
+    String newPhotoKey = s3Service.extractPhotoKey(newPhotoUrl);
 
-        if (!meal.getMemberId().equals(memberId)) {
-            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
-        }
+    s3Service.deletePhoto(meal.getPhotoKey());
 
-        Resource imageResource = photo.getResource();
-        String newPhotoUrl = s3Service.uploadMealPhoto(photo, memberId);
-        String newPhotoKey = s3Service.extractPhotoKey(newPhotoUrl);
+    meal.updatePhoto(newPhotoUrl, newPhotoKey);
+    meal.updateAnalysisStatus(AnalysisStatus.PENDING);
+    mealWriter.save(meal);
 
-        s3Service.deletePhoto(meal.getPhotoKey());
+    mealAnalysisService.analyzeMealAsync(meal.getId(), meal.getMealType(), imageResource);
 
-        meal.updatePhoto(newPhotoUrl, newPhotoKey);
-        meal.updateAnalysisStatus(AnalysisStatus.PENDING);
-        mealWriter.save(meal);
+    boolean hasReaction = reactionReader.existsByMealId(meal.getId());
 
-        mealAnalysisService.analyzeMealAsync(meal.getId(), meal.getMealType(), imageResource);
+    return MealResponse.from(meal, hasReaction);
+  }
 
-        boolean hasReaction = reactionReader.existsByMealId(meal.getId());
+  @Transactional
+  public void deleteMeal(Long memberId, Long mealId) {
+    Meal meal = mealReader.findById(mealId);
 
-        return MealResponse.from(meal, hasReaction);
+    if (!meal.getMemberId().equals(memberId)) {
+      throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
     }
 
-    @Transactional
-    public void deleteMeal(Long memberId, Long mealId) {
-        Meal meal = mealReader.findById(mealId);
+    mealWriter.delete(meal);
+  }
 
-        if (!meal.getMemberId().equals(memberId)) {
-            throw new BusinessException(ErrorCode.MEAL_FORBIDDEN);
-        }
-
-        mealWriter.delete(meal);
-    }
-
-    private Meal createNewMeal(Long memberId, MealType mealType, String photoUrl,
-        String photoKey) {
-        return Meal.builder()
-            .memberId(memberId)
-            .mealType(mealType)
-            .photoUrl(photoUrl)
-            .photoKey(photoKey)
-            .mealTime(LocalDateTime.now())
-            .build();
-    }
+  private Meal createNewMeal(Long memberId, MealType mealType, String photoUrl, String photoKey) {
+    return Meal.builder()
+        .memberId(memberId)
+        .mealType(mealType)
+        .photoUrl(photoUrl)
+        .photoKey(photoKey)
+        .mealTime(LocalDateTime.now())
+        .build();
+  }
 }

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MealAnalysisReader {
 
-    private final MealAnalysisRepository mealAnalysisRepository;
+  private final MealAnalysisRepository mealAnalysisRepository;
 
-    public Optional<MealAnalysis> findByMealId(Long mealId) {
-        return mealAnalysisRepository.findByMealId(mealId);
-    }
+  public Optional<MealAnalysis> findByMealId(Long mealId) {
+    return mealAnalysisRepository.findByMealId(mealId);
+  }
 }
