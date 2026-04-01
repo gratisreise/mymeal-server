@@ -1,6 +1,7 @@
 package com.mymealserver.domain.mealanalysis;
 
 import com.mymealserver.common.db.BaseEntity;
+import com.mymealserver.common.enums.MealType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,4 +41,15 @@ public class MealAnalysis extends BaseEntity {
   private String rawResponse;
 
   @Transient private Double score;
+
+  public String buildMealSummary(MealType mealType) {
+    return String.format(
+        "%s, %s, %dkcal, 탄수화물 %.0fg, 단백질 %.0fg, 지방 %.0fg",
+        this.mealName,
+        mealType.getDescription(),
+        Math.round(this.calories),
+        this.carbohydrates,
+        this.protein,
+        this.fat);
+  }
 }

@@ -33,12 +33,12 @@ public class NotificationController {
   public ResponseEntity<SuccessResponse<Void>> markAsRead(
       @CurrentMember Long memberId, @PathVariable Long id) {
     notificationService.markAsRead(memberId, id);
-    return SuccessResponse.toNoContent(null);
+    return SuccessResponse.toNoContent();
   }
 
   @PutMapping("/read-all")
   public ResponseEntity<SuccessResponse<Void>> markAllAsRead(@CurrentMember Long memberId) {
     notificationService.markAllAsRead(memberId);
-    return SuccessResponse.toNoContent(null);
+    return SuccessResponse.toNoContent();
   }
 }

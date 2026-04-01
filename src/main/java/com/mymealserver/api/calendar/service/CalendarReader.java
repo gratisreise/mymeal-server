@@ -1,7 +1,9 @@
-package com.mymealserver.api.calendar.domain;
+package com.mymealserver.api.calendar.service;
 
 import com.mymealserver.domain.meal.Meal;
 import com.mymealserver.domain.meal.MealReader;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
+import com.mymealserver.domain.mealanalysis.MealAnalysisReader;
 import com.mymealserver.domain.reaction.Reaction;
 import com.mymealserver.domain.reaction.ReactionReader;
 import java.time.LocalDate;
@@ -18,6 +20,7 @@ public class CalendarReader {
 
   private final MealReader mealReader;
   private final ReactionReader reactionReader;
+  private final MealAnalysisReader mealAnalysisReader;
 
   public List<Meal> findMealsByDateRange(Long memberId, LocalDateTime start, LocalDateTime end) {
     return mealReader.findByMemberIdAndDateRange(memberId, start, end);
@@ -29,6 +32,14 @@ public class CalendarReader {
     }
     List<Reaction> reactions = reactionReader.findAllByMealIds(mealIds);
     return reactions.stream().collect(Collectors.toMap(Reaction::getMealId, r -> r));
+  }
+
+  public Map<Long, MealAnalysis> findMealAnalysesByMealIds(List<Long> mealIds) {
+    if (mealIds.isEmpty()) {
+      return Map.of();
+    }
+    return mealAnalysisReader.findAllByMealIds(mealIds).stream()
+        .collect(Collectors.toMap(MealAnalysis::getMealId, a -> a));
   }
 
   public Map<LocalDate, List<Meal>> groupMealsByDate(List<Meal> meals) {
