@@ -62,13 +62,13 @@ public class AuthController {
   public ResponseEntity<SuccessResponse<Void>> logout(
       @CurrentMember Long memberId, @Valid @RequestBody LogoutRequest request) {
     authService.logout(memberId, request);
-    return SuccessResponse.toOk(null);
+    return SuccessResponse.toNoContent();
   }
 
   @DeleteMapping("/withdraw")
   public ResponseEntity<SuccessResponse<Void>> withdraw(
       @CurrentMember Long memberId, @Valid @RequestBody WithdrawRequest request) {
     authService.withdraw(memberId, request);
-    return SuccessResponse.toOk(null);
+    return SuccessResponse.toNoContent();
   }
 }
