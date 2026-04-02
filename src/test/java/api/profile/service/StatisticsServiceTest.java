@@ -56,34 +56,36 @@ class StatisticsServiceTest {
     // given
     given(mealRepository.countByMemberIdAndDeletedAtIsNull(MEMBER_ID)).willReturn(10L);
 
-    List<Meal> meals = List.of(
-        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now()),
-        createMeal(2L, MEMBER_ID, MealType.DINNER, LocalDateTime.now())
-    );
-    given(mealRepository.findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
-        org.mockito.ArgumentMatchers.eq(MEMBER_ID),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
+    List<Meal> meals =
+        List.of(
+            createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now()),
+            createMeal(2L, MEMBER_ID, MealType.DINNER, LocalDateTime.now()));
+    given(
+            mealRepository.findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
+                org.mockito.ArgumentMatchers.eq(MEMBER_ID),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
         .willReturn(meals);
 
     given(reactionRepository.countByMealIdIn(List.of(1L, 2L))).willReturn(5L);
 
     // tag statistics
-    List<Object[]> tagStats = List.of(
-        new Object[]{MEMBER_ID, "비빔밥", 4.5, 8},
-        new Object[]{MEMBER_ID, "된장찌개", 3.8, 5},
-        new Object[]{MEMBER_ID, "김치찌개", 3.2, 3}
-    );
+    List<Object[]> tagStats =
+        List.of(
+            new Object[] {MEMBER_ID, "비빔밥", 4.5, 8},
+            new Object[] {MEMBER_ID, "된장찌개", 3.8, 5},
+            new Object[] {MEMBER_ID, "김치찌개", 3.2, 3});
     given(foodMemberStatsRepository.findTagStatistics(MEMBER_ID)).willReturn(tagStats);
 
     // weekly trend
-    List<Object[]> weeklyTrend = List.of(
-        new Object[]{LocalDate.of(2026, 4, 1), 4.2},
-        new Object[]{LocalDate.of(2026, 4, 2), 3.8}
-    );
-    given(mealRepository.findWeeklyTrend(
-        org.mockito.ArgumentMatchers.eq(MEMBER_ID),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
+    List<Object[]> weeklyTrend =
+        List.of(
+            new Object[] {LocalDate.of(2026, 4, 1), 4.2},
+            new Object[] {LocalDate.of(2026, 4, 2), 3.8});
+    given(
+            mealRepository.findWeeklyTrend(
+                org.mockito.ArgumentMatchers.eq(MEMBER_ID),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
         .willReturn(weeklyTrend);
 
     // when
@@ -105,17 +107,20 @@ class StatisticsServiceTest {
     given(mealRepository.countByMemberIdAndDeletedAtIsNull(MEMBER_ID)).willReturn(5L);
 
     List<Meal> meals = List.of(createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now()));
-    given(mealRepository.findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
-        org.mockito.ArgumentMatchers.eq(MEMBER_ID),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
+    given(
+            mealRepository.findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
+                org.mockito.ArgumentMatchers.eq(MEMBER_ID),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
         .willReturn(meals);
 
     given(reactionRepository.countByMealIdIn(List.of(1L))).willReturn(0L);
-    given(foodMemberStatsRepository.findTagStatistics(MEMBER_ID)).willReturn(Collections.emptyList());
-    given(mealRepository.findWeeklyTrend(
-        org.mockito.ArgumentMatchers.eq(MEMBER_ID),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
+    given(foodMemberStatsRepository.findTagStatistics(MEMBER_ID))
+        .willReturn(Collections.emptyList());
+    given(
+            mealRepository.findWeeklyTrend(
+                org.mockito.ArgumentMatchers.eq(MEMBER_ID),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
         .willReturn(Collections.emptyList());
 
     // when
@@ -133,27 +138,29 @@ class StatisticsServiceTest {
     given(mealRepository.countByMemberIdAndDeletedAtIsNull(MEMBER_ID)).willReturn(20L);
 
     List<Meal> meals = List.of(createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now()));
-    given(mealRepository.findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
-        org.mockito.ArgumentMatchers.eq(MEMBER_ID),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
+    given(
+            mealRepository.findByMemberIdAndMealTimeBetweenAndDeletedAtIsNull(
+                org.mockito.ArgumentMatchers.eq(MEMBER_ID),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
         .willReturn(meals);
 
     given(reactionRepository.countByMealIdIn(List.of(1L))).willReturn(1L);
 
-    List<Object[]> tagStats = List.of(
-        new Object[]{MEMBER_ID, "음식1", 4.5, 10},
-        new Object[]{MEMBER_ID, "음식2", 4.3, 9},
-        new Object[]{MEMBER_ID, "음식3", 4.1, 8},
-        new Object[]{MEMBER_ID, "음식4", 3.9, 7},
-        new Object[]{MEMBER_ID, "음식5", 3.7, 6},
-        new Object[]{MEMBER_ID, "음식6", 3.5, 5},
-        new Object[]{MEMBER_ID, "음식7", 3.3, 4}
-    );
+    List<Object[]> tagStats =
+        List.of(
+            new Object[] {MEMBER_ID, "음식1", 4.5, 10},
+            new Object[] {MEMBER_ID, "음식2", 4.3, 9},
+            new Object[] {MEMBER_ID, "음식3", 4.1, 8},
+            new Object[] {MEMBER_ID, "음식4", 3.9, 7},
+            new Object[] {MEMBER_ID, "음식5", 3.7, 6},
+            new Object[] {MEMBER_ID, "음식6", 3.5, 5},
+            new Object[] {MEMBER_ID, "음식7", 3.3, 4});
     given(foodMemberStatsRepository.findTagStatistics(MEMBER_ID)).willReturn(tagStats);
-    given(mealRepository.findWeeklyTrend(
-        org.mockito.ArgumentMatchers.eq(MEMBER_ID),
-        org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
+    given(
+            mealRepository.findWeeklyTrend(
+                org.mockito.ArgumentMatchers.eq(MEMBER_ID),
+                org.mockito.ArgumentMatchers.any(LocalDateTime.class)))
         .willReturn(Collections.emptyList());
 
     // when

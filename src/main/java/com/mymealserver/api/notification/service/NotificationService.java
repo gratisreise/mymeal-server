@@ -1,6 +1,5 @@
 package com.mymealserver.api.notification.service;
 
-import com.mymealserver.api.notification.dto.request.BatchReadRequest;
 import com.mymealserver.api.notification.dto.response.NotificationListResponse;
 import com.mymealserver.api.notification.dto.response.NotificationResponse;
 import com.mymealserver.api.notification.dto.response.UnreadCountResponse;
@@ -38,8 +37,8 @@ public class NotificationService {
     List<Notification> trimmed = hasNext ? content.subList(0, size) : content;
     Long nextCursor = hasNext ? trimmed.get(trimmed.size() - 1).getId() : null;
 
-    List<NotificationResponse> responses = trimmed.stream()
-        .map(NotificationResponse::from).toList();
+    List<NotificationResponse> responses =
+        trimmed.stream().map(NotificationResponse::from).toList();
     long unreadCount = notificationReader.countUnread(memberId);
 
     return NotificationListResponse.of(responses, nextCursor, hasNext, size, unreadCount);
@@ -58,8 +57,7 @@ public class NotificationService {
 
   @Transactional
   public void markAsReadBatch(Long memberId, List<Long> ids) {
-    List<Notification> notifications =
-        notificationReader.findByIdsAndMemberId(ids, memberId);
+    List<Notification> notifications = notificationReader.findByIdsAndMemberId(ids, memberId);
     if (notifications.size() != ids.size()) {
       throw new BusinessException(ErrorCode.NOTIFICATION_NOT_FOUND);
     }

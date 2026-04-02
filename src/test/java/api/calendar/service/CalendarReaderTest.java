@@ -38,9 +38,10 @@ class CalendarReaderTest {
     Long memberId = 1L;
     LocalDateTime start = LocalDateTime.of(2026, 4, 1, 0, 0);
     LocalDateTime end = LocalDateTime.of(2026, 4, 30, 23, 59, 59);
-    List<Meal> meals = List.of(
-        createMeal(1L, MealType.BREAKFAST, LocalDateTime.of(2026, 4, 1, 8, 0)),
-        createMeal(2L, MealType.LUNCH, LocalDateTime.of(2026, 4, 1, 12, 0)));
+    List<Meal> meals =
+        List.of(
+            createMeal(1L, MealType.BREAKFAST, LocalDateTime.of(2026, 4, 1, 8, 0)),
+            createMeal(2L, MealType.LUNCH, LocalDateTime.of(2026, 4, 1, 12, 0)));
     given(mealReader.findByMemberIdAndDateRange(memberId, start, end)).willReturn(meals);
 
     // when
@@ -133,7 +134,8 @@ class CalendarReaderTest {
     Meal meal3 = createMeal(3L, MealType.DINNER, LocalDateTime.of(2026, 4, 2, 18, 0));
 
     // when
-    Map<LocalDate, List<Meal>> result = calendarReader.groupMealsByDate(List.of(meal1, meal2, meal3));
+    Map<LocalDate, List<Meal>> result =
+        calendarReader.groupMealsByDate(List.of(meal1, meal2, meal3));
 
     // then
     assertThat(result).hasSize(2);

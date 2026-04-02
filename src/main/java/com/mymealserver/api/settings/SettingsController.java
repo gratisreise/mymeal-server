@@ -31,8 +31,7 @@ public class SettingsController {
 
   @PutMapping("/notifications")
   public ResponseEntity<SuccessResponse<Void>> updateNotificationSettings(
-      @AuthenticatedMember Long memberId,
-      @Valid @RequestBody UpdateNotificationRequest request) {
+      @AuthenticatedMember Long memberId, @Valid @RequestBody UpdateNotificationRequest request) {
     settingsService.updateNotificationSettings(memberId, request);
     return SuccessResponse.toNoContent();
   }

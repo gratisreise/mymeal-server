@@ -7,14 +7,11 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
-import com.mymealserver.api.meal.dto.response.AIAnalysisResponse;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.meal.dto.response.MealResponse;
 import com.mymealserver.api.meal.service.MealAnalysisService;
 import com.mymealserver.api.meal.service.MealService;
-import com.mymealserver.api.reaction.dto.response.ReactionResponse;
 import com.mymealserver.common.enums.AnalysisStatus;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.exception.BusinessException;
@@ -45,7 +42,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 @ExtendWith(MockitoExtension.class)
 class MealServiceTest {
@@ -73,7 +69,8 @@ class MealServiceTest {
     MockMultipartFile photo =
         new MockMultipartFile("photo", "test.jpg", "image/jpeg", "test image".getBytes());
 
-    given(s3Service.uploadMealPhoto(photo, MEMBER_ID)).willReturn("https://s3.example.com/photo.jpg");
+    given(s3Service.uploadMealPhoto(photo, MEMBER_ID))
+        .willReturn("https://s3.example.com/photo.jpg");
     given(s3Service.extractPhotoKey("https://s3.example.com/photo.jpg")).willReturn("photo.jpg");
 
     Meal savedMeal =
@@ -108,8 +105,12 @@ class MealServiceTest {
     LocalDate endDate = LocalDate.of(2026, 4, 30);
     Pageable pageable = PageRequest.of(0, 10);
 
-    Meal meal1 = createMeal(1L, MEMBER_ID, MealType.BREAKFAST, startDate.atTime(8, 0), AnalysisStatus.COMPLETED);
-    Meal meal2 = createMeal(2L, MEMBER_ID, MealType.LUNCH, startDate.atTime(12, 0), AnalysisStatus.COMPLETED);
+    Meal meal1 =
+        createMeal(
+            1L, MEMBER_ID, MealType.BREAKFAST, startDate.atTime(8, 0), AnalysisStatus.COMPLETED);
+    Meal meal2 =
+        createMeal(
+            2L, MEMBER_ID, MealType.LUNCH, startDate.atTime(12, 0), AnalysisStatus.COMPLETED);
 
     Page<Meal> mealPage = new PageImpl<>(List.of(meal1, meal2), pageable, 2);
 
@@ -155,7 +156,9 @@ class MealServiceTest {
     LocalDate endDate = LocalDate.of(2026, 4, 30);
     Pageable pageable = PageRequest.of(0, 10);
 
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.DINNER, startDate.atTime(19, 0), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(
+            1L, MEMBER_ID, MealType.DINNER, startDate.atTime(19, 0), AnalysisStatus.COMPLETED);
     Page<Meal> mealPage = new PageImpl<>(List.of(meal), pageable, 1);
 
     given(mealReader.findByMemberId(MEMBER_ID, startDate, endDate, MealType.DINNER, pageable))
@@ -178,7 +181,8 @@ class MealServiceTest {
   @Test
   void getMealDetail_success_withAnalysisAndReaction() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
     MealAnalysis analysis = createMealAnalysis(100L, 1L, "비빔밥");
     Reaction reaction = createReaction(10L, 1L, 4.5);
 
@@ -201,7 +205,8 @@ class MealServiceTest {
   @Test
   void getMealDetail_success_analysisPending() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.PENDING);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.PENDING);
     Reaction reaction = createReaction(10L, 1L, 3.0);
 
     given(mealReader.findById(1L)).willReturn(meal);
@@ -219,7 +224,8 @@ class MealServiceTest {
   @Test
   void getMealDetail_success_noReaction() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
     MealAnalysis analysis = createMealAnalysis(100L, 1L, "된장찌개");
 
     given(mealReader.findById(1L)).willReturn(meal);
@@ -238,7 +244,8 @@ class MealServiceTest {
   @Test
   void getMealDetail_success_noAnalysisNoReaction() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.PENDING);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.PENDING);
 
     given(mealReader.findById(1L)).willReturn(meal);
     given(reactionReader.findByMealId(1L)).willReturn(null);
@@ -255,7 +262,8 @@ class MealServiceTest {
   @Test
   void getMealDetail_fail_otherMembersMeal() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
     given(mealReader.findById(1L)).willReturn(meal);
 
     // when & then
@@ -268,7 +276,8 @@ class MealServiceTest {
   @Test
   void getMealDetail_success_analysisCompletedButNotFound() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
 
     given(mealReader.findById(1L)).willReturn(meal);
     given(mealAnalysisReader.findByMealId(1L)).willReturn(Optional.empty());
@@ -289,13 +298,16 @@ class MealServiceTest {
   @Test
   void retakePhoto_success() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
     MockMultipartFile newPhoto =
         new MockMultipartFile("photo", "new.jpg", "image/jpeg", "new image".getBytes());
 
     given(mealReader.findById(1L)).willReturn(meal);
-    given(s3Service.uploadMealPhoto(newPhoto, MEMBER_ID)).willReturn("https://s3.example.com/new-photo.jpg");
-    given(s3Service.extractPhotoKey("https://s3.example.com/new-photo.jpg")).willReturn("new-photo.jpg");
+    given(s3Service.uploadMealPhoto(newPhoto, MEMBER_ID))
+        .willReturn("https://s3.example.com/new-photo.jpg");
+    given(s3Service.extractPhotoKey("https://s3.example.com/new-photo.jpg"))
+        .willReturn("new-photo.jpg");
     given(mealWriter.save(any(Meal.class))).willReturn(meal);
     given(reactionReader.existsByMealId(1L)).willReturn(true);
 
@@ -305,14 +317,17 @@ class MealServiceTest {
     // then
     assertThat(response).isNotNull();
     then(s3Service).should().deletePhoto("photo1.jpg");
-    then(mealAnalysisService).should().analyzeMealAsync(eq(1L), eq(MealType.LUNCH), any(Resource.class));
+    then(mealAnalysisService)
+        .should()
+        .analyzeMealAsync(eq(1L), eq(MealType.LUNCH), any(Resource.class));
     assertThat(response.hasReaction()).isTrue();
   }
 
   @Test
   void retakePhoto_fail_otherMembersMeal() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
     MockMultipartFile photo =
         new MockMultipartFile("photo", "test.jpg", "image/jpeg", "test".getBytes());
 
@@ -334,7 +349,8 @@ class MealServiceTest {
   @Test
   void deleteMeal_success() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
     given(mealReader.findById(1L)).willReturn(meal);
 
     // when
@@ -347,7 +363,8 @@ class MealServiceTest {
   @Test
   void deleteMeal_fail_otherMembersMeal() {
     // given
-    Meal meal = createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
+    Meal meal =
+        createMeal(1L, MEMBER_ID, MealType.LUNCH, LocalDateTime.now(), AnalysisStatus.COMPLETED);
     given(mealReader.findById(1L)).willReturn(meal);
 
     // when & then

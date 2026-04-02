@@ -23,7 +23,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 
@@ -52,9 +51,7 @@ class NotificationServiceTest {
             createNotification(1L, NotificationType.MEAL_REMINDER, false));
 
     Slice<Notification> slice = new SliceImpl<>(notifications);
-    given(
-            notificationReader.findByMemberIdWithCursor(
-                any(), any(), any(), any()))
+    given(notificationReader.findByMemberIdWithCursor(any(), any(), any(), any()))
         .willReturn(slice);
     given(notificationReader.countUnread(MEMBER_ID)).willReturn(5L);
 
@@ -170,8 +167,7 @@ class NotificationServiceTest {
   @Test
   void markAsRead_success() {
     // given
-    Notification notification =
-        createNotification(1L, NotificationType.RECOMMENDATION, false);
+    Notification notification = createNotification(1L, NotificationType.RECOMMENDATION, false);
     given(notificationReader.findByIdAndMemberId(1L, MEMBER_ID)).willReturn(notification);
 
     // when
@@ -272,8 +268,7 @@ class NotificationServiceTest {
   @Test
   void deleteNotification_success() {
     // given
-    Notification notification =
-        createNotification(1L, NotificationType.RECOMMENDATION, false);
+    Notification notification = createNotification(1L, NotificationType.RECOMMENDATION, false);
     given(notificationReader.findByIdAndMemberId(1L, MEMBER_ID)).willReturn(notification);
 
     // when
@@ -300,8 +295,7 @@ class NotificationServiceTest {
 
   // --- Helper ---
 
-  private Notification createNotification(
-      Long id, NotificationType type, boolean isRead) {
+  private Notification createNotification(Long id, NotificationType type, boolean isRead) {
     return Notification.builder()
         .id(id)
         .memberId(MEMBER_ID)
