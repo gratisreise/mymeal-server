@@ -53,28 +53,29 @@ class CalendarServiceTest {
     Reaction reaction2 = createReaction(20L, 2L, 3.0);
     Reaction reaction3 = createReaction(30L, 3L, 2.0);
 
-    Map<Long, Reaction> reactionsByMealId = Map.of(
-        1L, reaction1,
-        2L, reaction2,
-        3L, reaction3);
+    Map<Long, Reaction> reactionsByMealId =
+        Map.of(
+            1L, reaction1,
+            2L, reaction2,
+            3L, reaction3);
 
-    Map<LocalDate, List<Meal>> mealsByDate = Map.of(
-        day1, List.of(meal1, meal2),
-        day2, List.of(meal3));
+    Map<LocalDate, List<Meal>> mealsByDate =
+        Map.of(
+            day1, List.of(meal1, meal2),
+            day2, List.of(meal3));
 
     List<Reaction> day1Reactions = List.of(reaction1, reaction2);
 
-    given(calendarReader.findMealsByDateRange(
-        MEMBER_ID,
-        LocalDate.of(2026, 4, 1).atStartOfDay(),
-        LocalDate.of(2026, 4, 30).atTime(23, 59, 59)))
+    given(
+            calendarReader.findMealsByDateRange(
+                MEMBER_ID,
+                LocalDate.of(2026, 4, 1).atStartOfDay(),
+                LocalDate.of(2026, 4, 30).atTime(23, 59, 59)))
         .willReturn(List.of(meal1, meal2, meal3));
 
-    given(calendarReader.findReactionsByMealIds(List.of(1L, 2L, 3L)))
-        .willReturn(reactionsByMealId);
+    given(calendarReader.findReactionsByMealIds(List.of(1L, 2L, 3L))).willReturn(reactionsByMealId);
 
-    given(calendarReader.groupMealsByDate(List.of(meal1, meal2, meal3)))
-        .willReturn(mealsByDate);
+    given(calendarReader.groupMealsByDate(List.of(meal1, meal2, meal3))).willReturn(mealsByDate);
 
     // Day 1 aggregation stubs
     given(dataAggregator.filterValidReactions(List.of(meal1, meal2), reactionsByMealId))
@@ -115,10 +116,11 @@ class CalendarServiceTest {
     int year = 2026;
     int month = 3;
 
-    given(calendarReader.findMealsByDateRange(
-        MEMBER_ID,
-        LocalDate.of(2026, 3, 1).atStartOfDay(),
-        LocalDate.of(2026, 3, 31).atTime(23, 59, 59)))
+    given(
+            calendarReader.findMealsByDateRange(
+                MEMBER_ID,
+                LocalDate.of(2026, 3, 1).atStartOfDay(),
+                LocalDate.of(2026, 3, 31).atTime(23, 59, 59)))
         .willReturn(List.of());
 
     given(calendarReader.findReactionsByMealIds(List.of())).willReturn(Map.of());
@@ -145,14 +147,16 @@ class CalendarServiceTest {
     Meal meal2 = createMeal(2L, MealType.LUNCH, day20.atTime(12, 0));
 
     Map<Long, Reaction> reactionsByMealId = Map.of();
-    Map<LocalDate, List<Meal>> mealsByDate = Map.of(
-        day5, List.of(meal1),
-        day20, List.of(meal2));
+    Map<LocalDate, List<Meal>> mealsByDate =
+        Map.of(
+            day5, List.of(meal1),
+            day20, List.of(meal2));
 
-    given(calendarReader.findMealsByDateRange(
-        MEMBER_ID,
-        LocalDate.of(2026, 4, 1).atStartOfDay(),
-        LocalDate.of(2026, 4, 30).atTime(23, 59, 59)))
+    given(
+            calendarReader.findMealsByDateRange(
+                MEMBER_ID,
+                LocalDate.of(2026, 4, 1).atStartOfDay(),
+                LocalDate.of(2026, 4, 30).atTime(23, 59, 59)))
         .willReturn(List.of(meal1, meal2));
 
     given(calendarReader.findReactionsByMealIds(List.of(1L, 2L))).willReturn(reactionsByMealId);
@@ -207,8 +211,9 @@ class CalendarServiceTest {
 
     List<Reaction> validReactions = List.of(reaction1);
 
-    given(calendarReader.findMealsByDateRange(
-        MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
+    given(
+            calendarReader.findMealsByDateRange(
+                MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
         .willReturn(List.of(meal1, meal2));
 
     given(calendarReader.findReactionsByMealIds(List.of(1L, 2L))).willReturn(reactionsByMealId);
@@ -246,8 +251,9 @@ class CalendarServiceTest {
     // given
     LocalDate date = LocalDate.of(2026, 4, 1);
 
-    given(calendarReader.findMealsByDateRange(
-        MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
+    given(
+            calendarReader.findMealsByDateRange(
+                MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
         .willReturn(List.of());
 
     given(calendarReader.findReactionsByMealIds(List.of())).willReturn(Map.of());
@@ -279,8 +285,9 @@ class CalendarServiceTest {
     Map<Long, Reaction> reactionsByMealId = Map.of(1L, reaction);
     Map<Long, MealAnalysis> analysesByMealId = Map.of(1L, analysis);
 
-    given(calendarReader.findMealsByDateRange(
-        MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
+    given(
+            calendarReader.findMealsByDateRange(
+                MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
         .willReturn(List.of(meal));
     given(calendarReader.findReactionsByMealIds(List.of(1L))).willReturn(reactionsByMealId);
     given(calendarReader.findMealAnalysesByMealIds(List.of(1L))).willReturn(analysesByMealId);
@@ -308,8 +315,9 @@ class CalendarServiceTest {
     LocalDate date = LocalDate.of(2026, 4, 1);
     Meal meal = createMeal(1L, MealType.DINNER, date.atTime(18, 0));
 
-    given(calendarReader.findMealsByDateRange(
-        MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
+    given(
+            calendarReader.findMealsByDateRange(
+                MEMBER_ID, date.atStartOfDay(), date.atTime(23, 59, 59)))
         .willReturn(List.of(meal));
     given(calendarReader.findReactionsByMealIds(List.of(1L))).willReturn(Map.of());
     given(calendarReader.findMealAnalysesByMealIds(List.of(1L))).willReturn(Map.of());
@@ -344,13 +352,14 @@ class CalendarServiceTest {
   }
 
   private Reaction createReaction(Long id, Long mealId, Double overallScore) {
-    Reaction reaction = Reaction.builder()
-        .id(id)
-        .mealId(mealId)
-        .digestionLevel((short) 4)
-        .fullnessLevel((short) 3)
-        .energyLevel((short) 4)
-        .build();
+    Reaction reaction =
+        Reaction.builder()
+            .id(id)
+            .mealId(mealId)
+            .digestionLevel((short) 4)
+            .fullnessLevel((short) 3)
+            .energyLevel((short) 4)
+            .build();
     reaction.setOverallScore(overallScore);
     return reaction;
   }

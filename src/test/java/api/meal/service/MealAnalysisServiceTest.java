@@ -56,8 +56,7 @@ class MealAnalysisServiceTest {
     // given
     Meal meal = createMeal(MEAL_ID, MealType.LUNCH, AnalysisStatus.PENDING);
     Food existingFood = createFood(FOOD_ID, "비빔밥");
-    FoodAnalysisResult analysisResult =
-        FoodAnalysisResult.of("비빔밥", 550.0, 70.0, 25.0, 18.0, 0.92);
+    FoodAnalysisResult analysisResult = FoodAnalysisResult.of("비빔밥", 550.0, 70.0, 25.0, 18.0, 0.92);
 
     given(mealReader.findById(MEAL_ID)).willReturn(meal);
     given(aiAnalysisService.analyzeFoodImage(nullable(Resource.class), eq(MealType.LUNCH)))
@@ -97,8 +96,7 @@ class MealAnalysisServiceTest {
         .willReturn(analysisResult);
     given(foodReader.findByName("새로운음식")).willReturn(Optional.empty());
     given(foodWriter.save(any(Food.class))).willReturn(newFood);
-    given(objectMapper.writeValueAsString(analysisResult))
-        .willReturn("{\"mealName\":\"새로운음식\"}");
+    given(objectMapper.writeValueAsString(analysisResult)).willReturn("{\"mealName\":\"새로운음식\"}");
 
     // when
     mealAnalysisService.analyzeMealAsync(MEAL_ID, MealType.DINNER, null);
@@ -200,9 +198,7 @@ class MealAnalysisServiceTest {
     mealAnalysisService.analyzeMealAsync(MEAL_ID, MealType.SNACK, null);
 
     // then
-    then(aiAnalysisService)
-        .should()
-        .analyzeFoodImage(nullable(Resource.class), eq(MealType.SNACK));
+    then(aiAnalysisService).should().analyzeFoodImage(nullable(Resource.class), eq(MealType.SNACK));
   }
 
   // --- Helper methods ---

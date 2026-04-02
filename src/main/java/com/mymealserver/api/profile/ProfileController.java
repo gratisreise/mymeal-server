@@ -30,7 +30,8 @@ public class ProfileController {
   private final BodyPatternService bodyPatternService;
 
   @GetMapping
-  public ResponseEntity<SuccessResponse<ProfileResponse>> getProfile(@AuthenticatedMember Long memberId) {
+  public ResponseEntity<SuccessResponse<ProfileResponse>> getProfile(
+      @AuthenticatedMember Long memberId) {
     return SuccessResponse.toOk(profileService.getProfile(memberId));
   }
 

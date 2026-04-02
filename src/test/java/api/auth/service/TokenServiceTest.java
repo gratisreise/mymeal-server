@@ -8,7 +8,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import com.mymealserver.api.auth.dto.response.LoginResponse;
-import com.mymealserver.api.auth.dto.response.MemberResponse;
 import com.mymealserver.api.auth.dto.response.RefreshResponse;
 import com.mymealserver.api.auth.service.TokenService;
 import com.mymealserver.common.enums.ProviderType;

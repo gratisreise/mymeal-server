@@ -49,8 +49,7 @@ public class Notification {
   @Column(nullable = false)
   private LocalDateTime updatedAt;
 
-  @Column
-  private LocalDateTime deletedAt;
+  @Column private LocalDateTime deletedAt;
 
   @PrePersist
   protected void onCreate() {

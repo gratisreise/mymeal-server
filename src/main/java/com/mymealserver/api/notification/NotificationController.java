@@ -27,8 +27,7 @@ public class NotificationController {
       @RequestParam(required = false) Long cursor,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false) NotificationType type) {
-    return SuccessResponse.toOk(
-        notificationService.getNotifications(memberId, cursor, size, type));
+    return SuccessResponse.toOk(notificationService.getNotifications(memberId, cursor, size, type));
   }
 
   @GetMapping("/unread-count")

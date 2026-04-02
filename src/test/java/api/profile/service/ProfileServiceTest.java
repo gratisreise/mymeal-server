@@ -37,7 +37,8 @@ class ProfileServiceTest {
   @Test
   void getProfile_success() {
     // given
-    Member member = createMember(MEMBER_ID, "test@example.com", "홍길동", "https://img.com/profile.jpg");
+    Member member =
+        createMember(MEMBER_ID, "test@example.com", "홍길동", "https://img.com/profile.jpg");
     given(memberReader.findById(MEMBER_ID)).willReturn(member);
 
     // when
@@ -54,7 +55,8 @@ class ProfileServiceTest {
   @Test
   void getProfile_fail_memberNotFound() {
     // given
-    given(memberReader.findById(MEMBER_ID)).willThrow(new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    given(memberReader.findById(MEMBER_ID))
+        .willThrow(new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
     // when & then
     assertThatThrownBy(() -> profileService.getProfile(MEMBER_ID))
@@ -137,7 +139,8 @@ class ProfileServiceTest {
   @Test
   void updateProfile_success_nullFieldsNoChange() {
     // given
-    Member member = createMember(MEMBER_ID, "test@example.com", "홍길동", "https://img.com/profile.jpg");
+    Member member =
+        createMember(MEMBER_ID, "test@example.com", "홍길동", "https://img.com/profile.jpg");
     UpdateProfileRequest request = new UpdateProfileRequest(null, null);
 
     given(memberReader.findById(MEMBER_ID)).willReturn(member);

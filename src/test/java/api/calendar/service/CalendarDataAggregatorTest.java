@@ -35,7 +35,8 @@ class CalendarDataAggregatorTest {
     Map<Long, Reaction> reactionsByMealId = Map.of(1L, reaction1, 3L, reaction3);
 
     // when
-    List<Reaction> result = aggregator.filterValidReactions(List.of(meal1, meal2, meal3), reactionsByMealId);
+    List<Reaction> result =
+        aggregator.filterValidReactions(List.of(meal1, meal2, meal3), reactionsByMealId);
 
     // then
     assertThat(result).hasSize(2);
@@ -50,7 +51,8 @@ class CalendarDataAggregatorTest {
     Map<Long, Reaction> reactionsByMealId = Map.of();
 
     // when
-    List<Reaction> result = aggregator.filterValidReactions(List.of(meal1, meal2), reactionsByMealId);
+    List<Reaction> result =
+        aggregator.filterValidReactions(List.of(meal1, meal2), reactionsByMealId);
 
     // then
     assertThat(result).isEmpty();
@@ -66,7 +68,8 @@ class CalendarDataAggregatorTest {
     Map<Long, Reaction> reactionsByMealId = Map.of(1L, reaction1, 2L, reaction2);
 
     // when
-    List<Reaction> result = aggregator.filterValidReactions(List.of(meal1, meal2), reactionsByMealId);
+    List<Reaction> result =
+        aggregator.filterValidReactions(List.of(meal1, meal2), reactionsByMealId);
 
     // then
     assertThat(result).hasSize(2);
@@ -181,7 +184,8 @@ class CalendarDataAggregatorTest {
     Map<Long, Reaction> reactionsByMealId = Map.of(1L, reaction1, 2L, reaction2);
 
     // when
-    Map<Long, Reaction> result = aggregator.aggregateReactions(List.of(meal1, meal2), reactionsByMealId);
+    Map<Long, Reaction> result =
+        aggregator.aggregateReactions(List.of(meal1, meal2), reactionsByMealId);
 
     // then
     assertThat(result).hasSize(2);
@@ -213,13 +217,14 @@ class CalendarDataAggregatorTest {
   }
 
   private Reaction createReactionWithScore(Long mealId, Double overallScore) {
-    Reaction reaction = Reaction.builder()
-        .id(mealId * 100)
-        .mealId(mealId)
-        .digestionLevel((short) 4)
-        .fullnessLevel((short) 3)
-        .energyLevel((short) 4)
-        .build();
+    Reaction reaction =
+        Reaction.builder()
+            .id(mealId * 100)
+            .mealId(mealId)
+            .digestionLevel((short) 4)
+            .fullnessLevel((short) 3)
+            .energyLevel((short) 4)
+            .build();
     reaction.setOverallScore(overallScore);
     return reaction;
   }

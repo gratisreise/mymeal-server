@@ -173,10 +173,12 @@ class ReactionServiceTest {
   void updateReaction_success() {
     // given
     Meal meal = createMeal(MEAL_ID, MEMBER_ID);
-    ReactionRequest originalRequest = createReactionRequest(4, 3, 4, false, false, false, false, "기존 메모");
+    ReactionRequest originalRequest =
+        createReactionRequest(4, 3, 4, false, false, false, false, "기존 메모");
     Reaction existingReaction = createReaction(1L, MEAL_ID, originalRequest);
 
-    ReactionRequest updateRequest = createReactionRequest(2, 2, 1, true, true, true, true, "업데이트 메모");
+    ReactionRequest updateRequest =
+        createReactionRequest(2, 2, 1, true, true, true, true, "업데이트 메모");
 
     given(mealReader.findById(MEAL_ID)).willReturn(meal);
     given(reactionReader.findByMealId(MEAL_ID)).willReturn(existingReaction);

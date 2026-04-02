@@ -45,7 +45,7 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=60s --retries=3 \
   CMD wget -q --spider http://localhost:8080/actuator/health || exit 1
 
 # JVM options for container environment
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC"
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:+UseG1GC -Djdk.tracePinnedThreads=short"
 
 # Entry point
 ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS org.springframework.boot.loader.launch.JarLauncher"]

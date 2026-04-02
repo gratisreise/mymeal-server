@@ -46,8 +46,7 @@ class AuthServiceTest {
   @Mock private PasswordEncoder passwordEncoder;
   @Mock private MemberWithdrawalRepository memberWithdrawalRepository;
 
-  @InjectMocks
-  private com.mymealserver.api.auth.service.AuthService authService;
+  @InjectMocks private com.mymealserver.api.auth.service.AuthService authService;
 
   private Member createActiveMember() {
     return Member.builder()
@@ -98,8 +97,7 @@ class AuthServiceTest {
     assertThat(memberCaptor.getValue().getPassword()).isEqualTo("encodedPw");
     assertThat(memberCaptor.getValue().getProvider()).isEqualTo(ProviderType.EMAIL);
 
-    ArgumentCaptor<MemberSettings> settingsCaptor =
-        ArgumentCaptor.forClass(MemberSettings.class);
+    ArgumentCaptor<MemberSettings> settingsCaptor = ArgumentCaptor.forClass(MemberSettings.class);
     verify(memberSettingsWriter).save(settingsCaptor.capture());
     assertThat(settingsCaptor.getValue().getFcmToken()).isEqualTo("fcm-token-123");
     assertThat(settingsCaptor.getValue().getMemberId()).isEqualTo(1L);
@@ -134,8 +132,7 @@ class AuthServiceTest {
     authService.register(request);
 
     // then
-    ArgumentCaptor<MemberSettings> settingsCaptor =
-        ArgumentCaptor.forClass(MemberSettings.class);
+    ArgumentCaptor<MemberSettings> settingsCaptor = ArgumentCaptor.forClass(MemberSettings.class);
     verify(memberSettingsWriter).save(settingsCaptor.capture());
     assertThat(settingsCaptor.getValue().getFcmToken()).isNull();
   }
@@ -198,10 +195,7 @@ class AuthServiceTest {
     // given
     Member member = createActiveMember();
     LoginRequest request =
-        LoginRequest.builder()
-            .email("test@example.com")
-            .password("Password123!")
-            .build();
+        LoginRequest.builder().email("test@example.com").password("Password123!").build();
 
     LoginResponse expectedResponse =
         LoginResponse.of("access-token", "refresh-token", MemberResponse.from(member));
@@ -223,10 +217,7 @@ class AuthServiceTest {
   void login_throwsException_whenMemberNotFound() {
     // given
     LoginRequest request =
-        LoginRequest.builder()
-            .email("unknown@example.com")
-            .password("Password123!")
-            .build();
+        LoginRequest.builder().email("unknown@example.com").password("Password123!").build();
 
     given(memberReader.findByEmail("unknown@example.com"))
         .willThrow(new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
@@ -246,10 +237,7 @@ class AuthServiceTest {
     // given
     Member member = createActiveMember();
     LoginRequest request =
-        LoginRequest.builder()
-            .email("test@example.com")
-            .password("wrongPassword")
-            .build();
+        LoginRequest.builder().email("test@example.com").password("wrongPassword").build();
 
     given(memberReader.findByEmail("test@example.com")).willReturn(member);
     given(passwordEncoder.matches("wrongPassword", "encodedPassword")).willReturn(false);
@@ -278,10 +266,7 @@ class AuthServiceTest {
             .build();
 
     LoginRequest request =
-        LoginRequest.builder()
-            .email("test@example.com")
-            .password("Password123!")
-            .build();
+        LoginRequest.builder().email("test@example.com").password("Password123!").build();
 
     given(memberReader.findByEmail("test@example.com")).willReturn(deactivatedMember);
     given(passwordEncoder.matches("Password123!", "encodedPassword")).willReturn(true);
@@ -363,8 +348,7 @@ class AuthServiceTest {
     authService.withdraw(1L, request);
 
     // then
-    ArgumentCaptor<MemberWithdrawal> captor =
-        ArgumentCaptor.forClass(MemberWithdrawal.class);
+    ArgumentCaptor<MemberWithdrawal> captor = ArgumentCaptor.forClass(MemberWithdrawal.class);
     verify(memberWithdrawalRepository).save(captor.capture());
 
     MemberWithdrawal withdrawal = captor.getValue();
@@ -379,11 +363,9 @@ class AuthServiceTest {
   @Test
   void withdraw_throwsException_whenMemberNotFound() {
     // given
-    WithdrawRequest request =
-        WithdrawRequest.builder().reason("OTHER").build();
+    WithdrawRequest request = WithdrawRequest.builder().reason("OTHER").build();
 
-    given(memberReader.findById(999L))
-        .willThrow(new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
+    given(memberReader.findById(999L)).willThrow(new BusinessException(ErrorCode.MEMBER_NOT_FOUND));
 
     // when & then
     assertThatThrownBy(() -> authService.withdraw(999L, request))
