@@ -7,7 +7,7 @@ import com.mymealserver.api.profile.dto.response.StatisticsResponse;
 import com.mymealserver.api.profile.service.BodyPatternService;
 import com.mymealserver.api.profile.service.ProfileService;
 import com.mymealserver.api.profile.service.StatisticsService;
-import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import com.mymealserver.common.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,25 +30,25 @@ public class ProfileController {
   private final BodyPatternService bodyPatternService;
 
   @GetMapping
-  public ResponseEntity<SuccessResponse<ProfileResponse>> getProfile(@CurrentMember Long memberId) {
+  public ResponseEntity<SuccessResponse<ProfileResponse>> getProfile(@AuthenticatedMember Long memberId) {
     return SuccessResponse.toOk(profileService.getProfile(memberId));
   }
 
   @PutMapping
   public ResponseEntity<SuccessResponse<ProfileResponse>> updateProfile(
-      @CurrentMember Long memberId, @Valid @RequestBody UpdateProfileRequest request) {
+      @AuthenticatedMember Long memberId, @Valid @RequestBody UpdateProfileRequest request) {
     return SuccessResponse.toOk(profileService.updateProfile(memberId, request));
   }
 
   @GetMapping("/statistics")
   public ResponseEntity<SuccessResponse<StatisticsResponse>> getStatistics(
-      @CurrentMember Long memberId) {
+      @AuthenticatedMember Long memberId) {
     return SuccessResponse.toOk(statisticsService.getStatistics(memberId));
   }
 
   @GetMapping("/patterns")
   public ResponseEntity<SuccessResponse<BodyPatternResponse>> getBodyPatterns(
-      @CurrentMember Long memberId) {
+      @AuthenticatedMember Long memberId) {
     return SuccessResponse.toOk(bodyPatternService.getBodyPatterns(memberId));
   }
 }

@@ -3,7 +3,7 @@ package com.mymealserver.api.ranking;
 import com.mymealserver.api.ranking.dto.response.RankingItemResponse;
 import com.mymealserver.api.ranking.service.DateRange;
 import com.mymealserver.api.ranking.service.RankingService;
-import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.common.response.SuccessResponse;
@@ -31,7 +31,7 @@ public class RankingController {
 
   @GetMapping("/best")
   public ResponseEntity<SuccessResponse<PageResponse<RankingItemResponse>>> getBestRanking(
-      @CurrentMember Long memberId,
+      @AuthenticatedMember Long memberId,
       @RequestParam(required = false) MealType mealType,
       @RequestParam(required = false) LocalDate startDate,
       @RequestParam(required = false) LocalDate endDate,
@@ -47,7 +47,7 @@ public class RankingController {
 
   @GetMapping("/worst")
   public ResponseEntity<SuccessResponse<PageResponse<RankingItemResponse>>> getWorstRanking(
-      @CurrentMember Long memberId,
+      @AuthenticatedMember Long memberId,
       @RequestParam MealType mealType,
       @RequestParam LocalDate startDate,
       @RequestParam LocalDate endDate,

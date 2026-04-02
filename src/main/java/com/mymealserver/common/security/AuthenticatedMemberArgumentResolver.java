@@ -1,6 +1,6 @@
 package com.mymealserver.common.security;
 
-import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
@@ -17,7 +17,7 @@ public class AuthenticatedMemberArgumentResolver implements HandlerMethodArgumen
 
   @Override
   public boolean supportsParameter(MethodParameter parameter) {
-    return parameter.hasParameterAnnotation(CurrentMember.class);
+    return parameter.hasParameterAnnotation(AuthenticatedMember.class);
   }
 
   @Override
