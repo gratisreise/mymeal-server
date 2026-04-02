@@ -4,6 +4,12 @@ spring:
   profiles:
     active: local
 
+  # Jackson
+  jackson:
+    date-format: yyyy-MM-dd
+    serialization:
+      write-dates-as-timestamps: false
+
   # MessageSource
   messages:
     basename: messages

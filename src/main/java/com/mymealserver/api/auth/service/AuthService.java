@@ -9,7 +9,6 @@ import com.mymealserver.api.auth.dto.response.LoginResponse;
 import com.mymealserver.api.auth.dto.response.RefreshResponse;
 import com.mymealserver.common.exception.BusinessException;
 import com.mymealserver.common.exception.ErrorCode;
-import com.mymealserver.common.security.JwtProvider;
 import com.mymealserver.domain.member.Member;
 import com.mymealserver.domain.member.MemberReader;
 import com.mymealserver.domain.member.MemberWriter;
@@ -17,7 +16,6 @@ import com.mymealserver.domain.membersettings.MemberSettings;
 import com.mymealserver.domain.membersettings.MemberSettingsWriter;
 import com.mymealserver.domain.memberwithdrawal.MemberWithdrawal;
 import com.mymealserver.domain.memberwithdrawal.MemberWithdrawalRepository;
-import com.mymealserver.external.redis.RedisTokenService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,8 +34,6 @@ public class AuthService {
   private final TokenService tokenService;
   private final PasswordEncoder passwordEncoder;
   private final MemberWithdrawalRepository memberWithdrawalRepository;
-  private final RedisTokenService redisTokenService;
-  private final JwtProvider jwtProvider;
 
   @Transactional
   public void register(RegisterRequest request) {
@@ -49,7 +45,7 @@ public class AuthService {
     // 2. 비밀번호 인코딩
     String encodedPassword = passwordEncoder.encode(request.password());
 
-    // 3. Member 엔티티 생성 (DTO의 toEntity 메서드 사용)
+    // 3. Member 엔티티 생성
     Member member = request.toEntity(encodedPassword);
     member = memberWriter.save(member);
 
@@ -96,13 +92,7 @@ public class AuthService {
 
   @Transactional
   public void logout(Long memberId, LogoutRequest request) {
-    // 1. 액세스 토큰 블랙
-    String accessToken = request.accessToken();
-    long expiration = jwtProvider.getExpiration(accessToken);
-    redisTokenService.addBlacklist(accessToken, expiration);
-
-    // 2. 리프레쉬 토큰 캐싱 삭제
-    redisTokenService.deleteRefreshToken(memberId);
+    tokenService.invalidateTokens(memberId, request.accessToken());
   }
 
   @Transactional

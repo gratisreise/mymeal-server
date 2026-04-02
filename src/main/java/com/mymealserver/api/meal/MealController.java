@@ -57,7 +57,7 @@ public class MealController {
   public ResponseEntity<SuccessResponse<Void>> deleteMeal(
       @CurrentMember Long memberId, @PathVariable Long id) {
     mealService.deleteMeal(memberId, id);
-    return SuccessResponse.toNoContent(null);
+    return SuccessResponse.toNoContent();
   }
 
   @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

@@ -54,7 +54,10 @@ public class TokenService {
     return RefreshResponse.of(newAT, newRT);
   }
 
-  //    public static String extractToken(String token) {
-  //        return token.replace(CommonValue.AUTH_PREFIX, "");
-  //    }
+  // 로그아웃 토큰 무효화
+  public void invalidateTokens(Long memberId, String accessToken) {
+    long expiration = jwtProvider.getExpiration(accessToken);
+    redisTokenService.addBlacklist(accessToken, expiration);
+    redisTokenService.deleteRefreshToken(memberId);
+  }
 }

@@ -35,6 +35,6 @@ public class SettingsController {
       @Parameter(hidden = true) @CurrentMember Long memberId,
       @Valid @RequestBody UpdateNotificationRequest request) {
     settingsService.updateNotificationSettings(memberId, request);
-    return SuccessResponse.toNoContent(null);
+    return SuccessResponse.toNoContent();
   }
 }

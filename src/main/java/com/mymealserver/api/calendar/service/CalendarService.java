@@ -1,14 +1,15 @@
 package com.mymealserver.api.calendar.service;
 
-import com.mymealserver.api.calendar.domain.CalendarReader;
 import com.mymealserver.api.calendar.dto.CalendarDailyResponse;
 import com.mymealserver.api.calendar.dto.CalendarMonthlyResponse;
 import com.mymealserver.api.calendar.dto.DailySummaryResponse;
+import com.mymealserver.api.meal.dto.response.AIAnalysisResponse;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.reaction.dto.response.ReactionResponse;
 import com.mymealserver.common.enums.GradeType;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.domain.meal.Meal;
+import com.mymealserver.domain.mealanalysis.MealAnalysis;
 import com.mymealserver.domain.reaction.Reaction;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,14 +39,14 @@ public class CalendarService {
     List<Long> mealIds = meals.stream().map(Meal::getId).toList();
     Map<Long, Reaction> reactionsByMealId = calendarReader.findReactionsByMealIds(mealIds);
     Map<LocalDate, List<Meal>> mealsByDate = calendarReader.groupMealsByDate(meals);
-    Map<String, DailySummaryResponse> days = new LinkedHashMap<>();
+    Map<LocalDate, DailySummaryResponse> days = new LinkedHashMap<>();
     for (int day = 1; day <= yearMonth.lengthOfMonth(); day++) {
       LocalDate date = LocalDate.of(year, month, day);
       List<Meal> dayMeals = mealsByDate.getOrDefault(date, List.of());
 
       if (!dayMeals.isEmpty()) {
         DailySummaryResponse summary = buildDailySummary(dayMeals, reactionsByMealId);
-        days.put(date.toString(), summary);
+        days.put(date, summary);
       }
     }
 
@@ -61,9 +62,17 @@ public class CalendarService {
     List<Meal> meals = calendarReader.findMealsByDateRange(memberId, startOfDay, endOfDay);
     List<Long> mealIds = meals.stream().map(Meal::getId).toList();
     Map<Long, Reaction> reactionsByMealId = calendarReader.findReactionsByMealIds(mealIds);
+    Map<Long, MealAnalysis> analysesByMealId = calendarReader.findMealAnalysesByMealIds(mealIds);
 
     List<MealDetailResponse> mealResponses =
-        meals.stream().map(meal -> buildMealDetailResponse(meal, reactionsByMealId)).toList();
+        meals.stream()
+            .map(
+                meal ->
+                    buildMealDetailResponse(
+                        meal,
+                        reactionsByMealId.get(meal.getId()),
+                        analysesByMealId.get(meal.getId())))
+            .toList();
 
     CalendarDailyResponse.StatisticsResponse statistics =
         calculateStatistics(meals, reactionsByMealId);
@@ -72,13 +81,13 @@ public class CalendarService {
   }
 
   private MealDetailResponse buildMealDetailResponse(
-      Meal meal, Map<Long, Reaction> reactionsByMealId) {
-    Reaction reaction = reactionsByMealId.get(meal.getId());
+      Meal meal, Reaction reaction, MealAnalysis analysis) {
     boolean hasReaction = reaction != null;
 
-    // AI 분석 기능이 아직 구현되지 않음
+    AIAnalysisResponse aiAnalysis = analysis != null ? AIAnalysisResponse.from(analysis) : null;
+
     return MealDetailResponse.from(
-        meal, null, reaction != null ? ReactionResponse.from(reaction) : null, hasReaction);
+        meal, aiAnalysis, hasReaction ? ReactionResponse.from(reaction) : null, hasReaction);
   }
 
   private DailySummaryResponse buildDailySummary(
@@ -87,9 +96,10 @@ public class CalendarService {
     Double averageScore = dataAggregator.calculateAverageScore(reactions);
     GradeType quality = dataAggregator.classifyQuality(averageScore);
     Set<MealType> mealTypes = dataAggregator.extractMealTypes(dayMeals);
+    Double reactionRate = dataAggregator.calculateReactionRate(dayMeals.size(), reactions.size());
 
     return new DailySummaryResponse(
-        dayMeals.size(), new ArrayList<>(mealTypes), averageScore, quality);
+        dayMeals.size(), new ArrayList<>(mealTypes), averageScore, quality, reactionRate);
   }
 
   private CalendarDailyResponse.StatisticsResponse calculateStatistics(

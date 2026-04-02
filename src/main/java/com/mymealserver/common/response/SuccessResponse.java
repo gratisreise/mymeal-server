@@ -28,8 +28,8 @@ public class SuccessResponse<T> extends BaseResponse {
   }
 
   // 응답 객체 없음
-  public static <T> ResponseEntity<SuccessResponse<T>> toNoContent(T data) {
-    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(of(data));
+  public static <T> ResponseEntity<SuccessResponse<T>> toNoContent() {
+    return ResponseEntity.noContent().build();
   }
 
   // 커스텀 형식

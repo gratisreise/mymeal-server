@@ -2,6 +2,8 @@ package com.mymealserver.api.recommendation.service;
 
 import com.mymealserver.domain.meallog.MealLog;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,9 +50,9 @@ public class RagPromptBuilder {
         }
         """;
 
+
   // 유틸리티 클래스 - 인스턴스화 방지
   private RagPromptBuilder() {}
-
   public static String buildRecommendationPrompt(List<MealLog> goodMeals) {
     String goodMealsSection = buildGoodMealsSection(goodMeals);
     return RECOMMENDATION_PROMPT_TEMPLATE.formatted(goodMealsSection);

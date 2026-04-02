@@ -21,7 +21,6 @@ public class AiAnalysisService {
 
   public FoodAnalysisResult analyzeFoodImage(Resource imageResource, MealType mealType) {
     try {
-      log.info("음식 이미지 분석 시작 - 식사 유형: {}", mealType.getDescription());
 
       // Gemini 프롬프트 생성 (한국어)
       String prompt = buildPrompt(mealType);
@@ -34,8 +33,6 @@ public class AiAnalysisService {
                   userSpec -> userSpec.text(prompt).media(MimeTypeUtils.IMAGE_JPEG, imageResource))
               .call()
               .entity(FoodAnalysisResult.class);
-
-      log.info("음식 이미지 분석 완료 - 음식명: {}", result.mealName());
       return result;
     } catch (Exception e) {
       log.error("음식 이미지 분석 실패 - 식사 유형: {}, 오류: {}", mealType.getDescription(), e.getMessage());
@@ -45,12 +42,8 @@ public class AiAnalysisService {
 
   public RecommendationResult generateRecommendations(String ragPrompt) {
     try {
-      log.info("식단 추천 생성 시작");
-
       RecommendationResult result =
           chatClient.prompt().user(ragPrompt).call().entity(RecommendationResult.class);
-
-      log.info("식단 추천 생성 완료");
       return result;
     } catch (Exception e) {
       log.error("식단 추천 생성 실패 - 오류: {}", e.getMessage());

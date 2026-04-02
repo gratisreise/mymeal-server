@@ -49,7 +49,7 @@ public class Notification {
   @Column(nullable = false)
   private LocalDateTime updatedAt;
 
-  @Column(nullable = false)
+  @Column
   private LocalDateTime deletedAt;
 
   @PrePersist
@@ -74,5 +74,9 @@ public class Notification {
 
   public boolean isUnread() {
     return !isRead;
+  }
+
+  public void softDelete() {
+    this.deletedAt = LocalDateTime.now();
   }
 }

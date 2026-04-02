@@ -1,10 +1,13 @@
 package com.mymealserver.api.notification;
 
+import com.mymealserver.api.notification.dto.request.BatchReadRequest;
 import com.mymealserver.api.notification.dto.response.NotificationListResponse;
+import com.mymealserver.api.notification.dto.response.UnreadCountResponse;
 import com.mymealserver.api.notification.service.NotificationService;
 import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.enums.NotificationType;
 import com.mymealserver.common.response.SuccessResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/notifications")
 @RequiredArgsConstructor
-@Tag(name = "Notifications", description = "알림")
 public class NotificationController {
 
   private final NotificationService notificationService;
@@ -22,23 +24,43 @@ public class NotificationController {
   @GetMapping
   public ResponseEntity<SuccessResponse<NotificationListResponse>> getNotifications(
       @CurrentMember Long memberId,
-      @RequestParam(defaultValue = "false") Boolean unreadOnly,
-      @RequestParam(defaultValue = "0") int page,
-      @RequestParam(defaultValue = "20") int size) {
+      @RequestParam(required = false) Long cursor,
+      @RequestParam(defaultValue = "20") int size,
+      @RequestParam(required = false) NotificationType type) {
     return SuccessResponse.toOk(
-        notificationService.getNotifications(memberId, unreadOnly, page, size));
+        notificationService.getNotifications(memberId, cursor, size, type));
+  }
+
+  @GetMapping("/unread-count")
+  public ResponseEntity<SuccessResponse<UnreadCountResponse>> getUnreadCount(
+      @CurrentMember Long memberId) {
+    return SuccessResponse.toOk(notificationService.getUnreadCount(memberId));
   }
 
   @PutMapping("/{id}/read")
   public ResponseEntity<SuccessResponse<Void>> markAsRead(
       @CurrentMember Long memberId, @PathVariable Long id) {
     notificationService.markAsRead(memberId, id);
-    return SuccessResponse.toNoContent(null);
+    return SuccessResponse.toNoContent();
   }
 
   @PutMapping("/read-all")
   public ResponseEntity<SuccessResponse<Void>> markAllAsRead(@CurrentMember Long memberId) {
     notificationService.markAllAsRead(memberId);
-    return SuccessResponse.toNoContent(null);
+    return SuccessResponse.toNoContent();
+  }
+
+  @PutMapping("/batch-read")
+  public ResponseEntity<SuccessResponse<Void>> markAsReadBatch(
+      @CurrentMember Long memberId, @Valid @RequestBody BatchReadRequest request) {
+    notificationService.markAsReadBatch(memberId, request.ids());
+    return SuccessResponse.toNoContent();
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<SuccessResponse<Void>> deleteNotification(
+      @CurrentMember Long memberId, @PathVariable Long id) {
+    notificationService.deleteNotification(memberId, id);
+    return SuccessResponse.toNoContent();
   }
 }
