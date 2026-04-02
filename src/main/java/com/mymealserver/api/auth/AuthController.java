@@ -11,7 +11,7 @@ import com.mymealserver.api.auth.dto.response.RefreshResponse;
 import com.mymealserver.api.auth.service.AuthService;
 import com.mymealserver.api.auth.service.oauth.OAuthService;
 import com.mymealserver.api.auth.service.oauth.OAuthServiceFactory;
-import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import com.mymealserver.common.response.SuccessResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,14 +60,14 @@ public class AuthController {
 
   @PostMapping("/logout")
   public ResponseEntity<SuccessResponse<Void>> logout(
-      @CurrentMember Long memberId, @Valid @RequestBody LogoutRequest request) {
+      @AuthenticatedMember Long memberId, @Valid @RequestBody LogoutRequest request) {
     authService.logout(memberId, request);
     return SuccessResponse.toNoContent();
   }
 
   @DeleteMapping("/withdraw")
   public ResponseEntity<SuccessResponse<Void>> withdraw(
-      @CurrentMember Long memberId, @Valid @RequestBody WithdrawRequest request) {
+      @AuthenticatedMember Long memberId, @Valid @RequestBody WithdrawRequest request) {
     authService.withdraw(memberId, request);
     return SuccessResponse.toNoContent();
   }

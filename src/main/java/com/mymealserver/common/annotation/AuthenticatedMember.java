@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface CurrentMember {
+public @interface AuthenticatedMember {
 
   String expression() default "";
 
