@@ -22,3 +22,19 @@ public class NotificationReader {
           memberId, type, cursor, pageable);
     }
     return notificationRepository.findByMemberIdWithCursor(memberId, cursor, pageable);
+  }
+
+  public long countUnread(Long memberId) {
+    return notificationRepository.countByMemberIdAndIsReadAndDeletedAtIsNull(memberId, false);
+  }
+
+  public Notification findByIdAndMemberId(Long notificationId, Long memberId) {
+    return notificationRepository
+        .findByIdAndMemberIdAndDeletedAtIsNull(notificationId, memberId)
+        .orElseThrow(() -> new BusinessException(ErrorCode.NOTIFICATION_NOT_FOUND));
+  }
+
+  public List<Notification> findByIdsAndMemberId(List<Long> ids, Long memberId) {
+    return notificationRepository.findAllByIdInAndMemberIdAndDeletedAtIsNull(ids, memberId);
+  }
+}
