@@ -4,7 +4,7 @@ import com.mymealserver.api.notification.dto.request.BatchReadRequest;
 import com.mymealserver.api.notification.dto.response.NotificationListResponse;
 import com.mymealserver.api.notification.dto.response.UnreadCountResponse;
 import com.mymealserver.api.notification.service.NotificationService;
-import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import com.mymealserver.common.enums.NotificationType;
 import com.mymealserver.common.response.SuccessResponse;
 import jakarta.validation.Valid;
@@ -23,7 +23,7 @@ public class NotificationController {
 
   @GetMapping
   public ResponseEntity<SuccessResponse<NotificationListResponse>> getNotifications(
-      @CurrentMember Long memberId,
+      @AuthenticatedMember Long memberId,
       @RequestParam(required = false) Long cursor,
       @RequestParam(defaultValue = "20") int size,
       @RequestParam(required = false) NotificationType type) {
@@ -33,33 +33,33 @@ public class NotificationController {
 
   @GetMapping("/unread-count")
   public ResponseEntity<SuccessResponse<UnreadCountResponse>> getUnreadCount(
-      @CurrentMember Long memberId) {
+      @AuthenticatedMember Long memberId) {
     return SuccessResponse.toOk(notificationService.getUnreadCount(memberId));
   }
 
   @PutMapping("/{id}/read")
   public ResponseEntity<SuccessResponse<Void>> markAsRead(
-      @CurrentMember Long memberId, @PathVariable Long id) {
+      @AuthenticatedMember Long memberId, @PathVariable Long id) {
     notificationService.markAsRead(memberId, id);
     return SuccessResponse.toNoContent();
   }
 
   @PutMapping("/read-all")
-  public ResponseEntity<SuccessResponse<Void>> markAllAsRead(@CurrentMember Long memberId) {
+  public ResponseEntity<SuccessResponse<Void>> markAllAsRead(@AuthenticatedMember Long memberId) {
     notificationService.markAllAsRead(memberId);
     return SuccessResponse.toNoContent();
   }
 
   @PutMapping("/batch-read")
   public ResponseEntity<SuccessResponse<Void>> markAsReadBatch(
-      @CurrentMember Long memberId, @Valid @RequestBody BatchReadRequest request) {
+      @AuthenticatedMember Long memberId, @Valid @RequestBody BatchReadRequest request) {
     notificationService.markAsReadBatch(memberId, request.ids());
     return SuccessResponse.toNoContent();
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<SuccessResponse<Void>> deleteNotification(
-      @CurrentMember Long memberId, @PathVariable Long id) {
+      @AuthenticatedMember Long memberId, @PathVariable Long id) {
     notificationService.deleteNotification(memberId, id);
     return SuccessResponse.toNoContent();
   }

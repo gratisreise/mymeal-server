@@ -3,7 +3,7 @@ package com.mymealserver.api.meal;
 import com.mymealserver.api.meal.dto.response.MealDetailResponse;
 import com.mymealserver.api.meal.dto.response.MealResponse;
 import com.mymealserver.api.meal.service.MealService;
-import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import com.mymealserver.common.enums.MealType;
 import com.mymealserver.common.response.PageResponse;
 import com.mymealserver.common.response.SuccessResponse;
@@ -30,7 +30,7 @@ public class MealController {
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<SuccessResponse<MealResponse>> createMeal(
-      @CurrentMember Long memberId,
+      @AuthenticatedMember Long memberId,
       @Parameter(required = true) @RequestParam MultipartFile photo,
       @Parameter(required = true) @RequestParam MealType mealType) {
     return SuccessResponse.toCreated(mealService.createMeal(memberId, photo, mealType));
@@ -38,7 +38,7 @@ public class MealController {
 
   @GetMapping
   public ResponseEntity<SuccessResponse<PageResponse<MealResponse>>> getMeals(
-      @CurrentMember Long memberId,
+      @AuthenticatedMember Long memberId,
       @RequestParam(required = false) LocalDate startDate,
       @RequestParam(required = false) LocalDate endDate,
       @RequestParam(required = false) MealType mealType,
@@ -49,20 +49,20 @@ public class MealController {
 
   @GetMapping("/{id}")
   public ResponseEntity<SuccessResponse<MealDetailResponse>> getMealDetail(
-      @CurrentMember Long memberId, @PathVariable Long id) {
+      @AuthenticatedMember Long memberId, @PathVariable Long id) {
     return SuccessResponse.toOk(mealService.getMealDetail(memberId, id));
   }
 
   @DeleteMapping("/{id}")
   public ResponseEntity<SuccessResponse<Void>> deleteMeal(
-      @CurrentMember Long memberId, @PathVariable Long id) {
+      @AuthenticatedMember Long memberId, @PathVariable Long id) {
     mealService.deleteMeal(memberId, id);
     return SuccessResponse.toNoContent();
   }
 
   @PostMapping(value = "/{id}/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<SuccessResponse<MealResponse>> retakePhoto(
-      @CurrentMember Long memberId,
+      @AuthenticatedMember Long memberId,
       @PathVariable Long id,
       @Parameter(required = true) @RequestParam MultipartFile photo) {
     return SuccessResponse.toOk(mealService.retakePhoto(memberId, id, photo));

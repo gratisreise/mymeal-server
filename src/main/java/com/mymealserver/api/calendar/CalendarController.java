@@ -3,7 +3,7 @@ package com.mymealserver.api.calendar;
 import com.mymealserver.api.calendar.dto.CalendarDailyResponse;
 import com.mymealserver.api.calendar.dto.CalendarMonthlyResponse;
 import com.mymealserver.api.calendar.service.CalendarService;
-import com.mymealserver.common.annotation.CurrentMember;
+import com.mymealserver.common.annotation.AuthenticatedMember;
 import com.mymealserver.common.response.SuccessResponse;
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.constraints.Max;
@@ -40,7 +40,7 @@ public class CalendarController {
           @Max(value = 12, message = "{validation.calendar.month.max}")
           @RequestParam
           Integer month,
-      @CurrentMember Long memberId) {
+      @AuthenticatedMember Long memberId) {
     return SuccessResponse.toOk(calendarService.getMonthlyCalendar(memberId, year, month));
   }
 
@@ -48,7 +48,7 @@ public class CalendarController {
   public ResponseEntity<SuccessResponse<CalendarDailyResponse>> getDailyCalendar(
       @Parameter(required = true) @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
           LocalDate date,
-      @CurrentMember Long memberId) {
+      @AuthenticatedMember Long memberId) {
     return SuccessResponse.toOk(calendarService.getDailyCalendar(memberId, date));
   }
 }
