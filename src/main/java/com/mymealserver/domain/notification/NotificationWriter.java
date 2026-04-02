@@ -63,4 +63,16 @@ public class NotificationWriter {
     unreadNotifications.forEach(Notification::markAsRead);
     notificationRepository.saveAll(unreadNotifications);
   }
+
+  @Transactional
+  public void softDelete(Notification notification) {
+    notification.softDelete();
+    notificationRepository.save(notification);
+  }
+
+  @Transactional
+  public void markAsReadBatch(List<Notification> notifications) {
+    notifications.stream().filter(Notification::isUnread).forEach(Notification::markAsRead);
+    notificationRepository.saveAll(notifications);
+  }
 }
